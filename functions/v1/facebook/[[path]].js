@@ -11,7 +11,6 @@ import {
   facebookExchangeNoAuth,
   facebookInboxAuth,
   facebookSendAuth,
-  facebookAutoPinAuth,
   facebookSubscriberCheck,
 } from '../../_lib/facebook.js';
 import {
@@ -137,9 +136,17 @@ export async function onRequest(context) {
       return facebookSendAuth(context);
     }
 
-    // POST /v1/facebook/auto-pin (auto-PIN from inbox slips)
+    // POST /v1/facebook/auto-pin — DISABLED 5 ก.ย.69 (พ่อสั่งปิดทั้งระบบ)
+    // เคยแจก PIN อัตโนมัติจาก inbox + แจ้ง Telegram — เลิกใช้แล้ว
     if (path === 'auto-pin' && request.method === 'POST') {
-      return facebookAutoPinAuth(context);
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'DISABLED',
+          message: 'Auto-PIN ปิดใช้งานแล้ว (5 ก.ย.69)',
+        }),
+        { status: 410, headers: { 'Content-Type': 'application/json' } }
+      );
     }
 
     // POST /v1/facebook/subscriber-check (FB Login — ตรวจว่าเป็นสมาชิกเพจหรือไม่)

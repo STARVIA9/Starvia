@@ -3,9 +3,9 @@ main = "index.js"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 
-# Cron trigger — every 5 minutes
-[triggers]
-crons = ["*/5 * * * *"]
+# DISABLED 5 ก.ย.69 (พ่อสั่งปิดทั้งระบบ Auto-PIN) — คอมเมนต์ cron ออก
+# [triggers]
+# crons = ["*/5 * * * *"]
 
 # Secrets (set via wrangler secret put):
 # STARVIA_ADMIN_JWT_SECRET — for signing admin JWT tokens

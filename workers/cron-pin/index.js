@@ -20,8 +20,10 @@ export default {
     return new Response('STARVIA Cron Worker — see /health', { status: 200 });
   },
 
-  // Cron trigger — runs every 5 minutes
+  // Cron trigger — DISABLED 5 ก.ย.69 (พ่อสั่งปิดทั้งระบบ Auto-PIN)
   async scheduled(event, env, ctx) {
+    console.log('[auto-pin] DISABLED — skipped');
+    return;
     try {
       // Generate admin JWT token
       const now = Math.floor(Date.now() / 1000);
