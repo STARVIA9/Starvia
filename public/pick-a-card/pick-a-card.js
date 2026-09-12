@@ -257,6 +257,7 @@ function buildFan() {
   state.fanCards = cards; // เก็บไว้ใช้ตอน pick
   const N = cards.length;
   const spread = 26;
+  const gap = window.innerWidth <= 420 ? 28 : 40; // จอเล็กชิดขึ้น ไพ่ใหญ่ไม่ล้นขอบ
   for (let i = 0; i < N; i++) {
     const t = i - (N - 1) / 2;
     const card = cards[i];
@@ -265,7 +266,7 @@ function buildFan() {
     c.setAttribute("role", "option");
     c.setAttribute("aria-label", `เลือกไพ่ใบที่ ${i + 1}`); // ไม่เฉลยชื่อไพ่ก่อนเลือก
     c.style.setProperty("--rot", `${(t * spread) / (N / 2)}deg`);
-    c.style.setProperty("--x", `${t * 40}px`);
+    c.style.setProperty("--x", `${t * gap}px`);
     c.style.setProperty("--y", `${Math.abs(t) * 7}px`);
     c.style.transitionDelay = `${i * 40}ms`;
 

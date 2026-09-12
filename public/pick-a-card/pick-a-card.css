@@ -130,14 +130,14 @@ body{
 
 /* ── Fan (ไพ่ 7 ใบ — คว่ำหลัง พลิกเฉลยตอนเลือก) ── */
 .fan{
-  position:relative;height:300px;margin:26px auto 8px;
+  position:relative;height:320px;margin:26px auto 8px;
   display:flex;justify-content:center;align-items:flex-end;
   perspective:1500px;
 }
 .card-f{
   --rot:0deg; --x:0px; --y:0px;
   position:absolute;bottom:0;left:50%;
-  width:92px;height:150px;
+  width:104px;height:167px;
   border-radius:14px;
   background:transparent;
   border:none;
@@ -172,7 +172,7 @@ body{
 .fan-hint{text-align:center;font-size:12px;color:var(--tx2);letter-spacing:.3em;text-transform:uppercase;margin-top:6px}
 
 /* ── Reveal ─────────────────────────────── */
-.rv-flip{width:150px;height:240px;margin:14px auto 6px;perspective:1100px}
+.rv-flip{width:190px;height:304px;margin:14px auto 6px;perspective:1100px}
 .rv-flip-in{
   position:relative;width:100%;height:100%;
   transform-style:preserve-3d;
@@ -416,8 +416,8 @@ body{
   .tp{min-height:108px;padding:15px 13px}
   .tp-i{font-size:26px}
   .tp-t{font-size:16px}
-  .card-f{width:80px;height:132px;font-size:26px}
-  .fan{height:270px}
+  .card-f{width:92px;height:148px;font-size:26px}
+  .fan{height:300px}
   .rv-grid{gap:7px}
 }
 
@@ -603,16 +603,16 @@ body.senior .mp-t{color:#232323}
 body.senior .mp-v{color:#7a4a00}
 
 /* fan cards senior */
-body.senior .fan{height:330px}
+body.senior .fan{height:350px}
 body.senior .card-f{
-  width:88px;height:142px;border:3px solid #000;border-radius:14px;
+  width:104px;height:167px;border:3px solid #000;border-radius:14px;
   background:linear-gradient(160deg,#F4D987,#D6AD45);box-shadow:none;
 }
 body.senior .card-f:not(.sel):hover .card-inner{transform:none}
 body.senior .fan-hint{font-size:15px;color:#232323}
 
 /* reveal senior */
-body.senior .rv-flip{width:170px;height:272px}
+body.senior .rv-flip{width:230px;height:368px}
 body.senior .rv-name{font-size:30px;color:#000}
 body.senior .rv-sub{font-size:16px;color:#232323}
 
@@ -683,6 +683,7 @@ body.senior .hss-s{font-size:15px;color:#333}
 body.senior .hs-empty{color:#232323;font-size:16px;border:2px dashed #000}
 body.senior .hs-topic{color:#000;border-color:#000}
 
+body.senior .hs-card-img{width:60px;height:60px}
 /* modal senior */
 body.senior .pm-card{background:#ffffe0;border:3px solid #000}
 body.senior .pm-t{color:#000;font-size:24px}
