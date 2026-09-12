@@ -25,6 +25,92 @@ function show(id) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+/* ── ประโยคประจำวัน (affirmation) — เลือกตามระดับ pos ของไพ่ ──
+   ใบเดิมได้ประโยคเดิมเสมอ (hash จาก slug) — รู้สึกว่าเป็นของตัวเอง */
+const AFFIRM = {
+  high: [
+    "วันนี้จักรวาลเข้าข้างคุณ เดินหน้าได้เลย",
+    "แสงของคุณชัดแล้ว ทำสิ่งนั้นเถอะ",
+    "จังหวะดีมาถึงแล้ว อย่าปล่อยให้หลุดมือ",
+    "คุณพร้อมกว่าที่คิด ลุยได้เลยวันนี้",
+  ],
+  mid: [
+    "ค่อยๆ ก้าวก็ถึง ใจนิ่งๆ ไว้นะ",
+    "วันนี้ทำดีได้ดี ระวังแค่เรื่องเสี่ยง",
+    "พักบ้างก็ได้ แล้วค่อยเริ่มใหม่",
+    "ฟังเสียงหัวใจตัวเองก่อนตัดสินใจ",
+  ],
+  low: [
+    "วันที่หนักจะผ่านไป คุณไม่ได้อยู่คนเดียว",
+    "ช้าลงนิด ใช้สติ ทุกอย่างจะคลี่คลาย",
+    "คืนนี้พักให้พอ พรุ่งนี้เริ่มใหม่ได้",
+    "เมฆบังแค่ชั่วคราว แสงยังรอคุณอยู่",
+  ],
+};
+function pickAffirm(card) {
+  const mood = card.pos >= 75 ? "high" : card.pos >= 45 ? "mid" : "low";
+  const pool = AFFIRM[mood];
+  let h = 0;
+  const s = String(card.slug || card.name || "");
+  for (let i = 0; i < s.length; i++) h = (h + s.charCodeAt(i)) | 0;
+  return pool[Math.abs(h) % pool.length];
+}
+
+/* ── Breath ritual: แตะไพ่ → นับ 3-2-1 → ค่อยพลิกเฉลย ── */
+let breathSeq = 0;
+let breathCard = null;
+function revealWithBreath(card) {
+  fillReveal(card);
+  // รีเซ็ต meter ไว้ก่อน — จะวิ่งตอนพลิกไพ่จริง (หลัง overlay หาย)
+  $("rvPosFill").style.width = "0%";
+  breathCard = card;
+  breathSeq += 1;
+  $("breathNum").textContent = "แตะไพ่";
+  $("breathTap").disabled = false;
+  $("breathOv").hidden = false;
+  show("scrReveal");
+}
+function breathStart() {
+  const seq = breathSeq;
+  const tap = $("breathTap");
+  tap.disabled = true;
+  let n = 3;
+  $("breathNum").textContent = n;
+  const tick = () => {
+    if (seq !== breathSeq) return; // ผู้ใช้กดย้อนกลับระหว่างนับ — ยกเลิก
+    n -= 1;
+    if (n <= 0) {
+      $("breathOv").hidden = true;
+      requestAnimationFrame(() =>
+        setTimeout(() => {
+          if (seq !== breathSeq) return;
+          $("rvFlip").classList.add("flip");
+          renderMeter(breathCard.pos);
+        }, 250)
+      );
+      return;
+    }
+    $("breathNum").textContent = n;
+    setTimeout(tick, 900);
+  };
+  setTimeout(tick, 900);
+}
+async function shareAffirm() {
+  const text = `🔮 ประโยคประจำวันจาก STARVIA\n“${$("rvAffirm").textContent}”\n— ${$("rvName").textContent}`;
+  const btn = $("btnShareAffirm");
+  try {
+    if (navigator.share) {
+      await navigator.share({ title: "STARVIA · ประโยคประจำวัน", text });
+      return;
+    }
+    await navigator.clipboard.writeText(text);
+  } catch (e) {
+    return; // ผู้ใช้กดยกเลิก — ไม่ต้องทำอะไร
+  }
+  btn.textContent = "✓ คัดลอกแล้ว";
+  setTimeout(() => { btn.textContent = "📤 แชร์ประโยคนี้"; }, 2000);
+}
+
 /* ── Boot ───────────────────────────────── */
 /* ── API helper: ส่ง Authorization header (JWT premium) ทุก call ── */
 function apiFetch(path, options = {}) {
@@ -134,11 +220,8 @@ async function pickSingleCard(card) {
     });
     renderMeta();
   }
-  fillReveal(card);
-  show("scrReveal");
-  requestAnimationFrame(() =>
-    setTimeout(() => $("rvFlip").classList.add("flip"), 250)
-  );
+  // เฉลยแบบมี breath ritual (แตะไพ่ → นับ 3-2-1 → พลิก)
+  revealWithBreath(card);
 }
 
 /* ── Topic → Fan ────────────────────────── */
@@ -250,12 +333,8 @@ async function pickCard(el, idx) {
   });
 
   setTimeout(() => {
-    fillReveal(card);
-    show("scrReveal");
-    requestAnimationFrame(() =>
-      setTimeout(() => $("rvFlip").classList.add("flip"), 250)
-    );
-  }, 900); // รอ fan flip (750ms) จบก่อนเข้าหน้าเฉลย
+    revealWithBreath(card);
+  }, 900); // รอ fan flip (750ms) จบก่อนเข้าหน้าเฉลยแบบ breath
 }
 
 function fillReveal(card) {
@@ -278,6 +357,7 @@ function fillReveal(card) {
   $("rvColor").textContent = card.color;
   $("rvDo").textContent = card.do;
   $("rvDont").textContent = card.dont;
+  $("rvAffirm").textContent = pickAffirm(card);
   renderMeter(card.pos);
 }
 
@@ -396,6 +476,8 @@ $("btnHistory").addEventListener("click", () => { renderHistory(); show("scrHist
 $("btnBackHome").addEventListener("click", () => show("scrTopic"));
 $("btnRvHome").addEventListener("click", () => show("scrTopic"));
 $("btnQuickPick").addEventListener("click", quickPick);
+$("breathTap").addEventListener("click", breathStart);
+$("btnShareAffirm").addEventListener("click", shareAffirm);
 
 /* จ่ายเรียบร้อย → แจ้งให้ส่งสลิปทาง Messenger (Omise ไม่ผ่านอนุมัติ — flow manual) */
 $("btnPaid").addEventListener("click", () => {

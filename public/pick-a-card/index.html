@@ -6,7 +6,7 @@
 <title>Pick a Card · STARVIA — ไพ่ประจำวันของคุณ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="pick-a-card.css?v=10">
+<link rel="stylesheet" href="pick-a-card.css?v=11">
 </head>
 <body>
 
@@ -120,6 +120,16 @@
 
   <!-- ═══════════ SCREEN 3 · REVEAL ═══════════ -->
   <section class="scr scr-reveal" id="scrReveal">
+    <div class="breath-ov" id="breathOv" hidden>
+      <div class="breath-card">
+        <div class="breath-ico">🃏</div>
+        <div class="breath-t">ใบนี้ออกมาหาคุณโดยเฉพาะ</div>
+        <div class="breath-s">หลับตา นึกเรื่องที่อยากรู้ในใจ<br>แล้วแตะไพ่เพื่อเริ่ม</div>
+        <button class="breath-tap" id="breathTap">
+          <span class="breath-num" id="breathNum">แตะไพ่</span>
+        </button>
+      </div>
+    </div>
     <div class="rv-flip" id="rvFlip">
       <div class="rv-flip-in">
         <div class="rv-face rv-back">🃏</div>
@@ -143,6 +153,12 @@
     <div class="rv-msg card" id="rvMsg">
       <div class="phd">คำทำนายวันนี้ · <span id="rvTopicLabel">การเงิน</span></div>
       <p id="rvReading">…</p>
+    </div>
+
+    <div class="rv-affirm card" id="rvAffirmBox">
+      <div class="phd">ประโยคประจำวัน · แคปเก็บไว้ได้</div>
+      <p class="rv-affirm-t" id="rvAffirm">…</p>
+      <button class="btn btn-o" id="btnShareAffirm">📤 แชร์ประโยคนี้</button>
     </div>
 
     <div class="rv-grid">
@@ -254,7 +270,7 @@
 </footer>
 
 <script src="data/tarot-card-data.js?v=7"></script>
-<script src="pick-a-card.js?v=14"></script>
+<script src="pick-a-card.js?v=15"></script>
 
 <!-- STARVIA senior-mode toggle bar (เหมือนหน้าแรก — สลับได้ตลอดเวลา) -->
 <div class="starvia-toggle-bar" id="starvia-toggle-bar">

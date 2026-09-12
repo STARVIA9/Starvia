@@ -35,6 +35,7 @@ body{
 .w{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:76px 18px 90px}
 .scr{display:none;animation:fu .45s ease both}
 .scr.on{display:block}
+.scr-reveal{position:relative}
 @keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
 .dl{width:120px;height:1px;background:linear-gradient(90deg,transparent,var(--g),transparent);margin:14px auto}
@@ -296,6 +297,40 @@ body{
 }
 .btn-o:hover{background:rgba(255,255,255,.09)}
 .rv-note{text-align:center;font-size:12.5px;color:var(--tx2);margin-top:12px}
+
+/* ── Breath ritual overlay (แตะไพ่ → นับ 3-2-1 → พลิก) ── */
+.breath-ov{
+  position:absolute;inset:0;z-index:5;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(9,6,28,.88);
+  backdrop-filter:blur(6px);
+  border-radius:var(--radius);
+  padding:20px;
+}
+.breath-ov[hidden]{display:none}
+.breath-card{text-align:center;max-width:340px}
+.breath-ico{font-size:56px;margin-bottom:10px;animation:breathe 2.6s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.12);opacity:1}}
+.breath-t{font-family:var(--font-display);font-weight:700;font-size:20px;color:var(--g2);margin-bottom:8px}
+.breath-s{font-size:14px;line-height:1.9;color:var(--tx2);margin-bottom:16px}
+.breath-tap{
+  width:150px;height:150px;border-radius:50%;cursor:pointer;
+  font-family:var(--font-display);font-weight:700;font-size:22px;color:#05030f;
+  background:radial-gradient(circle at 50% 30%,#f4d987,var(--g) 65%,#8a6d3b);
+  border:3px solid rgba(244,217,135,.7);
+  box-shadow:0 0 34px rgba(214,173,69,.45);
+  transition:transform .2s;
+}
+.breath-tap:active{transform:scale(.94)}
+.breath-tap:disabled{cursor:default}
+.breath-num{font-size:40px;display:block}
+
+/* ── ประโยคประจำวัน (affirmation) ── */
+.rv-affirm-t{
+  font-size:17px;line-height:2;font-weight:700;color:var(--g2);
+  text-align:center;margin:2px 0 12px;
+}
+.rv-affirm .btn{font-size:14px;padding:11px}
 
 /* ── Back button ─────────────────────────── */
 .back{
@@ -613,6 +648,13 @@ body.senior .btn-o{background:#fff;color:#000;border:2px solid #000}
 body.senior .btn-g:hover,body.senior .btn-o:hover{transform:none;box-shadow:none}
 body.senior .back{font-size:18px;color:#000;font-weight:700;padding:12px;min-height:48px}
 body.senior .rv-note{font-size:15px;color:#333}
+
+/* breath + affirm senior: พื้นสว่าง ตัวหนังสือดำ ตัวใหญ่ */
+body.senior .breath-ov{background:rgba(255,255,224,.97)}
+body.senior .breath-t{font-size:26px;color:#000}
+body.senior .breath-s{font-size:18px;color:#232323}
+body.senior .breath-tap{border:3px solid #000}
+body.senior .rv-affirm-t{font-size:22px;color:#14532d}
 
 /* gate + จ่าย senior */
 body.senior .gate-card{background:#ffffe0;border:3px solid #000;box-shadow:none}
