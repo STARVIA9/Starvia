@@ -79,6 +79,68 @@ function getCardsForTopic(topic) {
   return shuffled.slice(0, 7);
 }
 
+/* ── Quick Mode: 1 ปุ่ม → สุ่มไพ่ 1 ใบจาก 78 → เฉลยทันที (t-020) ── */
+function quickPick() {
+  if (state.quotaLeft <= 0) {
+    showQuotaModal();
+    return;
+  }
+  const all = window.CARD_DATA || [];
+  if (!all.length) return;
+  const card = all[Math.floor(Math.random() * all.length)];
+  state.topic = "career"; // topic กลางๆ สำหรับบันทึก — Quick Mode ไม่ถามหัวข้อ
+  state.fanCards = [card];
+  pickSingleCard(card);
+}
+
+/* เฉลยไพ่เดียวจาก Quick Mode — บันทึกผ่าน API แบบเดียวกับ pickCard */
+async function pickSingleCard(card) {
+  try {
+    const r = await apiFetch(`${API}/draw`, {
+      method: "POST",
+      body: JSON.stringify({
+        topic: state.topic,
+        slug: card.slug,
+        name: card.name,
+        emoji: card.emoji,
+        reading: card.reading || "",
+        pos: card.pos != null ? Number(card.pos) : null,
+        sub: card.sub || "",
+        num: card.num || "",
+        color: card.color || "",
+        do: card.do || "",
+        dont: card.dont || "",
+      }),
+    });
+    const d = await r.json();
+    if (!d.success) {
+      showQuotaModal();
+      return;
+    }
+    state.quotaLeft = d.quotaLeft;
+    state.streak = d.streak;
+    state.history = d.history || state.history;
+    renderMeta();
+  } catch (e) {
+    console.warn("draw API ไม่พร้อม — เปิดแบบ offline (ไม่บันทึก)", e);
+    state.quotaLeft -= 1;
+    state.streak += 1;
+    state.history.unshift({
+      date: new Date().toISOString(), card: card.name, emoji: card.emoji,
+      topic: TOPIC_LABEL[state.topic], slug: card.slug,
+      reading: card.reading || "", pos: card.pos != null ? Number(card.pos) : null,
+      sub: card.sub || "", num: card.num || "", color: card.color || "",
+      do: card.do || "", dont: card.dont || "",
+    });
+    renderMeta();
+  }
+  fillReveal(card);
+  show("scrReveal");
+  requestAnimationFrame(() =>
+    setTimeout(() => $("rvFlip").classList.add("flip"), 250)
+  );
+}
+
 /* ── Topic → Fan ────────────────────────── */
 $("topicGrid").addEventListener("click", (e) => {
   const btn = e.target.closest(".tp");
@@ -332,11 +394,16 @@ $("btnModalHistory").addEventListener("click", () => {
 $("btnBackTopic").addEventListener("click", () => show("scrTopic"));
 $("btnHistory").addEventListener("click", () => { renderHistory(); show("scrHistory"); });
 $("btnBackHome").addEventListener("click", () => show("scrTopic"));
-$("btnShare").addEventListener("click", () => {
-  alert("📤 เดี๋ยวขั้นต่อไปจะ gen การ์ดรูปสวยๆ ให้แชร์ลง Facebook ค่ะ");
-});
-$("btnTomorrow").addEventListener("click", () => {
-  alert("🔔 เปิดการแจ้งเตือนสำเร็จ (mock) — ตอนนี้พรุ่งนี้ 07:00 จะเตือนค่ะ");
+$("btnRvHome").addEventListener("click", () => show("scrTopic"));
+$("btnQuickPick").addEventListener("click", quickPick);
+
+/* จ่ายเรียบร้อย → แจ้งให้แนบสลิปหาแม่หมอ (ตรวจสลิปแล้วเปิดสมาชิก) */
+$("btnPaid").addEventListener("click", () => {
+  showMsg(
+    "💜",
+    "ได้รับการแจ้งแล้วค่ะ",
+    "แม่หมอจะตรวจสลิปและเปิดสมาชิกให้ภายใน 24 ชม.<br>ถ้ามี PIN แล้ว กรอกด้านล่างได้เลยค่ะ"
+  );
 });
 /* ── Modal ข้อความกลางจอ (แจ้งผล login/เตือน) ── */
 function showMsg(icon, title, body) {
@@ -402,25 +469,10 @@ async function checkSubscriber(accessToken, userID) {
   }
 }
 
-$("btnFbLogin").addEventListener("click", async () => {
-  try {
-    await loadFbSdk();
-    window.FB.login((resp) => {
-      if (resp.authResponse) {
-        checkSubscriber(resp.authResponse.accessToken, resp.authResponse.userID);
-      } else {
-        showMsg("😔", "เข้าสู่ระบบไม่สำเร็จ", "แตะปุ่มอีกครั้งเพื่อลองใหม่นะคะ");
-      }
-    }, { config_id: FB_LOGIN_CONFIG_ID });
-  } catch (e) {
-    console.warn("fb login error:", e);
-    showMsg("😔", "โหลดระบบ Facebook ไม่สำเร็จ", "ลองใหม่ภายหลังนะคะ");
-  }
-});
+/* (t-021) FB login flow เดิมตัดออกพร้อมปุ่ม — ไม่มี event ผูกกับ btnFbLogin อีกต่อไป */
 
-$("btnSubscribe").addEventListener("click", () => {
-  window.open("https://www.facebook.com/1071926269337612", "_blank");
-});
+/* (t-021) ปุ่มสมัคร FB + FB login เดิมตัดออก — หน้าจ่ายเป็น QR ในเว็บ + PIN แทน
+   เก็บ loadFbSdk/checkSubscriber ไว้เผื่อระบบ subscriber กลับมา (ไม่มีปุ่มเรียกแล้ว) */
 
 /* ── PIN Verify ── */
 $("btnPin").addEventListener("click", verifyPin);

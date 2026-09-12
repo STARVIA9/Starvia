@@ -6,9 +6,28 @@
 <title>Pick a Card · STARVIA — ไพ่ประจำวันของคุณ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="pick-a-card.css?v=8">
+<link rel="stylesheet" href="pick-a-card.css?v=9">
 </head>
 <body>
+
+<script>
+/* STARVIA senior-mode boot — อ่าน starvia_mode ที่หน้าแรกเลือกไว้ (pitfall: คนเข้าตรงลิงก์ย่อยจาก LINE/FB ไม่เคยเห็น age gate ของหน้าแรก) */
+(function(){
+  var KEY='starvia_mode';
+  function apply(mode){
+    var b=document.body;
+    b.classList.remove('senior','normal');
+    if(mode==='senior'||mode==='normal'){ b.classList.add(mode); }
+  }
+  window.starviaChoose=function(mode){
+    try{ localStorage.setItem(KEY,mode); }catch(e){}
+    apply(mode);
+  };
+  var saved=null;
+  try{ saved=localStorage.getItem(KEY); }catch(e){}
+  if(saved){ apply(saved); }
+})();
+</script>
 
 <!-- ═══════════ TOP BAR ═══════════ -->
 <nav class="pac-top">
@@ -33,6 +52,16 @@
       <div class="dl"></div>
       <p class="pac-hd-sub">ตั้งจิตให้นิ่ง เลือกเรื่องที่อยากรู้<br>ไพ่ 1 ใบจะเฉลยทางให้วันนี้</p>
     </header>
+
+    <div class="qm-wrap">
+      <button class="qm-big" id="btnQuickPick">
+        <span class="qm-ico">🎴</span>
+        หยิบไพ่วันนี้เลย
+      </button>
+      <p class="qm-sub">กดปุ่มเดียว — ไม่ต้องเลือกหัวข้อ ไม่ต้องเลือกไพ่<br>แม่หมอจัดไพ่และคำทำนายให้ทันที</p>
+    </div>
+
+    <div class="qm-divider"><span>หรือเลือกหัวข้อเอง</span></div>
 
     <div class="topic-grid" id="topicGrid">
       <button class="tp" data-topic="career">
@@ -123,9 +152,9 @@
       <div class="rv-box"><div class="rvb-l">⚠️ ควรเลี่ยง</div><div class="rvb-v rvb-dont" id="rvDont">การกู้ยืม</div></div>
     </div>
 
+    <!-- ปุ่ม mock (แชร์/เตือน) ตัดออกตามงาน t-021 — ห้าม ship ปุ่มหลอกหลัง paywall -->
     <div class="rv-actions">
-      <button class="btn btn-g" id="btnShare">📤 แชร์ผลไพ่</button>
-      <button class="btn btn-o" id="btnTomorrow">🔔 เตือนฉันพรุ่งนี้ 07:00</button>
+      <button class="btn btn-g" id="btnRvHome">← กลับหน้าแรก</button>
     </div>
     <div class="rv-note">กลับมาหยิบใหม่ได้พรุ่งนี้นะคะ 💜</div>
   </section>
@@ -165,10 +194,23 @@
         <span class="gp-n">19</span>
         <span class="gp-u">บาท / เดือน</span>
       </div>
-      <button class="btn btn-g gate-cta" id="btnSubscribe">💜 สมัครสมาชิกผ่าน Facebook</button>
-      <button class="btn btn-o gate-login" id="btnFbLogin">🔑 เป็นสมาชิกแล้ว? เข้าด้วย Facebook</button>
 
-      <div class="gate-or">— หรือ —</div>
+      <!-- จ่ายในเว็บ — QR PromptPay ใหญ่ ยอดฝังแน่นอน (t-021) -->
+      <div class="pay-inline">
+        <div class="pay-qr-box">
+          <img src="qr-19.png" alt="QR PromptPay 19 บาท" id="qrImg">
+        </div>
+        <div class="pay-hint">สแกน 1 ครั้ง — ยอด 19 บาท ฝังอยู่ใน QR แล้ว ไม่ต้องพิมพ์เลข</div>
+        <ol class="pay-steps">
+          <li><span class="n">1</span>เปิดแอปธนาคาร กดสแกน QR</li>
+          <li><span class="n">2</span>สแกนกล่องขาวด้านบน ยอด 19 บาทขึ้นเอง</li>
+          <li><span class="n">3</span>จ่ายเสร็จ กดปุ่มสีทองใหญ่ด้านล่างนี้</li>
+        </ol>
+        <button class="btn btn-g gate-cta" id="btnPaid">✓ จ่ายเรียบร้อยแล้ว</button>
+        <div class="pay-note">ยอดจะถูกตรวจโดยแม่หมอก่อนเปิดสมาชิก · มีปัญหาทักแม่หมอได้เลยค่ะ</div>
+      </div>
+
+      <div class="gate-or">— มี PIN อยู่แล้ว? —</div>
       <div class="gate-pin-row">
         <input class="gate-pin-input" id="pinInput" placeholder="PIN (เช่น STAR-XXXX)" maxlength="14" autocomplete="off">
         <button class="btn btn-o" id="btnPin" style="padding:10px 16px;border-radius:10px">✓</button>
@@ -211,6 +253,12 @@
 </footer>
 
 <script src="data/tarot-card-data.js?v=7"></script>
-<script src="pick-a-card.js?v=12"></script>
+<script src="pick-a-card.js?v=13"></script>
+
+<!-- STARVIA senior-mode toggle bar (เหมือนหน้าแรก — สลับได้ตลอดเวลา) -->
+<div class="starvia-toggle-bar" id="starvia-toggle-bar">
+  <button type="button" class="starvia-toggle-btn" onclick="starviaChoose('senior')" aria-label="สลับโหมดตัวใหญ่">👴 โหมดตัวใหญ่</button>
+  <button type="button" class="starvia-toggle-btn" onclick="starviaChoose('normal')" aria-label="สลับโหมดปกติ">👩 โหมดปกติ</button>
+</div>
 </body>
 </html>

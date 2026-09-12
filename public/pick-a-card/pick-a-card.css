@@ -432,3 +432,231 @@ body{
 .gate-pin-input::placeholder{color:rgba(255,255,255,.3);text-transform:none;letter-spacing:0;font-size:.82rem}
 .gate-pin-input:focus{border-color:#d4af37}
 .gate-pin-msg{text-align:center;margin-top:8px;font-size:.82rem;color:#f0c}
+
+/* ═══════════════════════════════════════════════════════════════
+   QUICK MODE + SENIOR MODE + จ่ายในเว็บ QR — 12 ก.ย.69 (t-019/020/021)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Quick Mode: ปุ่มใหญ่ 1 ปุ่ม ── */
+.qm-wrap{margin:20px 0 10px}
+.qm-big{
+  width:100%;min-height:96px;padding:24px 20px;
+  border-radius:26px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,#D6AD45,#8B6914);
+  color:#09061c;font-family:var(--font-display);font-weight:700;
+  font-size:22px;letter-spacing:.02em;
+  display:flex;align-items:center;justify-content:center;gap:14px;
+  box-shadow:0 14px 36px rgba(214,173,26,.35);
+  transition:transform .22s,box-shadow .22s;
+}
+.qm-big:hover{transform:translateY(-2px);box-shadow:0 18px 44px rgba(214,173,26,.45)}
+.qm-ico{font-size:34px;line-height:1}
+.qm-sub{font-size:13.5px;color:var(--tx2);text-align:center;margin-top:10px;line-height:1.8}
+.qm-divider{
+  display:flex;align-items:center;gap:12px;margin:22px 0 14px;
+  color:var(--tx2);font-size:12.5px;letter-spacing:.08em;
+}
+.qm-divider::before,.qm-divider::after{content:"";flex:1;height:1px;background:rgba(214,173,69,.22)}
+
+/* ── จ่ายในเว็บ: QR ใหญ่ใน gate ── */
+.pay-inline{margin:6px 0 4px}
+.pay-qr-box{
+  width:100%;max-width:340px;margin:14px auto 8px;
+  background:#fff;padding:16px;border-radius:20px;
+  border:1px solid rgba(201,162,39,.3);
+}
+.pay-qr-box img{width:100%;display:block;border-radius:8px}
+.pay-hint{font-size:13px;color:var(--tx2);text-align:center;margin-top:2px}
+.pay-steps{
+  list-style:none;text-align:left;max-width:300px;margin:14px auto 0;
+  display:grid;gap:9px;font-size:13.5px;color:var(--tx2);
+  padding:0;
+}
+.pay-steps li{list-style:none;display:flex;gap:10px;align-items:flex-start;line-height:1.7}
+.pay-steps .n{
+  flex:0 0 auto;width:26px;height:26px;border-radius:50%;
+  background:var(--g);color:#09061c;font-weight:700;font-size:14px;
+  display:flex;align-items:center;justify-content:center;margin-top:2px;
+}
+.pay-note{font-size:11.5px;color:var(--tx2);margin-top:10px;line-height:1.8;text-align:center}
+
+/* ── Toggle bar ล่าง (เหมือน styles.css หน้าแรก) ── */
+.starvia-toggle-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:10000;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+  background:rgba(13,10,31,.94);border-top:1px solid #554488;backdrop-filter:blur(10px);
+}
+.starvia-toggle-btn{
+  flex:0 0 auto;min-height:44px;padding:10px 18px;border-radius:50px;
+  border:1px solid #8E72D8;background:transparent;color:#C9B8F0;
+  font-family:var(--font-body);font-size:14px;font-weight:700;cursor:pointer;
+  transition:background .2s;
+}
+.starvia-toggle-btn:hover{background:rgba(142,114,216,.18)}
+
+/* ═══════════ SENIOR MODE — พื้นเหลือง ตัวดำ AAA ═══════════ */
+body.senior{
+  --tx:#000;--tx2:#232323;
+  --g:#7a4a00;--g2:#5a4400;--g3:#7a4a00;
+  --bg:#fff8d6;--bg2:#ffffe0;
+  --surface:#ffffe0;
+  --br:rgba(0,0,0,.38);
+  --shadow:none;
+}
+body.senior{
+  background:
+    radial-gradient(circle at 14% -10%,rgba(214,173,69,.28),transparent 36%),
+    radial-gradient(circle at 82% 4%,rgba(214,173,69,.18),transparent 26%),
+    linear-gradient(145deg,#fff8d6,#ffffe0 48%,#fff8d6);
+  color:#000;
+  font-size:18px;
+}
+
+/* top bar */
+body.senior .pac-top{
+  background:rgba(255,248,214,.96);
+  border-bottom:3px solid #000;
+  backdrop-filter:none;
+}
+body.senior .pac-user-n{font-size:16px;color:#000}
+body.senior .pac-user-t{font-size:13px;color:#7a4a00}
+
+/* headers */
+body.senior .pac-hd-tag{color:#5a3a00;font-size:16px;letter-spacing:.3em;font-weight:700}
+body.senior h1.pac-hd-t,body.senior .pac-hd-t2{
+  background:none;-webkit-text-fill-color:#000;animation:none;
+  font-size:clamp(32px,7.4vw,48px);color:#000;
+}
+body.senior .pac-hd-t2{font-size:28px}
+body.senior .pac-hd-d{font-size:17px;color:#232323}
+body.senior .pac-hd-sub{font-size:18px;color:#232323;line-height:1.8}
+
+/* Quick Mode button senior */
+body.senior .qm-big{
+  background:linear-gradient(135deg,#F4D987,#D6AD45);
+  border:3px solid #000;color:#000;font-size:26px;min-height:110px;
+  box-shadow:none;
+}
+body.senior .qm-big:hover{transform:none;box-shadow:none}
+body.senior .qm-ico{font-size:38px}
+body.senior .qm-sub{font-size:17px;color:#232323}
+body.senior .qm-divider{color:#232323;font-size:15px}
+body.senior .qm-divider::before,body.senior .qm-divider::after{background:rgba(0,0,0,.35)}
+
+/* topic grid senior */
+body.senior .topic-grid{gap:12px}
+body.senior .tp{
+  min-height:150px;border:3px solid #000;border-radius:18px;background:#ffffe0;
+  box-shadow:none;
+}
+body.senior .tp:hover{transform:none;border-color:#000;box-shadow:none}
+body.senior .tp-i{font-size:38px}
+body.senior .tp-t{font-size:22px;color:#000}
+body.senior .tp-s{font-size:16px;color:#111}
+
+/* meta pills */
+body.senior .meta-pill{background:#fff;border:2px solid #000}
+body.senior .mp-t{color:#232323}
+body.senior .mp-v{color:#7a4a00}
+
+/* fan cards senior */
+body.senior .fan{height:330px}
+body.senior .card-f{
+  width:88px;height:142px;border:3px solid #000;border-radius:14px;
+  background:linear-gradient(160deg,#F4D987,#D6AD45);box-shadow:none;
+}
+body.senior .card-f:not(.sel):hover .card-inner{transform:none}
+body.senior .fan-hint{font-size:15px;color:#232323}
+
+/* reveal senior */
+body.senior .rv-flip{width:170px;height:272px}
+body.senior .rv-name{font-size:30px;color:#000}
+body.senior .rv-sub{font-size:16px;color:#232323}
+
+/* meter senior: ป้ายใหญ่ ไม่มี % ไม่มีแถบ (พ่อเลือก 12 ก.ย.69) */
+body.senior .rv-meter{
+  background:#ffffe0;border:3px solid #000;box-shadow:none;backdrop-filter:none;
+}
+body.senior .meter-pct{display:none}
+body.senior .meter-bar{display:none}
+body.senior .meter-label{font-size:17px;letter-spacing:.02em;color:#000;text-transform:none;font-weight:700}
+body.senior .meter-tag{font-size:26px;font-weight:700;margin-top:4px;line-height:1.4}
+body.senior .meter-tag.high{color:#14532d}
+body.senior .meter-tag.mid{color:#7a4a00}
+body.senior .meter-tag.low{color:#7f1d1d}
+
+/* ทำนาย/กล่อง senior */
+body.senior .card{background:#ffffe0;border:3px solid #000;border-radius:16px;box-shadow:none;backdrop-filter:none}
+body.senior .phd{
+  font-size:15px;background:rgba(214,173,69,.25);border-left:4px solid #000;color:#000;
+}
+body.senior .rv-msg p{font-size:20px;line-height:1.9;color:#111}
+body.senior .rv-box{background:#fff;border:2px solid #000}
+body.senior .rvb-l{font-size:14px;color:#7a4a00}
+body.senior .rvb-v{font-size:17px;color:#111}
+
+/* ปุ่ม senior */
+body.senior .btn{
+  font-size:19px;padding:16px 26px;min-height:56px;border-radius:50px;
+  border:3px solid #000;color:#000;
+}
+body.senior .btn-g{background:linear-gradient(135deg,#F4D987,#D6AD45)}
+body.senior .btn-o{background:#fff;color:#000;border:2px solid #000}
+body.senior .btn-g:hover,body.senior .btn-o:hover{transform:none;box-shadow:none}
+body.senior .back{font-size:18px;color:#000;font-weight:700;padding:12px;min-height:48px}
+body.senior .rv-note{font-size:15px;color:#333}
+
+/* gate + จ่าย senior */
+body.senior .gate-card{background:#ffffe0;border:3px solid #000;box-shadow:none}
+body.senior .gate-t{color:#000;font-size:26px}
+body.senior .gate-ul{font-size:17px;color:#232323}
+body.senior .gp-n{background:none;-webkit-text-fill-color:#000;color:#000;font-size:56px}
+body.senior .gp-u{font-size:16px;color:#232323}
+body.senior .pay-qr-box{border:3px solid #000}
+body.senior .pay-hint{font-size:16px;color:#232323}
+body.senior .pay-steps{font-size:17px;color:#111}
+body.senior .pay-steps .n{background:#D6AD45;color:#000;border:2px solid #000}
+body.senior .pay-note{font-size:14px;color:#333}
+body.senior .gate-or{color:#232323;font-size:16px}
+body.senior .gate-pin-input{
+  font-size:18px;padding:14px;border:2px solid #000;background:#fff;color:#000;border-radius:12px;
+}
+body.senior .gate-pin-input::placeholder{color:#555}
+
+/* history senior */
+body.senior .hs-item{background:#fff;border:2px solid #000}
+body.senior .hs-card-n{font-size:16px;color:#000}
+body.senior .hs-meta{font-size:13px;color:#333}
+body.senior .hss-n{color:#000;font-size:22px}
+body.senior .hss-s{font-size:15px;color:#333}
+body.senior .hs-empty{color:#232323;font-size:16px;border:2px dashed #000}
+body.senior .hs-topic{color:#000;border-color:#000}
+
+/* modal senior */
+body.senior .pm-card{background:#ffffe0;border:3px solid #000}
+body.senior .pm-t{color:#000;font-size:24px}
+body.senior .pm-d{font-size:17px;color:#232323}
+
+/* footer senior */
+body.senior .pac-ft{color:#232323;font-size:15px;border-top:2px solid #000}
+body.senior .pac-ft-a{color:#7a4a00}
+
+/* toggle bar senior */
+body.senior .starvia-toggle-bar{background:#000;border-top:2px solid #D6AD45;gap:12px;padding:12px 12px calc(12px + env(safe-area-inset-bottom))}
+body.senior .starvia-toggle-btn{
+  min-height:52px;padding:12px 26px;font-size:17px;border:2px solid #D6AD45;
+  background:#D6AD45;color:#000;border-radius:50px;
+}
+body.senior .starvia-toggle-btn:hover{background:#F4D987}
+
+/* เว้นล่างให้ toggle bar ไม่ทับเนื้อหา */
+body.senior .w{padding-bottom:150px}
+.starvia-toggle-bar ~ footer{margin-bottom:56px}
+
+/* ── Senior: จอเล็ก 480px ── */
+@media (max-width:480px){
+  body.senior .qm-big{font-size:24px;min-height:104px}
+  body.senior .starvia-toggle-btn{font-size:17px;padding:11px 16px;min-height:50px}
+  body.senior .btn{font-size:19px;padding:14px 20px}
+}
