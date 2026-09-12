@@ -12,6 +12,7 @@ const state = {
   streak: 0,
   topic: null,
   history: [],
+  trial: false, // โหมดลองฟรีจากหน้าจ่ายเงิน — ไม่ยิง API ไม่หักโควตา
 };
 
 const TOPIC_LABEL = { career: "การงาน", money: "การเงิน", love: "ความรัก", health: "สุขภาพ" };
@@ -68,6 +69,11 @@ function revealWithBreath(card) {
   $("breathNum").textContent = "แตะไพ่";
   $("breathTap").disabled = false;
   $("breathOv").hidden = false;
+  // โหมดลองฟรี: โชว์ปุ่มชวนสมัคร + เปลี่ยนโน้ตท้าย
+  $("btnTrialSub").hidden = !state.trial;
+  $("rvNote").textContent = state.trial
+    ? "นี่คือใบลองชวน — สมัครแล้วมีไพ่รอทุกเช้า 💜"
+    : "กลับมาหยิบใหม่ได้พรุ่งนี้นะคะ 💜";
   show("scrReveal");
 }
 function breathStart() {
@@ -165,12 +171,22 @@ function getCardsForTopic(topic) {
   return shuffled.slice(0, 7);
 }
 
+/* ── ลองฟรี 1 ใบจากหน้าจ่ายเงิน — ไม่ยิง API ไม่หักโควตา ไม่นับ streak ── */
+function trialPick() {
+  const all = window.CARD_DATA || [];
+  if (!all.length) return;
+  state.topic = "career";
+  state.trial = true;
+  revealWithBreath(all[Math.floor(Math.random() * all.length)]);
+}
+
 /* ── Quick Mode: 1 ปุ่ม → สุ่มไพ่ 1 ใบจาก 78 → เฉลยทันที (t-020) ── */
 function quickPick() {
   if (state.quotaLeft <= 0) {
     showQuotaModal();
     return;
   }
+  state.trial = false;
   const all = window.CARD_DATA || [];
   if (!all.length) return;
   const card = all[Math.floor(Math.random() * all.length)];
@@ -287,6 +303,7 @@ async function pickCard(el, idx) {
     return;
   }
   const card = state.fanCards[idx];
+  state.trial = false;
 
   // บันทึกการเปิดไพ่ผ่าน API (หัก quota จริง) — fallback offline ถ้า API ไม่พร้อม
   try {
@@ -474,7 +491,9 @@ $("btnModalHistory").addEventListener("click", () => {
 $("btnBackTopic").addEventListener("click", () => show("scrTopic"));
 $("btnHistory").addEventListener("click", () => { renderHistory(); show("scrHistory"); });
 $("btnBackHome").addEventListener("click", () => show("scrTopic"));
-$("btnRvHome").addEventListener("click", () => show("scrTopic"));
+$("btnRvHome").addEventListener("click", () => show(state.member ? "scrTopic" : "scrGate"));
+$("btnTrialPick").addEventListener("click", trialPick);
+$("btnTrialSub").addEventListener("click", () => { state.trial = false; show("scrGate"); });
 $("btnQuickPick").addEventListener("click", quickPick);
 $("breathTap").addEventListener("click", breathStart);
 $("btnShareAffirm").addEventListener("click", shareAffirm);

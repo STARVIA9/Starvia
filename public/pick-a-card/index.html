@@ -170,9 +170,10 @@
 
     <!-- ปุ่ม mock (แชร์/เตือน) ตัดออกตามงาน t-021 — ห้าม ship ปุ่มหลอกหลัง paywall -->
     <div class="rv-actions">
+      <button class="btn btn-g" id="btnTrialSub" hidden>💜 ถูกใจไหม สมัคร 19฿ เปิดไพ่ทุกวัน</button>
       <button class="btn btn-g" id="btnRvHome">← กลับหน้าแรก</button>
     </div>
-    <div class="rv-note">กลับมาหยิบใหม่ได้พรุ่งนี้นะคะ 💜</div>
+    <div class="rv-note" id="rvNote">กลับมาหยิบใหม่ได้พรุ่งนี้นะคะ 💜</div>
   </section>
 
   <!-- ═══════════ SCREEN 4 · HISTORY ═══════════ -->
@@ -225,6 +226,10 @@
         <button class="btn btn-g gate-cta" id="btnPaid">✓ จ่าย 19 บาทแล้ว</button>
         <a class="btn btn-o gate-msg-btn" href="https://m.me/61573341702581" target="_blank" rel="noopener">💬 แจ้งสลิปส่ง Messenger</a>
         <div class="pay-note">กดปุ่มสีฟ้า 👆 ส่งสลิปให้แม่หมอ → แม่หมอจะส่ง PIN กลับมาให้ → กรอก PIN ด้านล่าง</div>
+
+      <div class="gate-or">— ยังไม่แน่ใจ? —</div>
+      <button class="btn btn-g" id="btnTrialPick">🎴 ลองหยิบไพ่ฟรี 1 ใบ</button>
+      <div class="pay-note">ลองก่อนได้ ไม่ต้องจ่าย — ถูกใจค่อยสมัคร 19฿/เดือน</div>
       </div>
 
       <div class="gate-or">— มี PIN อยู่แล้ว? —</div>
@@ -270,7 +275,7 @@
 </footer>
 
 <script src="data/tarot-card-data.js?v=7"></script>
-<script src="pick-a-card.js?v=15"></script>
+<script src="pick-a-card.js?v=16"></script>
 
 <!-- STARVIA senior-mode toggle bar (เหมือนหน้าแรก — สลับได้ตลอดเวลา) -->
 <div class="starvia-toggle-bar" id="starvia-toggle-bar">
