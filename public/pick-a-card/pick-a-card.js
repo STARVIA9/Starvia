@@ -397,12 +397,12 @@ $("btnBackHome").addEventListener("click", () => show("scrTopic"));
 $("btnRvHome").addEventListener("click", () => show("scrTopic"));
 $("btnQuickPick").addEventListener("click", quickPick);
 
-/* จ่ายเรียบร้อย → แจ้งให้แนบสลิปหาแม่หมอ (ตรวจสลิปแล้วเปิดสมาชิก) */
+/* จ่ายเรียบร้อย → แจ้งให้ส่งสลิปทาง Messenger (Omise ไม่ผ่านอนุมัติ — flow manual) */
 $("btnPaid").addEventListener("click", () => {
   showMsg(
     "💜",
-    "ได้รับการแจ้งแล้วค่ะ",
-    "แม่หมอจะตรวจสลิปและเปิดสมาชิกให้ภายใน 24 ชม.<br>ถ้ามี PIN แล้ว กรอกด้านล่างได้เลยค่ะ"
+    "รับทราบการโอนแล้วค่ะ",
+    "ส่งสลิปทาง <b>Messenger</b> (ปุ่มสีฟ้าด้านบน) แม่หมอจะตอบกลับพร้อม PIN<br>แล้วกลับมากรอก PIN ด้านล่างเพื่อเปิดสมาชิกได้เลยค่ะ"
   );
 });
 /* ── Modal ข้อความกลางจอ (แจ้งผล login/เตือน) ── */
