@@ -247,6 +247,16 @@
       <div class="pm-ic">🌙</div>
       <h3 class="pm-t">วันนี้เปิดไพ่ครบแล้วนะคะ</h3>
       <p class="pm-d">ไพ่ประจำวัน 1 ใบต่อวัน<br>พรุ่งนี้ 07:00 กลับมาหยิบใบใหม่ได้เลย ✨</p>
+      <!-- แพ็กเครดิตหยิบเพิ่ม 19฿=+3 ใบ (QR เดิม+สลิป Messenger+PIN เครดิต) -->
+      <div class="gate-or">— อยากหยิบเพิ่มคืนนี้? —</div>
+      <p class="pm-d">💜 <b>แพ็ก 19 บาท = หยิบเพิ่ม 3 ใบ</b><br>
+      สแกน QR เดิมที่หน้าสมาชิก → ส่งสลิปทาง Messenger<br>แม่หมอส่ง <b>PIN เครดิต</b> กลับมา → กรอกด้านล่างได้เลย</p>
+      <!-- แพ็ก 49฿=+10 ใบ ซ่อนไว้ก่อน — รอ QR-49 (ยอดฝัง 49) แล้วค่อยเปิด -->
+      <div class="gate-pin-row">
+        <input class="gate-pin-input" id="creditPinInput" placeholder="PIN เครดิต (เช่น STAR-XXXX)" maxlength="14" autocomplete="off">
+        <button class="btn btn-o" id="btnCreditRedeem" style="padding:10px 16px;border-radius:10px">✓</button>
+      </div>
+      <div id="creditPinMsg" class="gate-pin-msg" hidden></div>
       <div class="pm-actions">
         <button class="btn btn-g" id="btnModalHistory">📜 ดูประวัติของฉัน</button>
         <button class="btn btn-o" id="btnModalClose">← กลับหน้าหลัก</button>
@@ -275,7 +285,7 @@
 </footer>
 
 <script src="data/tarot-card-data.js?v=7"></script>
-<script src="pick-a-card.js?v=19"></script>
+<script src="pick-a-card.js?v=20"></script>
 
 <!-- STARVIA senior-mode toggle bar (เหมือนหน้าแรก — สลับได้ตลอดเวลา) -->
 <div class="starvia-toggle-bar" id="starvia-toggle-bar">

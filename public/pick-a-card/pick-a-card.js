@@ -9,6 +9,7 @@ const state = {
     localStorage.getItem("starvia_premium") === "true" ||
     !!localStorage.getItem("starvia_premium_token"),
   quotaLeft: 1,
+  credits: 0, // เครดิตหยิบเพิ่มจากแพ็ก 19฿=+3 (อยู่ข้ามวันจนกว่าจะใช้หมด)
   streak: 0,
   topic: null,
   history: [],
@@ -132,6 +133,7 @@ async function loadState() {
     const d = await r.json();
     if (d.success) {
       state.quotaLeft = d.quotaLeft;
+      state.credits = Number(d.credits) || 0;
       state.streak = d.streak;
       state.history = d.history || [];
     } else if (d.error === "TOKEN_EXPIRED" || d.error === "INVALID_TOKEN") {
@@ -159,8 +161,14 @@ function boot() {
 
 function renderMeta() {
   $("streakVal").textContent = `${state.streak} วัน`;
-  $("quotaVal").textContent = state.quotaLeft > 0 ? `${state.quotaLeft} ครั้ง` : "หมดแล้ว";
+  const total = (Number(state.quotaLeft) || 0) + (Number(state.credits) || 0);
+  $("quotaVal").textContent = total > 0 ? `${total} ครั้ง` : "หมดแล้ว";
   $("historyCount").textContent = state.history.length;
+}
+
+/* สิทธิ์หยิบคงเหลือรวม (โควต้าฟรี + เครดิตแพ็ก) */
+function picksLeft() {
+  return (Number(state.quotaLeft) || 0) + (Number(state.credits) || 0);
 }
 
 /* ── เลือกไพ่ตามหัวข้อ ──────────────────── */
@@ -206,7 +214,7 @@ function trialPick() {
 
 /* ── Quick Mode: 1 ปุ่ม → สุ่มไพ่ 1 ใบจาก 78 → เฉลยทันที (t-020) ── */
 function quickPick() {
-  if (state.quotaLeft <= 0) {
+  if (picksLeft() <= 0) {
     showQuotaModal();
     return;
   }
@@ -244,12 +252,14 @@ async function pickSingleCard(card) {
       return;
     }
     state.quotaLeft = d.quotaLeft;
+    state.credits = Number(d.credits) || 0;
     state.streak = d.streak;
     state.history = d.history || state.history;
     renderMeta();
   } catch (e) {
     console.warn("draw API ไม่พร้อม — เปิดแบบ offline (ไม่บันทึก)", e);
-    state.quotaLeft -= 1;
+    if ((Number(state.quotaLeft) || 0) > 0) state.quotaLeft -= 1;
+    else state.credits = Math.max(0, (Number(state.credits) || 0) - 1);
     state.streak += 1;
     state.history.unshift({
       date: new Date().toISOString(), card: card.name, emoji: card.emoji,
@@ -323,7 +333,7 @@ function buildFan() {
 
 /* ── Pick → Reveal ──────────────────────── */
 async function pickCard(el, idx) {
-  if (state.quotaLeft <= 0) {
+  if (picksLeft() <= 0) {
     showQuotaModal();
     return;
   }
@@ -354,11 +364,13 @@ async function pickCard(el, idx) {
       return;
     }
     state.quotaLeft = d.quotaLeft;
+    state.credits = Number(d.credits) || 0;
     state.streak = d.streak;
     state.history = d.history || state.history;
   } catch (e) {
     console.warn("draw API ไม่พร้อม — เปิดแบบ offline (ไม่บันทึก)", e);
-    state.quotaLeft -= 1;
+    if ((Number(state.quotaLeft) || 0) > 0) state.quotaLeft -= 1;
+    else state.credits = Math.max(0, (Number(state.credits) || 0) - 1);
     state.streak += 1;
     state.history.unshift({
       date: new Date().toISOString(), card: card.name, emoji: card.emoji,
@@ -500,6 +512,10 @@ function viewHistoryCard(h) {
 
 /* ── Quota modal ────────────────────────── */
 function showQuotaModal() {
+  const m = $("creditPinMsg");
+  if (m) { m.hidden = true; m.textContent = ""; }
+  const inp = $("creditPinInput");
+  if (inp) inp.value = "";
   $("quotaModal").hidden = false;
 }
 $("btnModalClose").addEventListener("click", () => {
@@ -511,6 +527,41 @@ $("btnModalHistory").addEventListener("click", () => {
   renderHistory();
   show("scrHistory");
 });
+
+/* ── แลก PIN เครดิตหยิบเพิ่ม (แพ็ก 19฿=+3) ── */
+async function redeemCreditPin() {
+  const pin = ($("creditPinInput").value || "").trim().toUpperCase();
+  if (!pin) return;
+  const msg = $("creditPinMsg");
+  msg.hidden = false;
+  msg.style.color = "#aaa";
+  msg.textContent = "⏳ กำลังเติมเครดิต…";
+  try {
+    const r = await apiFetch(`${API}/redeem`, {
+      method: "POST",
+      body: JSON.stringify({ pin }),
+    });
+    const d = await r.json();
+    if (d.success) {
+      state.quotaLeft = d.quotaLeft;
+      state.credits = Number(d.credits) || 0;
+      state.streak = d.streak;
+      state.history = d.history || state.history;
+      renderMeta();
+      msg.style.color = "#0f0";
+      msg.textContent = `✅ เติม +${d.added} หยิบแล้ว — เลือกไพ่ต่อได้เลยค่ะ 💜`;
+      setTimeout(() => { $("quotaModal").hidden = true; show("scrTopic"); }, 900);
+    } else {
+      msg.style.color = "#f0c";
+      msg.textContent = "❌ " + (d.message || d.error || "PIN ไม่ถูกต้อง");
+    }
+  } catch (e) {
+    msg.style.color = "#f0c";
+    msg.textContent = "❌ ติดต่อเซิร์ฟเวอร์ไม่ได้ ลองใหม่อีกครั้ง";
+  }
+}
+$("btnCreditRedeem").addEventListener("click", redeemCreditPin);
+$("creditPinInput").addEventListener("keydown", (e) => { if (e.key === "Enter") redeemCreditPin(); });
 
 /* ── Nav wiring ─────────────────────────── */
 $("btnBackTopic").addEventListener("click", () => show("scrTopic"));
