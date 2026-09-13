@@ -153,6 +153,7 @@ function boot() {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
   });
   $("todayText").textContent = th;
+  markTrialUsed();
   loadState();
 }
 
@@ -171,13 +172,36 @@ function getCardsForTopic(topic) {
   return shuffled.slice(0, 7);
 }
 
-/* ── ลองฟรี 1 ใบจากหน้าจ่ายเงิน — ไม่ยิง API ไม่หักโควตา ไม่นับ streak ── */
+/* ── ลองฟรี 1 ใบจากหน้าจ่ายเงิน — ไม่ยิง API ไม่หักโควตา ไม่นับ streak ──
+   ล็อกครั้งเดียวต่อเครื่อง (localStorage) + กดซ้ำโชว์ใบเดิมใบที่เคยได้ */
+const TRIAL_KEY = "starvia_trial_slug";
+function getCardBySlug(slug) {
+  return (window.CARD_DATA || []).find((c) => c.slug === slug);
+}
+function markTrialUsed() {
+  if (!localStorage.getItem(TRIAL_KEY)) return;
+  const b = $("btnTrialPick");
+  if (b) { b.disabled = true; b.textContent = "🎴 ใช้สิทธิ์ลองฟรีแล้ว — สมัคร 19฿ เปิดไพ่ทุกวัน 💜"; }
+}
 function trialPick() {
+  const used = localStorage.getItem(TRIAL_KEY);
+  if (used) {
+    const old = getCardBySlug(used);
+    state.topic = "career";
+    state.trial = true;
+    if (old) { revealWithBreath(old); return; }
+    markTrialUsed();
+    showMsg("🎴", "ใช้สิทธิ์ลองฟรีแล้วค่ะ", "ลองหยิบฟรีได้ 1 ใบต่อเครื่อง — ถูกใจสมัคร 19฿ เปิดไพ่ได้ทุกวันนะคะ 💜");
+    return;
+  }
   const all = window.CARD_DATA || [];
   if (!all.length) return;
+  const card = all[Math.floor(Math.random() * all.length)];
+  try { localStorage.setItem(TRIAL_KEY, card.slug); } catch (e) {}
   state.topic = "career";
   state.trial = true;
-  revealWithBreath(all[Math.floor(Math.random() * all.length)]);
+  revealWithBreath(card);
+  markTrialUsed();
 }
 
 /* ── Quick Mode: 1 ปุ่ม → สุ่มไพ่ 1 ใบจาก 78 → เฉลยทันที (t-020) ── */
