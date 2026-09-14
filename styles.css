@@ -2270,7 +2270,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.4) sepia(1) h
 .f input,.f select{font-size:16px;padding:14px 15px;border-radius:14px}
 .btn{font-size:16px;min-height:48px;border-radius:14px;letter-spacing:.04em}
 .trust-strip{font-size:13px;line-height:1.55;margin-top:15px}
-@media(max-width:768px){.w{max-width:100%;padding:0 18px 72px}.hero-splash{padding:0}.hero-frame{border-radius:0;max-height:100dvh}.hd h1{font-size:42px}.hero-title{font-size:31px;line-height:1.12}.hero-desc{font-size:15.5px}.daily-mantra{margin-bottom:18px}.modenav{margin-bottom:24px}.value-section,.premium-preview{margin:24px auto 20px}.value-grid,.preview-grid{grid-template-columns:1fr}.form-card{padding:22px}
+@media(max-width:768px){.w{max-width:100%;padding:0 18px 72px}.hero-splash{padding:0}.hero-frame{border-radius:0;max-height:100dvh}.hd h1{font-size:42px}.hero-title{font-size:31px;line-height:1.12}.hero-desc{font-size:15.5px}.daily-mantra{margin-bottom:18px}.modenav{margin-bottom:24px}.value-section,.premium-preview{margin:24px auto 20px}.value-grid,.preview-grid{grid-template-columns:1fr}.form-card{padding:22px}}
 @media(max-width:768px){
   .w{max-width:100%;padding:0 18px 72px}
   /* V27 mobile: hero-splash ไม่ flex center — เป็น block ปกติ, frame เต็มจอ */
