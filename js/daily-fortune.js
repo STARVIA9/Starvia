@@ -529,25 +529,10 @@
     container.innerHTML = html;
   }
 
-  // ===== LIVE COUNTER (Social Proof) =====
-  function startLiveCounter() {
-    var counterEl = document.getElementById('sp-live-count');
-    if (!counterEl) return;
-
-    function updateCounter() {
-      var count = Math.floor(Math.random() * 31) + 23;
-      counterEl.textContent = count + ' คน';
-    }
-
-    updateCounter();
-    setInterval(updateCounter, 45000);
-  }
-
   // ===== INIT =====
   function init() {
     renderDailyFortune();
     renderStreak();
-    startLiveCounter();
   }
 
   // Run when DOM ready

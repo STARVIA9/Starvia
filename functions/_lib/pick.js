@@ -185,6 +185,10 @@ export async function drawPick(context) {
   };
   const next = applyDraw(refreshed, today, entry);
   await env.STARVIA_KV.put(stateKey(fingerprint), JSON.stringify(next));
+  try {
+    const { incrCounter } = await import('./stats.js');
+    await incrCounter(env, 'draws:total');
+  } catch (e) { /* นับสถิติพลาดต้องไม่ทำให้หยิบไพ่ล้ม */ }
 
   return jsonResponse({ success: true, ...next, today });
 }
@@ -249,6 +253,10 @@ export async function redeemCredit(context) {
   const refreshed = refreshDaily(prev, today);
   const next = { ...refreshed, credits: (Number(refreshed.credits) || 0) + added };
   await env.STARVIA_KV.put(stateKey(fingerprint), JSON.stringify(next));
+  try {
+    const { incrCounter } = await import('./stats.js');
+    await incrCounter(env, 'premium:total');
+  } catch (e) { /* นับสถิติพลาดต้องไม่ทำให้แลก PIN ล้ม */ }
 
   return jsonResponse({ success: true, added, ...next, today });
 }

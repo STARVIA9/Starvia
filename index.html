@@ -211,47 +211,46 @@
     </div>
   </section>
 
-  <!-- P0: Social Proof Section -->
+  <!-- P0: Social Proof Section — เลขจริงจาก /v1/stats/public (ค่าเริ่มต้น "—" กันโชว์เลขมั่ว) -->
   <section class="social-proof-section reveal" aria-label="ความน่าเชื่อถือ">
     <!-- Authority Badge -->
     <div class="sp-authority" id="sp-authority"></div>
     <div class="social-proof-grid">
-      <!-- Total Readers (animated) -->
+      <!-- เปิดดวงสะสม (นับจริง) -->
       <div class="sp-stat-card">
-        <div class="sp-stat-number" id="sp-total-count">137+</div>
-        <div class="sp-stat-label">คนเคยอ่านรายงานแล้ว</div>
+        <div class="sp-stat-number" id="sp-total-count">—</div>
+        <div class="sp-stat-label">คนเปิดดวงแล้ว</div>
       </div>
-      <!-- Today -->
+      <!-- เปิดดวงวันนี้ (นับจริง) -->
       <div class="sp-stat-card">
-        <div class="sp-stat-number" id="sp-today-count">8</div>
-        <div class="sp-stat-label">คนดูดวงวันนี้</div>
+        <div class="sp-stat-number" id="sp-today-count">—</div>
+        <div class="sp-stat-label">คนเปิดดวงวันนี้</div>
       </div>
-      <!-- Satisfaction -->
+      <!-- หยิบไพ่สะสม (นับจริง) -->
       <div class="sp-stat-card">
-        <div class="sp-stat-number" id="sp-satisfaction">96.7%</div>
-        <div class="sp-stat-label">บอกว่าตรงกับชีวิตจริง</div>
+        <div class="sp-stat-number" id="sp-draws-count">—</div>
+        <div class="sp-stat-label">ครั้งที่หยิบไพ่ทำนาย</div>
       </div>
     </div>
     <div class="social-proof-grid social-proof-grid-secondary">
-      <!-- Rating -->
+      <!-- % บอกว่าตรง (โหวตจริง) -->
       <div class="sp-stat-card sp-stat-compact">
-        <div class="sp-stat-number sp-rating-stars" id="sp-rating">4.8 ★</div>
-        <div class="sp-stat-label">คะแนนรีวิว</div>
+        <div class="sp-stat-number sp-rating-stars" id="sp-vote-pct">—</div>
+        <div class="sp-stat-label">บอกว่าตรงกับชีวิตจริง</div>
       </div>
-      <!-- Reviews -->
+      <!-- คนร่วมโหวต (นับจริง) -->
       <div class="sp-stat-card sp-stat-compact">
-        <div class="sp-stat-number" id="sp-review-count">45</div>
-        <div class="sp-stat-label">รีวิวจากผู้ใช้จริง</div>
+        <div class="sp-stat-number" id="sp-vote-count">—</div>
+        <div class="sp-stat-label">คนร่วมโหวต</div>
       </div>
-      <!-- Live -->
+      <!-- ผู้ติดตามเพจ (FB จริง) -->
       <div class="sp-stat-card sp-stat-compact">
-        <div class="sp-stat-number sp-live-dot" id="sp-live-count">●</div>
-        <div class="sp-stat-label">กำลังอ่านอยู่ตอนนี้</div>
+        <div class="sp-stat-number" id="sp-fb-count">—</div>
+        <div class="sp-stat-label">ผู้ติดตามเพจ STARVIA</div>
       </div>
     </div>
-    <!-- Rotating Testimonials -->
+    <!-- ความเห็นจริงจากเพจ (ถ้าไม่มีจะซ่อน) -->
     <div class="testimonials-strip" id="testimonials-container">
-      <p class="testimonial-text">"อ่านแล้วขนลุกเลยค่ะ ตรงมากกก ไม่คิดว่าแค่วันเกิดจะบอกอะไรได้ขนาดนี้"<span class="testimonial-author">— หนึ่งฤทัย, กรุงเทพฯ</span></p>
     </div>
   </section>
 

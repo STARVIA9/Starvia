@@ -479,6 +479,8 @@ function go0(){
         if(reportEl) {
           var targetY = reportEl.getBoundingClientRect().top + window.scrollY - 20;
           window.scrollTo({ top: targetY, behavior: 'smooth' });
+          // นับเปิดรายงานจริง + แปะกล่องโหวต "ตรงไหม"
+          if (window.StarviaStats) { window.StarviaStats.pingReport('m0'); window.StarviaStats.mountVote(reportEl, 'm0'); }
         }
       }, 400);
     }, 3200);

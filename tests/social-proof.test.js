@@ -19,6 +19,7 @@ function loadContext(birthData) {
     },
     requestAnimationFrame: (fn) => setTimeout(fn, 0),
     IntersectionObserver: class { observe() {} unobserve() {} },
+    fetch: () => Promise.resolve({ json: () => Promise.resolve({ success: true }) }),
     setInterval: () => {},
     setTimeout: (fn) => fn(),
   };
@@ -43,41 +44,27 @@ function loadContext(birthData) {
   return { window, store, elements };
 }
 
-describe('SocialProof', () => {
+describe('StarviaStats (real stats — ไม่มีตัวเลขแต่ง)', () => {
   let ctx;
 
   beforeEach(() => {
     ctx = loadContext({ dob: '1990-06-15', name: 'Test' });
   });
 
-  describe('TESTIMONIALS', () => {
-    it('should have at least 10 testimonials', () => {
-      const SP = window.SocialProof;
-      expect(SP.TESTIMONIALS.length >= 10).toBeTruthy();
-    });
-
-    it('each testimonial should have text, author, loc, stars', () => {
-      const SP = window.SocialProof;
-      SP.TESTIMONIALS.forEach(t => {
-        expect(t.text).toBeTruthy();
-        expect(t.author).toBeTruthy();
-        expect(t.loc).toBeTruthy();
-        expect(t.stars >= 1 && t.stars <= 5).toBeTruthy();
-      });
-    });
-  });
-
-  describe('animateCounter', () => {
-    it('should be a function', () => {
-      const SP = window.SocialProof;
-      expect(typeof SP.animateCounter).toBe('function');
-    });
-  });
-
   describe('Public API', () => {
-    it('should expose TESTIMONIALS array', () => {
-      const SP = window.SocialProof;
-      expect(Array.isArray(SP.TESTIMONIALS)).toBeTruthy();
+    it('should expose pingReport function', () => {
+      expect(typeof window.StarviaStats.pingReport).toBe('function');
+    });
+
+    it('should expose mountVote function', () => {
+      expect(typeof window.StarviaStats.mountVote).toBe('function');
+    });
+
+    it('pingReport must not throw when fetch is missing', () => {
+      const oldFetch = window.fetch;
+      delete window.fetch;
+      expect(() => window.StarviaStats.pingReport('m0')).not.toThrow();
+      window.fetch = oldFetch;
     });
   });
 });

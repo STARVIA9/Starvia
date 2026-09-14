@@ -112,6 +112,10 @@ export async function verifyPremiumPin(context) {
     env.STARVIA_JWT_SECRET
   );
 
+  try {
+    const { incrCounter } = await import('./stats.js');
+    await incrCounter(context.env, 'premium:total');
+  } catch (e) { /* นับสถิติพลาดต้องไม่ทำให้ปลดล็อกพรีเมียมล้ม */ }
   return json({
     success: true,
     token,

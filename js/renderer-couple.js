@@ -47,6 +47,7 @@ function go1(){
           if(r1) {
             var targetY = r1.getBoundingClientRect().top + window.scrollY - 20;
             window.scrollTo({ top: targetY, behavior: 'smooth' });
+            if (window.StarviaStats) { window.StarviaStats.pingReport('m1'); window.StarviaStats.mountVote(r1, 'm1'); }
           }
           return;
         }
@@ -59,6 +60,7 @@ function go1(){
         if(r1) {
           var targetY = r1.getBoundingClientRect().top + window.scrollY - 20;
           window.scrollTo({ top: targetY, behavior: 'smooth' });
+          if (window.StarviaStats) { window.StarviaStats.pingReport('m1'); window.StarviaStats.mountVote(r1, 'm1'); }
         }
       }, 400);
     }, 900);

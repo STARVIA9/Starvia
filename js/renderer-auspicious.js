@@ -43,6 +43,7 @@ function go2(){
         if(r2) {
           var targetY = r2.getBoundingClientRect().top + window.scrollY - 20;
           window.scrollTo({ top: targetY, behavior: 'smooth' });
+          if (window.StarviaStats) { window.StarviaStats.pingReport('m2'); window.StarviaStats.mountVote(r2, 'm2'); }
         }
       }, 400);
     }, 700);

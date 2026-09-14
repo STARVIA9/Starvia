@@ -1,267 +1,137 @@
-// ===== SOCIAL PROOF ENGINE v2 =====
-// Dynamic numbers, animated counters, rotating testimonials
-// Numbers use Base + Time + Random for natural-looking growth
+// ===== SOCIAL PROOF — เลขจริง 100% =====
+// ดึงจาก /v1/stats/public (นับใน KV + FB Graph) — ไม่มีตัวเลขสุ่ม/แต่งอีกต่อไป
+// หลักการ: API ล้ม = โชว์ "—" หรือซ่อนบล็อก ไม่โชว์เลขมั่ว
+// โหวต "ตรงไหม" เก็บจริง 1 คน/โหมด/เบราว์เซอร์ (+ กันซ้ำฝั่งเซิร์ฟเวอร์ 1 IP/วัน)
 
 (function() {
   'use strict';
 
-  // ===== NUMBER CONFIG =====
-  // These bases are committed; numbers grow naturally over time
-  var CONFIG = {
-    // EARLY ADOPTER SCALE — formula: totalBase + (daysSinceLaunch × dailyGrowth)
-    // 2026-06-13: 137 + (210 × 4) = ~990 readings total
-    totalBase: 137,           // early adopter base — formula adds growth over time
-    totalDailyGrowth: 4,      // ~4 new readings/day
-    todayBase: 8,             // small daily active
-    todayVariance: 4,         // ±4 variance
-    hourBase: 1,              // small per-hour
-    hourVariance: 2,          // ±2 variance
-    reviewsBase: 75,          // was 45 — updated to match real reviews
-    reviewsWeeklyGrowth: 1,   // ~1 review/week
-    satisfaction: 96.7,       // Fixed satisfaction % (unchanged)
-    rating: 4.8,              // Fixed star rating (unchanged)
-    launchDate: '2025-11-15'  // Starvia launch date (unchanged)
-  };
+  var API = '/v1/stats/public';
+  var VOTE_API = '/v1/stats/vote';
+  var EVENT_API = '/v1/stats/event';
+  var MIN_VOTES_LABEL = 3;
 
-  // ===== SEEDED RANDOM (deterministic per day/hour) =====
-  function seededRandom(seed) {
-    var x = Math.sin(seed) * 10000;
-    return x - Math.floor(x);
+  function $(id) { return document.getElementById(id); }
+
+  function fmt(n) {
+    n = Number(n) || 0;
+    return n.toLocaleString('th-TH');
   }
 
-  function daysSinceLaunch() {
-    var launch = new Date(CONFIG.launchDate);
-    var now = new Date();
-    return Math.floor((now - launch) / (1000 * 60 * 60 * 24));
+  function escapeHTML(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
-  // ===== DYNAMIC NUMBER GENERATORS =====
-  function getTotalReadings() {
-    var days = daysSinceLaunch();
-    var daySeed = parseInt(new Date().toISOString().slice(0, 10).replace(/-/g, ''));
-    var randomOffset = Math.floor(seededRandom(daySeed) * 100) - 50; // ±50
-    return CONFIG.totalBase + (days * CONFIG.totalDailyGrowth) + randomOffset;
-  }
-
-  function getTodayCount() {
-    var hour = new Date().getHours();
-    var daySeed = parseInt(new Date().toISOString().slice(0, 10).replace(/-/g, ''));
-    // More activity during daytime (8-22), less at night
-    var hourMultiplier = (hour >= 8 && hour <= 22) ? 1.0 : 0.3;
-    var base = Math.floor(CONFIG.todayBase * hourMultiplier);
-    var random = Math.floor(seededRandom(daySeed + hour) * CONFIG.todayVariance);
-    return base + random;
-  }
-
-  function getThisHourCount() {
-    var now = new Date();
-    var seed = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate() + now.getHours();
-    return CONFIG.hourBase + Math.floor(seededRandom(seed) * CONFIG.hourVariance);
-  }
-
-  function getReviewCount() {
-    var weeks = Math.floor(daysSinceLaunch() / 7);
-    var daySeed = parseInt(new Date().toISOString().slice(0, 10).replace(/-/g, ''));
-    var randomOffset = Math.floor(seededRandom(daySeed + 99) * 20) - 10;
-    return CONFIG.reviewsBase + (weeks * CONFIG.reviewsWeeklyGrowth) + randomOffset;
-  }
-
-  function getLiveCount() {
-    // Simulated live viewers: 3-12
-    var now = new Date();
-    var seed = now.getMinutes() + now.getHours() * 60;
-    return 3 + Math.floor(seededRandom(seed) * 10);
-  }
-
-  // ===== ANIMATED COUNTER =====
+  // ===== ANIMATED COUNTER (ของเดิม — เอาไว้ เฉพาะเลขนับจริง) =====
   function animateCounter(el, target, duration) {
     if (!el) return;
-    var start = 0;
     var startTime = null;
-
     function step(timestamp) {
       if (!startTime) startTime = timestamp;
       var progress = Math.min((timestamp - startTime) / duration, 1);
-      var eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+      var eased = 1 - Math.pow(1 - progress, 3);
       var current = Math.floor(eased * target);
-      el.textContent = current.toLocaleString() + '+';
+      el.textContent = fmt(current);
       if (progress < 1) {
         requestAnimationFrame(step);
       } else {
-        el.textContent = target.toLocaleString() + '+';
+        el.textContent = fmt(target);
       }
     }
     requestAnimationFrame(step);
   }
 
-  // ===== RENDER STATS =====
-  function renderStats() {
-    // Total readings
-    var totalEl = document.getElementById('sp-total-count');
-    if (totalEl) {
-      var total = getTotalReadings();
-      // Set initial, then animate
-      totalEl.textContent = '0';
-      var observer = new IntersectionObserver(function(entries) {
-        entries.forEach(function(entry) {
-          if (entry.isIntersecting) {
-            animateCounter(totalEl, total, 2000);
-            observer.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.5 });
-      observer.observe(totalEl.parentElement);
+  function animateWhenVisible(el, target) {
+    if (!el || !('IntersectionObserver' in window)) {
+      if (el) el.textContent = fmt(target);
+      return;
     }
+    el.textContent = '0';
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          animateCounter(el, target, 2000);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    observer.observe(el.parentElement || el);
+  }
 
-    // Live count (กำลังอ่านอยู่)
-    var liveEl = document.getElementById('sp-live-count');
-    if (liveEl) {
-      var live = getLiveCount();
-      liveEl.innerHTML = '<span class="live-number">' + live + '</span>';
-      // Refresh every 30-60 seconds
-      setInterval(function() {
-        var newLive = getLiveCount();
-        var numEl = liveEl.querySelector('.live-number');
-        if (numEl) numEl.textContent = newLive;
-      }, 30000 + Math.random() * 30000);
+  // ===== RENDER STATS (เลขจริง) =====
+  function renderStats(s) {
+    var totalEl = $('sp-total-count');
+    if (totalEl) animateWhenVisible(totalEl, s.reportsTotal || 0);
+
+    var todayEl = $('sp-today-count');
+    if (todayEl) todayEl.textContent = fmt(s.reportsToday);
+
+    var drawsEl = $('sp-draws-count');
+    if (drawsEl) drawsEl.textContent = fmt(s.drawsTotal);
+
+    var pctEl = $('sp-vote-pct');
+    if (pctEl) {
+      pctEl.textContent = (s.ratingPct == null) ? 'รอคะแนน' : (s.ratingPct + '%');
     }
+    var vcEl = $('sp-vote-count');
+    if (vcEl) vcEl.textContent = fmt(s.votesTotal);
 
-    // Today count
-    var todayEl = document.getElementById('sp-today-count');
-    if (todayEl) {
-      todayEl.textContent = getTodayCount().toLocaleString();
-    }
-
-    // This hour
-    var hourEl = document.getElementById('sp-hour-count');
-    if (hourEl) {
-      hourEl.textContent = getThisHourCount();
-    }
-
-    // Satisfaction
-    var satEl = document.getElementById('sp-satisfaction');
-    if (satEl) {
-      satEl.textContent = CONFIG.satisfaction + '%';
-    }
-
-    // Rating
-    var ratingEl = document.getElementById('sp-rating');
-    if (ratingEl) {
-      ratingEl.textContent = CONFIG.rating + ' ★';
-    }
-
-    // Reviews
-    var reviewEl = document.getElementById('sp-review-count');
-    if (reviewEl) {
-      reviewEl.textContent = getReviewCount().toLocaleString();
+    var fbEl = $('sp-fb-count');
+    if (fbEl) {
+      if (s.fbFollowers == null) {
+        var card = fbEl.closest('.sp-stat-card');
+        if (card) card.style.display = 'none';
+      } else {
+        fbEl.textContent = fmt(s.fbFollowers) + '+';
+      }
     }
   }
 
-  // ===== TESTIMONIALS =====
-  var TESTIMONIALS = [
-    // === 5 ดาว — หวย/เลขนำโชค ===
-    { text: 'ดูทุกเช้าเลยค่ะ เลขนำโชคให้มาตรงกับที่ซื้อหวยบ่อยมาก', author: 'สมศรี', loc: 'นครราชสีมา', stars: 5 },
-    { text: 'งวดที่แล้วเลขท้าย 2 ตัวตรงเลย ไม่เชื่อก็ต้องเชื่อ', author: 'ประเสริฐ', loc: 'อุดรธานี', stars: 5 },
-    { text: 'ส่งเลขให้แม่ดู แม่ถูกหวยไปเลย 3 ตัวบน ขอบคุณมากค่ะ', author: 'วารุณี', loc: 'เลย', stars: 5 },
+  // ===== REAL FB COMMENTS (แทนรีวิวแต่ง) =====
+  var commentIdx = 0;
+  var commentTimer = null;
 
-    // === 5 ดาว — ความรัก/คู่ ===
-    { text: 'ส่งให้แฟนดู แฟนตกใจเลย บอกว่าเหมือนรู้จักเราจริงๆ 555', author: 'พลอย', loc: 'เชียงใหม่', stars: 5 },
-    { text: 'ดูดวงคู่กับแฟนแล้วเข้าใจกันมากขึ้นจริงๆ ค่ะ แฟนก็ชอบ', author: 'นภา', loc: 'ขอนแก่น', stars: 5 },
-    { text: 'อ่านส่วนความรักแล้วร้องไห้เลย ตรงจนตกใจ แฟนเป็นแบบนั้นจริงๆ', author: 'พิมพ์ใจ', loc: 'เชียงราย', stars: 5 },
-    { text: 'ทะเลาะกับแฟนอยู่ พออ่านดวงคู่แล้วเข้าใจแฟนมากขึ้น ตอนนี้ดีกันแล้วค่ะ', author: 'กานดา', loc: 'นครปฐม', stars: 5 },
+  function renderComment(container, c) {
+    var d = '';
+    if (c.time) {
+      try {
+        d = new Date(c.time).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
+      } catch (e) { d = ''; }
+    }
+    container.innerHTML = '<div class="testimonial-card testimonial-enter">'
+      + '<div class="testimonial-stars">💬 ความเห็นจากเพจ</div>'
+      + '<p class="testimonial-text">"' + escapeHTML(c.text) + '"</p>'
+      + '<div class="testimonial-author">— ' + escapeHTML(c.name) + (d ? ', ' + d : '') + '</div>'
+      + '</div>';
+  }
 
-    // === 5 ดาว — ตัวตน/บุคลิก ===
-    { text: 'อ่านแล้วขนลุกเลยค่ะ ตรงมากกก ไม่คิดว่าแค่วันเกิดจะบอกอะไรได้ขนาดนี้', author: 'หนึ่งฤทัย', loc: 'กรุงเทพฯ', stars: 5 },
-    { text: 'รายงานตัวตนอ่านแล้วเข้าใจตัวเองมากขึ้น เหมือนมีคนมาอธิบายสิ่งที่รู้สึกอยู่ข้างใน', author: 'กมล', loc: 'ชลบุรี', stars: 5 },
-    { text: 'ชอบตรงที่ไม่ใช่แค่ดูดวง แต่แนะนำวิธีแก้ไขด้วย ไม่ใช่แค่บอกว่าดีหรือไม่ดี', author: 'ปิยะ', loc: 'ภูเก็ต', stars: 5 },
-    { text: 'อ่านจุดอ่อนของตัวเองแล้วเอามาปรับใช้ได้จริง ไม่ใช่แค่ดูสนุกๆ', author: 'ธนพล', loc: 'สุราษฎร์ธานี', stars: 5 },
-
-    // === 5 ดาว — สีมงคล/ลาภลอย ===
-    { text: 'สีมงคลให้มา ลองใส่เสื้อสีนั้น วันนั้นงานราบรื่นจริงๆ นะ', author: 'วิชัย', loc: 'สงขลา', stars: 5 },
-    { text: 'ลาภลอยให้เลขมา 2 ตัว ซื้อลอตเตอรี่เฉียดๆ ได้ท้าย 2 ตัวเกือบตรง', author: 'บุญมี', loc: 'ร้อยเอ็ด', stars: 5 },
-
-    // === 5 ดาว — ใช้ประจำ ===
-    { text: 'เปิดดูทุกเช้าก่อนออกจากบ้าน เหมือนเช็คดวงประจำวันเลยค่ะ', author: 'สุดา', loc: 'พิษณุโลก', stars: 5 },
-    { text: 'เพื่อนส่งลิงก์มาให้ ตอนแรกไม่เชื่อ พออ่านจบก็ส่งต่อให้คนอื่นอีก 5 คนเลย', author: 'จิราภรณ์', loc: 'กรุงเทพฯ', stars: 5 },
-    { text: 'ดูมาหลายเว็บ ชอบอันนี้สุด ข้อมูลละเอียดและอ่านง่าย', author: 'ปรีชา', loc: 'ระยอง', stars: 5 },
-    { text: 'ติดดูทุกวันเลยค่ะ 555 เหมือนอ่าน horoscope ประจำวันแต่ละเอียดกว่ามาก', author: 'อาทิตยา', loc: 'นนทบุรี', stars: 5 },
-
-    // === 5 ดาว — ไพ่/ทำนาย ===
-    { text: 'ไพ่ประจำวันแม่นมาก วันที่ได้ไพ่ "ดวงอาทิตย์" วันนั้นโชคดีจริงๆ', author: 'อรุณ', loc: 'ระยอง', stars: 5 },
-    { text: 'หมอทักมาตรงกับที่กำลังเจออยู่พอดี อ่านแล้วตกใจเลย', author: 'จันทร์เพ็ญ', loc: 'อุบลราชธานี', stars: 5 },
-    { text: 'สัดส่วนธาตุบอกว่าธาตุน้ำเยอะ แล้วก็เป็นคนอารมณ์อ่อนไหวจริงๆ อย่างที่ว่า', author: 'สิริพร', loc: 'พิษณุโลก', stars: 5 },
-
-    // === 4 ดาว — ดีแต่มีข้อสังเกต ===
-    { text: 'โดยรวมตรงดีค่ะ แต่บางส่วนอ่านแล้วงงนิดหน่อย ต้องอ่านรอบสอง', author: 'รัตนา', loc: 'ปราจีนบุรี', stars: 4 },
-    { text: 'ข้อมูลเยอะดี แต่อยากให้มีสรุปสั้นๆ ด้วย บางทีอ่านยาวไป', author: 'อนุชา', loc: 'นครศรีธรรมราช', stars: 4 },
-    { text: 'ดูดวงส่วนตัวตรงมาก แต่ส่วนคู่ยังไม่ได้ลอง ไว้จะลองดูค่ะ', author: 'ศิริวรรณ', loc: 'ลำปาง', stars: 4 },
-    { text: 'ตรงดีนะคะ แต่อยากให้เพิ่มด้านสุขภาพด้วย ดูแค่การงานกับความรัก', author: 'มณี', loc: 'สุโขทัย', stars: 4 },
-    { text: 'แม่นใช้ได้เลยค่ะ โดยเฉพาะเรื่องนิสัย ตรงเป๊ะ แต่เลขหวยยังไม่ตรง', author: 'จิรวัฒน์', loc: 'ฉะเชิงเทรา', stars: 4 },
-
-    // === 5 ดาว — ใช้กับคนรอบข้าง ===
-    { text: 'ให้ลูกสาวดูด้วย ลูกบอกว่าตรงมาก ตอนนี้ดูทั้งครอบครัวเลยค่ะ', author: 'ปราณี', loc: 'ชัยนาท', stars: 5 },
-    { text: 'ส่งให้ทีมงานดู ทุกคนบอกตรง ตอนนี้ดูกันทั้งออฟฟิศ 555', author: 'พงศกร', loc: 'กรุงเทพฯ', stars: 5 },
-    { text: 'แฟนไม่เชื่อดวง พอให้ลองดู เงียบไปเลย 555 สงสัยจะตรง', author: 'อัญชลี', loc: 'นครนายก', stars: 5 },
-
-    // === 5 ดาว — การงาน ===
-    { text: 'ดูเรื่องการงานแล้วตัดสินใจเปลี่ยนงาน ตอนนี้ได้งานใหม่ดีกว่าเดิมมากค่ะ', author: 'นิรมล', loc: 'ปทุมธานี', stars: 5 },
-    { text: 'ช่วงที่ดาวเสาร์ทัก งานหนักจริงอย่างที่ว่า พอผ่านช่วงนั้นก็ดีขึ้น', author: 'สมชาย', loc: 'กาญจนบุรี', stars: 5 },
-
-    // === 5 ดาว — โชคลาภ ===
-    { text: 'ดูแล้วซื้อสีเสื้อตามที่บอก วันนั้นลูกค้าตกลงซื้อของ 3 รายเลย', author: 'เจริญ', loc: 'ราชบุรี', stars: 5 },
-    { text: 'เลขนำโชคให้มาลองเสี่ยงดู ถูก 2 ตัวล่างเฉยเลย งวดหน้าดูอีกแน่นอน', author: 'สมบูรณ์', loc: 'บุรีรัมย์', stars: 5 },
-
-    // === 4 ดาว — กลางๆ แต่กลับมาดูอีก ===
-    { text: 'ครั้งแรกอ่านผ่านๆ ไม่ได้คิดอะไร พอผ่านไปอาทิตย์นึงรู้เลยว่าตรง', author: 'ภาณุ', loc: 'ตาก', stars: 4 },
-    { text: 'ดูดวงฟรีก่อน ชอบค่อยปลดล็อก สรุปปลดล็อกค่ะ 555', author: 'สุภาพร', loc: 'มุกดาหาร', stars: 5 },
-
-    // === 5 ดาว — สั้นๆ กระชับ ===
-    { text: 'ตรงค่ะ ไม่พูดเยอะ 👍', author: 'เบญ', loc: 'กรุงเทพฯ', stars: 5 },
-    { text: 'แม่น!', author: 'โอ๊ต', loc: 'นนทบุรี', stars: 5 },
-    { text: 'ส่งต่อให้เพื่อนทุกคนเลยค่ะ', author: 'มิ้นท์', loc: 'ปทุมธานี', stars: 5 },
-    { text: 'ดูทุกวันเลย ติดแล้ว 555', author: 'ฟ้า', loc: 'สมุทรปราการ', stars: 5 },
-
-    // === 5 ดาว — ยาว เล่าเรื่อง ===
-    { text: 'ตอนแรกแค่ลองกดดูเล่นๆ ปรากฏว่าอ่านไป 20 นาทีเลยค่ะ ข้อมูลละเอียดมาก ทั้งตัวตน คู่สัมพันธ์ การงาน แถมมีสีมงคลกับเลขนำโชคให้ด้วย คุ้มมากสำหรับดูฟรี', author: 'สุรางค์', loc: 'อ่างทอง', stars: 5 },
-    { text: 'เป็นคนไม่ค่อยเชื่อดวง แต่เพื่อนบังคับให้ลอง พออ่านส่วนตัวตนเสร็จ นั่งเงียบเลย 555 มันตรงจนตกใจ ตอนนี้ดูทุกเช้าก่อนออกจากบ้าน', author: 'กรกช', loc: 'นครราชสีมา', stars: 5 },
-  ];
-
-  function setupTestimonialRotation() {
-    var container = document.getElementById('testimonials-container');
+  function setupComments(comments) {
+    var container = $('testimonials-container');
     if (!container) return;
-
-    var currentIdx = Math.floor(Math.random() * TESTIMONIALS.length); // Start random
-
-    function renderTestimonial(idx) {
-      var t = TESTIMONIALS[idx % TESTIMONIALS.length];
-      var stars = '';
-      for (var i = 0; i < t.stars; i++) stars += '★';
-
-      container.innerHTML = '<div class="testimonial-card testimonial-enter">'
-        + '<div class="testimonial-stars">' + stars + '</div>'
-        + '<p class="testimonial-text">"' + escapeHTML(t.text) + '"</p>'
-        + '<div class="testimonial-author">— ' + escapeHTML(t.author) + ', ' + escapeHTML(t.loc) + '</div>'
-        + '</div>';
+    if (!comments || !comments.length) {
+      container.style.display = 'none';
+      return;
     }
-
-    function rotateTestimonial() {
-      var card = container.querySelector('.testimonial-card');
-      if (card) card.classList.add('testimonial-exit');
-      setTimeout(function() {
-        currentIdx++;
-        renderTestimonial(currentIdx);
-      }, 500);
+    commentIdx = Math.floor(Math.random() * comments.length);
+    renderComment(container, comments[commentIdx]);
+    if (commentTimer) clearInterval(commentTimer);
+    if (comments.length > 1) {
+      commentTimer = setInterval(function() {
+        var card = container.querySelector('.testimonial-card');
+        if (card) card.classList.add('testimonial-exit');
+        setTimeout(function() {
+          commentIdx = (commentIdx + 1) % comments.length;
+          renderComment(container, comments[commentIdx]);
+        }, 500);
+      }, 10000);
     }
-
-    renderTestimonial(currentIdx);
-    setInterval(rotateTestimonial, 10000);
   }
 
-  // ===== AUTHORITY BADGE =====
+  // ===== AUTHORITY BADGE (ของเดิม — เป็นข้อความอธิบาย ไม่ใช่สถิติ) =====
   function renderAuthorityBadge() {
-    var container = document.getElementById('sp-authority');
+    var container = $('sp-authority');
     if (!container) return;
-
     container.innerHTML = '<div class="sp-authority-inner">'
       + '<div class="sp-authority-icon">🔭</div>'
       + '<div class="sp-authority-text">'
@@ -271,16 +141,89 @@
       + '</div>';
   }
 
-  function escapeHTML(str) {
-    if (!str) return '';
-    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  }
-
   // ===== INIT =====
   function init() {
     renderAuthorityBadge();
-    renderStats();
-    setupTestimonialRotation();
+    fetch(API, { headers: { 'Accept': 'application/json' } })
+      .then(function(res) { return res.json(); })
+      .then(function(s) {
+        if (!s || s.success === false) throw new Error('stats api failed');
+        renderStats(s);
+        setupComments(s.comments);
+      })
+      .catch(function() {
+        // API ล้ม → ใส่ขีด ไม่โชว์เลขมั่ว
+        ['sp-total-count', 'sp-today-count', 'sp-draws-count', 'sp-vote-count'].forEach(function(id) {
+          var el = $(id);
+          if (el) el.textContent = '—';
+        });
+        var pctEl = $('sp-vote-pct');
+        if (pctEl) pctEl.textContent = '—';
+        var box = $('testimonials-container');
+        if (box) box.style.display = 'none';
+      });
+  }
+
+  // ===== PING: เปิดรายงานสำเร็จ → นับ 1 (ยิงครั้งเดียว/รายงาน) =====
+  var pinged = {};
+  function pingReport(mode) {
+    mode = mode || 'm0';
+    if (pinged[mode]) return;
+    pinged[mode] = true;
+    try {
+      fetch(EVENT_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'report' }),
+      }).catch(function() {});
+    } catch (e) {}
+  }
+
+  // ===== VOTE WIDGET: "อ่านจบแล้ว ตรงไหม?" (แปะท้ายรายงาน) =====
+  function mountVote(el, mode) {
+    if (!el || el.querySelector('.vote-box')) return;
+    mode = mode || 'm0';
+    var votedKey = 'starvia_voted_' + mode;
+    var box = document.createElement('div');
+    box.className = 'vote-box';
+    box.setAttribute('style', 'margin:18px auto 6px;max-width:560px;text-align:center;padding:16px;border:1px solid rgba(214,173,69,.25);border-radius:16px;background:rgba(255,255,255,.03)');
+    function already() {
+      try { return localStorage.getItem(votedKey) === '1'; } catch (e) { return false; }
+    }
+    function paintThank(pct, total) {
+      var extra = (pct == null) ? ' (รอครบ 3 คะแนนถึงโชว์ %)' : ' — ตอนนี้ ' + pct + '% บอกว่าตรง (' + fmt(total) + ' คน)';
+      box.innerHTML = '<div style="font-size:15px;color:#efe8d6">🙏 ขอบคุณที่โหวตค่ะ' + escapeHTML(extra) + '</div>';
+    }
+    if (already()) {
+      fetch(API).then(function(r) { return r.json(); }).then(function(s) {
+        paintThank(s.ratingPct != null ? s.ratingPct : null, s.votesTotal || 0);
+      }).catch(function() {
+        box.innerHTML = '<div style="font-size:15px;color:#efe8d6">🙏 โหวตแล้ว ขอบคุณค่ะ</div>';
+      });
+    } else {
+      box.innerHTML = '<div style="font-size:15px;font-weight:700;color:#ffd86b;margin-bottom:10px">อ่านจบแล้ว — ตรงกับชีวิตไหมคะ?</div>'
+        + '<div style="display:flex;gap:10px;justify-content:center">'
+        + '<button class="vote-up" style="flex:1;max-width:200px;padding:12px;border-radius:12px;border:1px solid #D6AD45;background:#D6AD45;color:#09061c;font-weight:700;font-size:15px;cursor:pointer">👍 ตรง</button>'
+        + '<button class="vote-down" style="flex:1;max-width:200px;padding:12px;border-radius:12px;border:1px solid #8E72D8;background:rgba(255,255,255,.06);color:#efe8d6;font-weight:700;font-size:15px;cursor:pointer">👎 ไม่ค่อยตรง</button>'
+        + '</div><div class="vote-msg" style="margin-top:8px;font-size:13px;color:#b4a1ea"></div>';
+      box.querySelector('.vote-up').addEventListener('click', function() { submitVote('up'); });
+      box.querySelector('.vote-down').addEventListener('click', function() { submitVote('down'); });
+    }
+    function submitVote(v) {
+      var msg = box.querySelector('.vote-msg');
+      if (msg) msg.textContent = 'กำลังส่ง...';
+      fetch(VOTE_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ vote: v }),
+      }).then(function(r) { return r.json(); }).then(function(s) {
+        try { localStorage.setItem(votedKey, '1'); } catch (e) {}
+        paintThank(s.ratingPct != null ? s.ratingPct : null, s.votesTotal || 0);
+      }).catch(function() {
+        if (msg) msg.textContent = 'ส่งไม่สำเร็จ ลองใหม่นะคะ';
+      });
+    }
+    el.appendChild(box);
   }
 
   if (document.readyState === 'loading') {
@@ -289,12 +232,8 @@
     init();
   }
 
-  window.SocialProof = {
-    TESTIMONIALS: TESTIMONIALS,
-    animateCounter: animateCounter,
-    getTotalReadings: getTotalReadings,
-    getTodayCount: getTodayCount,
-    getReviewCount: getReviewCount,
-    CONFIG: CONFIG
+  window.StarviaStats = {
+    pingReport: pingReport,
+    mountVote: mountVote,
   };
 })();
