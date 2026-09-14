@@ -58,6 +58,8 @@ const otherFiles = [
   'admin.html',
   'share.html',
   'quiz.html',
+  'payment-success.html',
+  'promo-fullsize.html',
   '_headers',
 ];
 
@@ -164,10 +166,15 @@ if (fs.existsSync(indexHtml)) {
   console.warn('⚠️ dist/index.html not found — skipping rewrite');
 }
 
-// Also rewrite share.html with hashed JS filenames (same logic)
-const shareHtml = path.join(dist, 'share.html');
-if (fs.existsSync(shareHtml)) {
-  let html = fs.readFileSync(shareHtml, 'utf-8');
+// Also rewrite share.html / quiz.html / terms.html / privacy.html with hashed JS filenames
+const rewriteTargets = ['share.html', 'quiz.html', 'terms.html', 'privacy.html'];
+for (const name of rewriteTargets) {
+  const file = path.join(dist, name);
+  if (!fs.existsSync(file)) {
+    console.warn(`⚠️ dist/${name} not found — skipping rewrite`);
+    continue;
+  }
+  let html = fs.readFileSync(file, 'utf-8');
   let replacements = 0;
   for (const [original, hashed] of Object.entries(hashMap)) {
     const escaped = original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -177,10 +184,27 @@ if (fs.existsSync(shareHtml)) {
       return `${prefix}${slash}${hashed}${suffix}`;
     });
   }
-  fs.writeFileSync(shareHtml, html);
-  console.log(`✅ Rewrote share.html: ${replacements} JS references → hashed`);
+  fs.writeFileSync(file, html);
+  console.log(`✅ Rewrote ${name}: ${replacements} JS references → hashed`);
+}
+
+// Fix legacy "styles.css" links (terms/privacy) → real built CSS bundle from vite
+const assetsDir = path.join(dist, 'assets');
+const builtCss = fs.existsSync(assetsDir)
+  ? fs.readdirSync(assetsDir).find((f) => /^main-[A-Za-z0-9_-]+\.css$/.test(f))
+  : null;
+if (builtCss) {
+  for (const name of ['terms.html', 'privacy.html']) {
+    const file = path.join(dist, name);
+    if (!fs.existsSync(file)) continue;
+    let html = fs.readFileSync(file, 'utf-8');
+    if (!html.includes('href="styles.css"')) continue;
+    html = html.replace(/href="styles\.css"/g, `href="/assets/${builtCss}"`);
+    fs.writeFileSync(file, html);
+    console.log(`✅ ${name}: styles.css → /assets/${builtCss}`);
+  }
 } else {
-  console.warn('⚠️ dist/share.html not found — skipping rewrite');
+  console.warn('⚠️ built CSS bundle not found — styles.css links left as-is');
 }
 
 console.log(`Copied ${jsFiles.length} JS (hashed) + ${otherFiles.length} static files to dist/`);

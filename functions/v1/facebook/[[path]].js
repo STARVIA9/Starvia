@@ -22,6 +22,23 @@ import {
 // ไฟล์เก่าอยู่ที่ functions/_lib/_disabled/auto-reply.js — ยังไม่ deploy ปิด production
 
 // ── Inline Facebook Webhook Handler ──
+// ตรวจ X-Hub-Signature-256 (HMAC-SHA256 ของ raw body ด้วย FACEBOOK_APP_SECRET) ก่อนเชื่อ payload
+async function verifyFbSignature(request, rawBody, secret) {
+  const header = request.headers.get('x-hub-signature-256') || '';
+  if (!header.startsWith('sha256=')) return false;
+  const key = await crypto.subtle.importKey(
+    'raw', new TextEncoder().encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'],
+  );
+  const mac = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(rawBody));
+  const expected = 'sha256=' + [...new Uint8Array(mac)].map(b => b.toString(16).padStart(2, '0')).join('');
+  if (expected.length !== header.length) return false;
+  // เทียบแบบ constant-time (กัน timing side-channel)
+  let diff = 0;
+  for (let i = 0; i < expected.length; i++) diff |= expected.charCodeAt(i) ^ header.charCodeAt(i);
+  return diff === 0;
+}
+
 async function handleFacebookWebhook(context) {
   const { request, env } = context;
   const SUBSCRIBERS_KEY = 'premium:subscribers';
@@ -43,9 +60,21 @@ async function handleFacebookWebhook(context) {
     return new Response(null, { status: 204, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS' } });
   }
 
-  // POST: Event Notification
+  // POST: Event Notification — ต้องมีลายเซ็น Facebook ที่ถูกต้องเท่านั้น
   try {
-    const body = await request.json();
+    const rawBody = await request.text();
+    if (!env.FACEBOOK_APP_SECRET) {
+      console.error('[fb-webhook] FACEBOOK_APP_SECRET not set — refusing unsigned webhook');
+      return new Response('App secret not configured', { status: 500 });
+    }
+    if (!(await verifyFbSignature(request, rawBody, env.FACEBOOK_APP_SECRET))) {
+      console.warn('[fb-webhook] rejected: invalid X-Hub-Signature-256');
+      return new Response('Forbidden', { status: 403 });
+    }
+
+    let body;
+    try { body = JSON.parse(rawBody); } catch { return new Response('OK', { status: 200 }); }
+
     const userIds = new Set();
     if (body.object === 'page') {
       for (const entry of body.entry || []) {

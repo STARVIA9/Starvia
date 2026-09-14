@@ -12,6 +12,7 @@ id = "90a41835556b4f68967a1b4cd5df0951"
 # Plain (non-secret) vars — set in CF dashboard too
 [vars]
 STARVIA_PREMIUM_PLAN = "premium_199"
+STARVIA_APP_VERSION = "2.0.9"
 STARVIA_TOKEN_TTL_SECONDS = "86400"
 STARVIA_ADMIN_TOKEN_TTL = "43200"
 STARVIA_API_VERSION = "2.1.0-opencode-zen"

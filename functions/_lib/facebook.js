@@ -1379,19 +1379,27 @@ export async function facebookSubscriberCheck(context) {
 
   const checks = {};
   // ── วิธี 0: KV subscriber check (webhook-backed) ──
+  // ⚠️ ต้องพิสูจน์ก่อนว่า accessToken เป็นของ userID ที่อ้างจริง (Graph /me)
+  // ไม่งั้นใครก็ยิง userID อะไรก็ได้ + token ปลอม แล้วได้ premium JWT ฟรี
   try {
-    const raw = await env.STARVIA_KV.get("premium:subscribers", { type: "json" });
-    if (Array.isArray(raw)) {
-      const uid = String(body.userID || "");
-      if (uid && raw.some(s => s.id === uid)) {
-        const token = await signSubscriberToken(body.userID, env);
-        return jsonResponse({
-          success: true,
-          method: "kv_subscriber",
-          isSubscriber: true,
-          token,
-          plan: "premium_fb",
-        });
+    const uid = String(body.userID || "");
+    if (uid) {
+      const meResp = await fetch(`${GRAPH_BASE}/me?fields=id&access_token=${encodeURIComponent(userToken)}`);
+      const me = await meResp.json().catch(() => ({}));
+      if (me && String(me.id) === uid) {
+        const raw = await env.STARVIA_KV.get("premium:subscribers", { type: "json" });
+        if (Array.isArray(raw) && raw.some(s => s.id === uid)) {
+          const token = await signSubscriberToken(body.userID, env);
+          return jsonResponse({
+            success: true,
+            method: "kv_subscriber",
+            isSubscriber: true,
+            token,
+            plan: "premium_fb",
+          });
+        }
+      } else {
+        checks.kvTokenNotOwned = true;
       }
     }
   } catch (e) {
