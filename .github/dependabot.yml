@@ -24,3 +24,13 @@ updates:
       security:
         applies-to: security-updates
         patterns: ["*"]
+    # B (2026-09-24): pin major for breaking build tools — vite 5→8,
+    # vitest 2→5, jsdom 24→30 break CI in 17s. Allow patch+minor only.
+    # Major bumps still need Peat review via manual PR.
+    ignore:
+      - dependency-name: "vite"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "vitest"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "jsdom"
+        update-types: ["version-update:semver-major"]

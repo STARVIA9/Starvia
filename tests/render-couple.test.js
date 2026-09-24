@@ -142,7 +142,7 @@ describe('Couple mode rendering', () => {
     expect(output).toContain('data-mode="1"');
   });
 
-  it('renders full couple dharma, score breakdown, and action plan unconditionally (couple mode is always unlocked)', () => {
+  it('renders full couple dharma, score breakdown, and action plan for premium (Option A lock)', () => {
     const dom = new JSDOM('<!doctype html><div id="r1"></div><div id="tt1"></div><div id="ts1"></div>');
     const pa = planet('อาทิตย์', 'ไฟ', 0);
     const pb = planet('เสาร์', 'ไฟ', 0);
@@ -152,29 +152,32 @@ describe('Couple mode rendering', () => {
       PLC: [[78, 78], [78, 78]],
       getELD: () => [['ไฟเจอไฟ']],
       rasiAngle: () => [78, 'มุม'],
+      // B (2026-09-24): couple full content is premium-locked (Option A).
+      // Free sees matrix + CTA only. This test verifies premium view.
+      isPremiumUnlocked: () => true,
     });
     const ra = sign('เมษ');
     const rb = sign('สิงห์');
     const RA2 = [ra, rb];
 
-    // Default context (isPremiumUnlocked = false) — couple mode still renders full content
+    // Premium context — renders full content
     context.renderCouple('A', pa, ra, ra, 0, 0, 'B', pb, rb, rb, 1, 1, coupleUi(), RA2);
 
     const output = dom.window.document.getElementById('r1').innerHTML;
     expect(output).toContain('Compatibility Matrix');
     expect(output).toContain('คู่');
-    // Premium content always visible (per user decision 2026-06-07)
+    // Premium content visible for unlocked members
     expect(output).toContain('สิ่งที่คู่นี้มาเรียนรู้ร่วมกัน');
     expect(output).toContain('พิมพ์เขียวความสัมพันธ์');
     expect(output).toContain('วิธีดูแลความสัมพันธ์');
-    // No lock wrappers anywhere
+    // No lock wrappers in premium view
     expect(dom.window.document.querySelector('[class*="is-locked"]')).toBeNull();
     expect(dom.window.document.querySelector('.couple-premium-details')).toBeNull();
     expect(dom.window.document.querySelector('.lock-overlay')).toBeNull();
     expect(output).not.toContain('ปลดล็อกรีพอร์ตฉบับเต็ม');
   });
 
-  it('renders couple full content without collapsible details (always-expanded couple mode)', () => {
+  it('locks couple details for free readers (matrix + CTA only)', () => {
     const dom = new JSDOM('<!doctype html><div id="r1"></div><div id="tt1"></div><div id="ts1"></div>');
     const pa = planet('อาทิตย์', 'ไฟ', 0);
     const pb = planet('เสาร์', 'ไฟ', 0);
@@ -184,6 +187,31 @@ describe('Couple mode rendering', () => {
       PLC: [[78, 78], [78, 78]],
       getELD: () => [['ไฟเจอไฟ']],
       rasiAngle: () => [78, 'มุม'],
+      // default isPremiumUnlocked = false → free view
+    });
+    const ra = sign('เมษ');
+    const rb = sign('สิงห์');
+    const RA2 = [ra, rb];
+
+    context.renderCouple('A', pa, ra, ra, 0, 0, 'B', pb, rb, rb, 1, 1, coupleUi(), RA2);
+
+    const output = dom.window.document.getElementById('r1').innerHTML;
+    expect(output).toContain('Compatibility Matrix');
+    expect(output).toContain('ปลดล็อกดวงคู่เต็ม');
+    expect(output).not.toContain('สิ่งที่คู่นี้มาเรียนรู้ร่วมกัน');
+  });
+
+  it('renders couple full content without collapsible details (premium expanded mode)', () => {
+    const dom = new JSDOM('<!doctype html><div id="r1"></div><div id="tt1"></div><div id="ts1"></div>');
+    const pa = planet('อาทิตย์', 'ไฟ', 0);
+    const pb = planet('เสาร์', 'ไฟ', 0);
+    const context = loadContext(dom, {
+      getPL: () => [pa, pb],
+      ELC: [[78]],
+      PLC: [[78, 78], [78, 78]],
+      getELD: () => [['ไฟเจอไฟ']],
+      rasiAngle: () => [78, 'มุม'],
+      isPremiumUnlocked: () => true,
     });
     const ra = sign('เมษ');
     const rb = sign('สิงห์');
@@ -222,16 +250,17 @@ describe('Couple mode rendering', () => {
     expect(dom.window.document.querySelector('.cg2.is-locked')).toBeNull();
   });
 
-  it('renders love timing as a visible flagship couple section with credible reference', () => {
+  it('renders love timing as a visible flagship couple section for premium', () => {
     const dom = new JSDOM('<!doctype html><div id="r1"></div><div id="tt1"></div><div id="ts1"></div>');
     const pa = planet('อาทิตย์', 'ไฟ', 0);
-    const pb = planet('พุธ', 'ลม', 2);
+    const pb = planet('พุธ', 'ลม', 1);
     const context = loadContext(dom, {
       getPL: () => [pa, pb],
       ELC: [[82, 74], [74, 80]],
       PLC: [[82, 74], [74, 80]],
-      getELD: () => [['ไฟเจอลม'], ['ลมเจอไฟ']],
+      getELD: () => [['ไฟเจอไฟ', 'ไฟเจอลม'], ['ลมเจอไฟ', 'ลมเจอลม']],
       rasiAngle: () => [76, 'มุมส่งเสริม'],
+      isPremiumUnlocked: () => true,
     });
     const ra = sign('เมษ');
     const rb = sign('เมถุน');
@@ -269,7 +298,7 @@ describe('Couple mode rendering', () => {
     expect(model.timingStatus).toContain('ระบบอ่านรอบถัดไป');
   });
 
-  it('renders love timing action plan unconditionally (couple mode unlocked 2026-06-07)', () => {
+  it('renders love timing action plan for premium (Option A lock)', () => {
     const dom = new JSDOM('<!doctype html><div id="r1"></div><div id="tt1"></div><div id="ts1"></div>');
     const pa = planet('อาทิตย์', 'ไฟ', 0);
     const pb = planet('พุธ', 'ลม', 1);
@@ -279,6 +308,7 @@ describe('Couple mode rendering', () => {
       PLC: [[82, 74], [74, 80]],
       getELD: () => [['ไฟเจอลม'], ['ลมเจอไฟ']],
       rasiAngle: () => [76, 'มุมส่งเสริม'],
+      isPremiumUnlocked: () => true,
     });
     const ra = sign('เมษ');
     const rb = sign('เมถุน');
