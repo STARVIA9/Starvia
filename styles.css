@@ -4752,6 +4752,12 @@ body.has-report .value-section{display:none}
   opacity: 1;
   line-height: 1.4;
 }
+.cosmic-event-banner .ceb-impact {
+  font-size: 13px;
+  color: #FFE9A8;
+  font-weight: 700;
+  line-height: 1.4;
+}
 .cosmic-event-banner .ceb-cta {
   display: inline-block;
   padding: 4px 12px;
