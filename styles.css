@@ -5973,7 +5973,7 @@ body.senior #r0 [class*="wfl-"],body.senior #r1 [class*="wfl-"],body.senior #r2 
 body.senior #r0 [class*="hl-"],body.senior #r1 [class*="hl-"],body.senior #r2 [class*="hl-"],
 body.senior #r0 [class*="pc-"],body.senior #r1 [class*="pc-"],body.senior #r2 [class*="pc-"],
 body.senior #r0 [class*="el-"],body.senior #r1 [class*="el-"],body.senior #r2 [class*="el-"],
-body.senior #r0 [class*="tb-"],body.senior #r1 [class*="tb-"],body.senior #r2 [class*="tb-"]{font-size:17px!important;line-height:1.8;color:#000!important}
+body.senior #r0 [class*="tb-"],body.senior #r1 [class*="tb-"],body.senior #r2 [class*="tb-"]{font-size:19px!important;line-height:1.9;color:#000!important}
 /* senior: ตัวเปลือย (strong/span/td ไร้คลาส) รับขนาดตามพ่อแม่ — ไม่หด */
 body.senior #r0 strong,body.senior #r1 strong,body.senior #r2 strong,
 body.senior #r0 span:not([class]),body.senior #r1 span:not([class]),body.senior #r2 span:not([class]),
@@ -6025,7 +6025,23 @@ body.senior .cm-back{background:#D6AD45!important;color:#000!important;border:3p
 /* senior: เก็บตก 9 จุด (streak, ลิงก์ข้ามหัวข้อ, .rb ไร้ขีด) */
 body.senior #r0 [class*="streak-"],body.senior #r1 [class*="streak-"],body.senior #r2 [class*="streak-"],
 body.senior #r0 .cross-section-link,body.senior #r1 .cross-section-link,body.senior #r2 .cross-section-link,
-body.senior #r0 .rb,body.senior #r1 .rb,body.senior #r2 .rb{font-size:17px!important;line-height:1.8;color:#000!important}
+body.senior #r0 .rb,body.senior #r1 .rb,body.senior #r2 .rb{font-size:19px!important;line-height:1.9;color:#000!important}
+/* senior round-3 (12 ต.ค.69): คอนทราสต์จัด + เป้าจิ้มใหญ่ + เปิดอ่านขลัง */
+body.senior #r0 .rk-table,body.senior #r1 .rk-table,body.senior #r2 .rk-table{font-size:18px!important}
+body.senior #r0 .rk-table th,body.senior #r1 .rk-table th,body.senior #r2 .rk-table th{font-size:18px!important;background:#D6AD45!important;color:#000!important;padding:10px 8px!important}
+body.senior #r0 .rk-table td,body.senior #r1 .rk-table td,body.senior #r2 .rk-table td{font-size:18px!important;padding:10px 8px!important;border-bottom:2px solid #555!important}
+body.senior #r0 .rk-row-current,body.senior #r1 .rk-row-current,body.senior #r2 .rk-row-current{background:#ffe9a8!important}
+body.senior #r0 .rk-transit-affected,body.senior #r1 .rk-transit-affected,body.senior #r2 .rk-transit-affected{color:#7a2e00!important;font-weight:700!important;font-size:19px!important}
+body.senior #r0 .rk-subtitle,body.senior #r1 .rk-subtitle,body.senior #r2 .rk-subtitle{font-size:22px!important}
+body.senior #r0 .section-toggle,body.senior #r1 .section-toggle,body.senior #r2 .section-toggle{min-height:60px!important}
+body.senior #r0 .section-toggle-label,body.senior #r1 .section-toggle-label,body.senior #r2 .section-toggle-label{font-size:20px!important}
+body.senior .cm-d{font-size:18px!important}
+body.senior .cm-menu-sub{font-size:17px!important}
+/* ขลัง: หัวข้อหน้าที่เปิดอยู่ — แถบม่วงเข้มขอบทอง */
+body.senior .cm-open>.section-toggle{background:linear-gradient(135deg,#2a1650 0%,#4a2a8a 100%)!important;border:3px solid #D6AD45!important;border-radius:16px!important}
+body.senior .cm-open>.section-toggle .section-toggle-label{color:#FFE9A8!important;font-size:22px!important}
+body.senior .cm-open>.section-toggle .section-toggle-hint{color:#E8D48B!important;font-size:17px!important}
+body.senior .cm-open>.section-toggle .section-toggle-arrow,body.senior .cm-open>.section-toggle .section-toggle-cta{color:#D6AD45!important}
 
 /* ---------- SENIOR mode: small screens + landscape ---------- */
 @media (max-width:480px){
