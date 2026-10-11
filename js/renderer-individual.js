@@ -347,7 +347,6 @@ function buildMonthlyLifeMapHtml(model, premiumUnlocked){
     + '</div>'
     + '<div class="mlm-summary"><strong>🌟 พลังงานหลักของเดือนนี้:</strong> ' + escapeHTML(model.elementFocus) + '</div>'
     + '<div class="mlm-grid">'
-    + '<div class="mlm-pill mlm-pill-focus"><span>🔮 โฟกัส</span>' + escapeHTML(model.elementFocus) + '</div>'
     + '<div class="mlm-pill mlm-pill-warn"><span>⚡ วันที่ควรระวัง</span>' + escapeHTML(model.elementWarning) + '</div>'
     + '<div class="mlm-pill mlm-pill-action"><span>✨ สิ่งที่ควรทำ</span>' + escapeHTML(model.elementAction) + '</div>'
     + '</div>';
