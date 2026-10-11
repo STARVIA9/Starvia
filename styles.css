@@ -2563,7 +2563,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.4) sepia(1) h
 .sp-stat-card{text-align:center;background:rgba(255,255,255,.03);border:1px solid rgba(214,173,69,.12);border-radius:14px;padding:14px 8px;transition:background .3s,border-color .3s,transform .3s}
 .sp-stat-number{font-size:22px;font-weight:700;color:var(--g);margin-bottom:3px;letter-spacing:-.02em}
 /* Social proof — ไทยโบราณพรีเมียม (ทองแดง·ทอง·หยก) 12 ต.ค.69 */
-.sp-heritage{text-align:center;padding:26px 16px 22px;background:linear-gradient(180deg,rgba(184,115,51,.08),rgba(214,173,69,.05) 50%,rgba(46,125,91,.06));border-top:1px solid rgba(214,173,69,.5);border-bottom:1px solid rgba(214,173,69,.5);border-radius:4px}
+.sp-heritage{text-align:center;padding:26px 16px 22px;grid-column:1/-1;background:linear-gradient(180deg,rgba(184,115,51,.08),rgba(214,173,69,.05) 50%,rgba(46,125,91,.06));border-top:1px solid rgba(214,173,69,.5);border-bottom:1px solid rgba(214,173,69,.5);border-radius:4px}
 .sp-rule-top,.sp-rule-bottom{color:#B87333;font-size:13px;letter-spacing:.5em;opacity:.9}
 .sp-rule-top{margin-bottom:10px}
 .sp-rule-bottom{margin-top:14px}
