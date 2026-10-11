@@ -9,9 +9,11 @@ const state = {
     localStorage.getItem("starvia_premium") === "true" ||
     !!localStorage.getItem("starvia_premium_token"),
   quotaLeft: 1,
+  credits: 0, // เครดิตหยิบเพิ่มจากแพ็ก 19฿=+3 (อยู่ข้ามวันจนกว่าจะใช้หมด)
   streak: 0,
   topic: null,
   history: [],
+  trial: false, // โหมดลองฟรีจากหน้าจ่ายเงิน — ไม่ยิง API ไม่หักโควตา
 };
 
 const TOPIC_LABEL = { career: "การงาน", money: "การเงิน", love: "ความรัก", health: "สุขภาพ" };
@@ -23,6 +25,97 @@ const SCREENS = ["scrTopic", "scrFan", "scrReveal", "scrHistory", "scrGate"];
 function show(id) {
   SCREENS.forEach((s) => $(s).classList.toggle("on", s === id));
   window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* ── ประโยคประจำวัน (affirmation) — เลือกตามระดับ pos ของไพ่ ──
+   ใบเดิมได้ประโยคเดิมเสมอ (hash จาก slug) — รู้สึกว่าเป็นของตัวเอง */
+const AFFIRM = {
+  high: [
+    "วันนี้จักรวาลเข้าข้างคุณ เดินหน้าได้เลย",
+    "แสงของคุณชัดแล้ว ทำสิ่งนั้นเถอะ",
+    "จังหวะดีมาถึงแล้ว อย่าปล่อยให้หลุดมือ",
+    "คุณพร้อมกว่าที่คิด ลุยได้เลยวันนี้",
+  ],
+  mid: [
+    "ค่อยๆ ก้าวก็ถึง ใจนิ่งๆ ไว้นะ",
+    "วันนี้ทำดีได้ดี ระวังแค่เรื่องเสี่ยง",
+    "พักบ้างก็ได้ แล้วค่อยเริ่มใหม่",
+    "ฟังเสียงหัวใจตัวเองก่อนตัดสินใจ",
+  ],
+  low: [
+    "วันที่หนักจะผ่านไป คุณไม่ได้อยู่คนเดียว",
+    "ช้าลงนิด ใช้สติ ทุกอย่างจะคลี่คลาย",
+    "คืนนี้พักให้พอ พรุ่งนี้เริ่มใหม่ได้",
+    "เมฆบังแค่ชั่วคราว แสงยังรอคุณอยู่",
+  ],
+};
+function pickAffirm(card) {
+  const mood = card.pos >= 75 ? "high" : card.pos >= 45 ? "mid" : "low";
+  const pool = AFFIRM[mood];
+  let h = 0;
+  const s = String(card.slug || card.name || "");
+  for (let i = 0; i < s.length; i++) h = (h + s.charCodeAt(i)) | 0;
+  return pool[Math.abs(h) % pool.length];
+}
+
+/* ── Breath ritual: แตะไพ่ → นับ 3-2-1 → ค่อยพลิกเฉลย ── */
+let breathSeq = 0;
+let breathCard = null;
+function revealWithBreath(card) {
+  fillReveal(card);
+  // รีเซ็ต meter ไว้ก่อน — จะวิ่งตอนพลิกไพ่จริง (หลัง overlay หาย)
+  $("rvPosFill").style.width = "0%";
+  breathCard = card;
+  breathSeq += 1;
+  $("breathNum").textContent = "แตะไพ่";
+  $("breathTap").disabled = false;
+  $("breathOv").hidden = false;
+  // โหมดลองฟรี: โชว์ปุ่มชวนสมัคร + เปลี่ยนโน้ตท้าย
+  $("btnTrialSub").hidden = !state.trial;
+  $("rvNote").textContent = state.trial
+    ? "นี่คือใบลองชวน — สมัครแล้วมีไพ่รอทุกเช้า 💜"
+    : "กลับมาหยิบใหม่ได้พรุ่งนี้นะคะ 💜";
+  show("scrReveal");
+}
+function breathStart() {
+  const seq = breathSeq;
+  const tap = $("breathTap");
+  tap.disabled = true;
+  let n = 3;
+  $("breathNum").textContent = n;
+  const tick = () => {
+    if (seq !== breathSeq) return; // ผู้ใช้กดย้อนกลับระหว่างนับ — ยกเลิก
+    n -= 1;
+    if (n <= 0) {
+      $("breathOv").hidden = true;
+      requestAnimationFrame(() =>
+        setTimeout(() => {
+          if (seq !== breathSeq) return;
+          $("rvFlip").classList.add("flip");
+          renderMeter(breathCard.pos);
+        }, 250)
+      );
+      return;
+    }
+    $("breathNum").textContent = n;
+    setTimeout(tick, 900);
+  };
+  setTimeout(tick, 900);
+}
+async function shareAffirm() {
+  const text = `🔮 ประโยคประจำวันจาก STARVIA\n“${$("rvAffirm").textContent}”\n— ${$("rvName").textContent}`;
+  const btn = $("btnShareAffirm");
+  try {
+    if (navigator.share) {
+      await navigator.share({ title: "STARVIA · ประโยคประจำวัน", text });
+      return;
+    }
+    await navigator.clipboard.writeText(text);
+  } catch (e) {
+    return; // ผู้ใช้กดยกเลิก — ไม่ต้องทำอะไร
+  }
+  btn.textContent = "✓ คัดลอกแล้ว";
+  setTimeout(() => { btn.textContent = "📤 แชร์ประโยคนี้"; }, 2000);
 }
 
 /* ── Boot ───────────────────────────────── */
@@ -40,6 +133,7 @@ async function loadState() {
     const d = await r.json();
     if (d.success) {
       state.quotaLeft = d.quotaLeft;
+      state.credits = Number(d.credits) || 0;
       state.streak = d.streak;
       state.history = d.history || [];
     } else if (d.error === "TOKEN_EXPIRED" || d.error === "INVALID_TOKEN") {
@@ -61,13 +155,20 @@ function boot() {
     weekday: "long", day: "numeric", month: "long", year: "numeric",
   });
   $("todayText").textContent = th;
+  markTrialUsed();
   loadState();
 }
 
 function renderMeta() {
   $("streakVal").textContent = `${state.streak} วัน`;
-  $("quotaVal").textContent = state.quotaLeft > 0 ? `${state.quotaLeft} ครั้ง` : "หมดแล้ว";
+  const total = (Number(state.quotaLeft) || 0) + (Number(state.credits) || 0);
+  $("quotaVal").textContent = total > 0 ? `${total} ครั้ง` : "หมดแล้ว";
   $("historyCount").textContent = state.history.length;
+}
+
+/* สิทธิ์หยิบคงเหลือรวม (โควต้าฟรี + เครดิตแพ็ก) */
+function picksLeft() {
+  return (Number(state.quotaLeft) || 0) + (Number(state.credits) || 0);
 }
 
 /* ── เลือกไพ่ตามหัวข้อ ──────────────────── */
@@ -77,6 +178,100 @@ function getCardsForTopic(topic) {
   const filtered = all.filter(c => c.topic === topic || Math.random() > 0.6);
   const shuffled = filtered.sort(() => Math.random() - 0.5);
   return shuffled.slice(0, 7);
+}
+
+/* ── ลองฟรี 1 ใบจากหน้าจ่ายเงิน — ไม่ยิง API ไม่หักโควตา ไม่นับ streak ──
+   ล็อกครั้งเดียวต่อเครื่อง (localStorage) + กดซ้ำโชว์ใบเดิมใบที่เคยได้ */
+const TRIAL_KEY = "starvia_trial_slug";
+function getCardBySlug(slug) {
+  return (window.CARD_DATA || []).find((c) => c.slug === slug);
+}
+function markTrialUsed() {
+  if (!localStorage.getItem(TRIAL_KEY)) return;
+  const b = $("btnTrialPick");
+  if (b) { b.disabled = true; b.textContent = "🎴 ใช้สิทธิ์ลองฟรีแล้ว — สมัคร 19฿ เปิดไพ่ทุกวัน 💜"; }
+}
+function trialPick() {
+  const used = localStorage.getItem(TRIAL_KEY);
+  if (used) {
+    const old = getCardBySlug(used);
+    state.topic = "career";
+    state.trial = true;
+    if (old) { revealWithBreath(old); return; }
+    markTrialUsed();
+    showMsg("🎴", "ใช้สิทธิ์ลองฟรีแล้วค่ะ", "ลองหยิบฟรีได้ 1 ใบต่อเครื่อง — ถูกใจสมัคร 19฿ เปิดไพ่ได้ทุกวันนะคะ 💜");
+    return;
+  }
+  const all = window.CARD_DATA || [];
+  if (!all.length) return;
+  const card = all[Math.floor(Math.random() * all.length)];
+  try { localStorage.setItem(TRIAL_KEY, card.slug); } catch (e) {}
+  state.topic = "career";
+  state.trial = true;
+  revealWithBreath(card);
+  markTrialUsed();
+}
+
+/* ── Quick Mode: 1 ปุ่ม → สุ่มไพ่ 1 ใบจาก 78 → เฉลยทันที (t-020) ── */
+function quickPick() {
+  if (picksLeft() <= 0) {
+    showQuotaModal();
+    return;
+  }
+  state.trial = false;
+  const all = window.CARD_DATA || [];
+  if (!all.length) return;
+  const card = all[Math.floor(Math.random() * all.length)];
+  state.topic = "career"; // topic กลางๆ สำหรับบันทึก — Quick Mode ไม่ถามหัวข้อ
+  state.fanCards = [card];
+  pickSingleCard(card);
+}
+
+/* เฉลยไพ่เดียวจาก Quick Mode — บันทึกผ่าน API แบบเดียวกับ pickCard */
+async function pickSingleCard(card) {
+  try {
+    const r = await apiFetch(`${API}/draw`, {
+      method: "POST",
+      body: JSON.stringify({
+        topic: state.topic,
+        slug: card.slug,
+        name: card.name,
+        emoji: card.emoji,
+        reading: card.reading || "",
+        pos: card.pos != null ? Number(card.pos) : null,
+        sub: card.sub || "",
+        num: card.num || "",
+        color: card.color || "",
+        do: card.do || "",
+        dont: card.dont || "",
+      }),
+    });
+    const d = await r.json();
+    if (!d.success) {
+      showQuotaModal();
+      return;
+    }
+    state.quotaLeft = d.quotaLeft;
+    state.credits = Number(d.credits) || 0;
+    state.streak = d.streak;
+    state.history = d.history || state.history;
+    renderMeta();
+  } catch (e) {
+    console.warn("draw API ไม่พร้อม — เปิดแบบ offline (ไม่บันทึก)", e);
+    if ((Number(state.quotaLeft) || 0) > 0) state.quotaLeft -= 1;
+    else state.credits = Math.max(0, (Number(state.credits) || 0) - 1);
+    state.streak += 1;
+    state.history.unshift({
+      date: new Date().toISOString(), card: card.name, emoji: card.emoji,
+      topic: TOPIC_LABEL[state.topic], slug: card.slug,
+      reading: card.reading || "", pos: card.pos != null ? Number(card.pos) : null,
+      sub: card.sub || "", num: card.num || "", color: card.color || "",
+      do: card.do || "", dont: card.dont || "",
+    });
+    renderMeta();
+  }
+  // เฉลยแบบมี breath ritual (แตะไพ่ → นับ 3-2-1 → พลิก)
+  revealWithBreath(card);
 }
 
 /* ── Topic → Fan ────────────────────────── */
@@ -96,6 +291,7 @@ function buildFan() {
   state.fanCards = cards; // เก็บไว้ใช้ตอน pick
   const N = cards.length;
   const spread = 26;
+  const gap = window.innerWidth <= 420 ? 28 : 40; // จอเล็กชิดขึ้น ไพ่ใหญ่ไม่ล้นขอบ
   for (let i = 0; i < N; i++) {
     const t = i - (N - 1) / 2;
     const card = cards[i];
@@ -104,7 +300,7 @@ function buildFan() {
     c.setAttribute("role", "option");
     c.setAttribute("aria-label", `เลือกไพ่ใบที่ ${i + 1}`); // ไม่เฉลยชื่อไพ่ก่อนเลือก
     c.style.setProperty("--rot", `${(t * spread) / (N / 2)}deg`);
-    c.style.setProperty("--x", `${t * 40}px`);
+    c.style.setProperty("--x", `${t * gap}px`);
     c.style.setProperty("--y", `${Math.abs(t) * 7}px`);
     c.style.transitionDelay = `${i * 40}ms`;
 
@@ -137,11 +333,12 @@ function buildFan() {
 
 /* ── Pick → Reveal ──────────────────────── */
 async function pickCard(el, idx) {
-  if (state.quotaLeft <= 0) {
+  if (picksLeft() <= 0) {
     showQuotaModal();
     return;
   }
   const card = state.fanCards[idx];
+  state.trial = false;
 
   // บันทึกการเปิดไพ่ผ่าน API (หัก quota จริง) — fallback offline ถ้า API ไม่พร้อม
   try {
@@ -167,11 +364,13 @@ async function pickCard(el, idx) {
       return;
     }
     state.quotaLeft = d.quotaLeft;
+    state.credits = Number(d.credits) || 0;
     state.streak = d.streak;
     state.history = d.history || state.history;
   } catch (e) {
     console.warn("draw API ไม่พร้อม — เปิดแบบ offline (ไม่บันทึก)", e);
-    state.quotaLeft -= 1;
+    if ((Number(state.quotaLeft) || 0) > 0) state.quotaLeft -= 1;
+    else state.credits = Math.max(0, (Number(state.credits) || 0) - 1);
     state.streak += 1;
     state.history.unshift({
       date: new Date().toISOString(), card: card.name, emoji: card.emoji,
@@ -188,12 +387,8 @@ async function pickCard(el, idx) {
   });
 
   setTimeout(() => {
-    fillReveal(card);
-    show("scrReveal");
-    requestAnimationFrame(() =>
-      setTimeout(() => $("rvFlip").classList.add("flip"), 250)
-    );
-  }, 900); // รอ fan flip (750ms) จบก่อนเข้าหน้าเฉลย
+    revealWithBreath(card);
+  }, 900); // รอ fan flip (750ms) จบก่อนเข้าหน้าเฉลยแบบ breath
 }
 
 function fillReveal(card) {
@@ -216,6 +411,7 @@ function fillReveal(card) {
   $("rvColor").textContent = card.color;
   $("rvDo").textContent = card.do;
   $("rvDont").textContent = card.dont;
+  $("rvAffirm").textContent = pickAffirm(card);
   renderMeter(card.pos);
 }
 
@@ -316,6 +512,10 @@ function viewHistoryCard(h) {
 
 /* ── Quota modal ────────────────────────── */
 function showQuotaModal() {
+  const m = $("creditPinMsg");
+  if (m) { m.hidden = true; m.textContent = ""; }
+  const inp = $("creditPinInput");
+  if (inp) inp.value = "";
   $("quotaModal").hidden = false;
 }
 $("btnModalClose").addEventListener("click", () => {
@@ -328,15 +528,59 @@ $("btnModalHistory").addEventListener("click", () => {
   show("scrHistory");
 });
 
+/* ── แลก PIN เครดิตหยิบเพิ่ม (แพ็ก 19฿=+3) ── */
+async function redeemCreditPin() {
+  const pin = ($("creditPinInput").value || "").trim().toUpperCase();
+  if (!pin) return;
+  const msg = $("creditPinMsg");
+  msg.hidden = false;
+  msg.style.color = "#aaa";
+  msg.textContent = "⏳ กำลังเติมเครดิต…";
+  try {
+    const r = await apiFetch(`${API}/redeem`, {
+      method: "POST",
+      body: JSON.stringify({ pin }),
+    });
+    const d = await r.json();
+    if (d.success) {
+      state.quotaLeft = d.quotaLeft;
+      state.credits = Number(d.credits) || 0;
+      state.streak = d.streak;
+      state.history = d.history || state.history;
+      renderMeta();
+      msg.style.color = "#0f0";
+      msg.textContent = `✅ เติม +${d.added} หยิบแล้ว — เลือกไพ่ต่อได้เลยค่ะ 💜`;
+      setTimeout(() => { $("quotaModal").hidden = true; show("scrTopic"); }, 900);
+    } else {
+      msg.style.color = "#f0c";
+      msg.textContent = "❌ " + (d.message || d.error || "PIN ไม่ถูกต้อง");
+    }
+  } catch (e) {
+    msg.style.color = "#f0c";
+    msg.textContent = "❌ ติดต่อเซิร์ฟเวอร์ไม่ได้ ลองใหม่อีกครั้ง";
+  }
+}
+$("btnCreditRedeem").addEventListener("click", redeemCreditPin);
+$("creditPinInput").addEventListener("keydown", (e) => { if (e.key === "Enter") redeemCreditPin(); });
+
 /* ── Nav wiring ─────────────────────────── */
 $("btnBackTopic").addEventListener("click", () => show("scrTopic"));
 $("btnHistory").addEventListener("click", () => { renderHistory(); show("scrHistory"); });
 $("btnBackHome").addEventListener("click", () => show("scrTopic"));
-$("btnShare").addEventListener("click", () => {
-  alert("📤 เดี๋ยวขั้นต่อไปจะ gen การ์ดรูปสวยๆ ให้แชร์ลง Facebook ค่ะ");
-});
-$("btnTomorrow").addEventListener("click", () => {
-  alert("🔔 เปิดการแจ้งเตือนสำเร็จ (mock) — ตอนนี้พรุ่งนี้ 07:00 จะเตือนค่ะ");
+$("btnRvHome").addEventListener("click", () => show(state.member ? "scrTopic" : "scrGate"));
+$("btnTrialPick").addEventListener("click", trialPick);
+$("btnTrialSub").addEventListener("click", () => { state.trial = false; show("scrGate"); });
+$("btnQuickPick").addEventListener("click", quickPick);
+$("breathTap").addEventListener("click", breathStart);
+$("btnShareAffirm").addEventListener("click", shareAffirm);
+
+/* จ่ายเรียบร้อย → แจ้งให้ส่งสลิปทาง Messenger (Omise ไม่ผ่านอนุมัติ — flow manual) */
+$("btnPaid").addEventListener("click", () => {
+  showMsg(
+    "💜",
+    "รับทราบการโอนแล้วค่ะ",
+    "ส่งสลิปทาง <b>Messenger</b> (ปุ่มสีฟ้าด้านบน) แม่หมอจะตอบกลับพร้อม PIN<br>แล้วกลับมากรอก PIN ด้านล่างเพื่อเปิดสมาชิกได้เลยค่ะ"
+  );
 });
 /* ── Modal ข้อความกลางจอ (แจ้งผล login/เตือน) ── */
 function showMsg(icon, title, body) {
@@ -402,25 +646,10 @@ async function checkSubscriber(accessToken, userID) {
   }
 }
 
-$("btnFbLogin").addEventListener("click", async () => {
-  try {
-    await loadFbSdk();
-    window.FB.login((resp) => {
-      if (resp.authResponse) {
-        checkSubscriber(resp.authResponse.accessToken, resp.authResponse.userID);
-      } else {
-        showMsg("😔", "เข้าสู่ระบบไม่สำเร็จ", "แตะปุ่มอีกครั้งเพื่อลองใหม่นะคะ");
-      }
-    }, { config_id: FB_LOGIN_CONFIG_ID });
-  } catch (e) {
-    console.warn("fb login error:", e);
-    showMsg("😔", "โหลดระบบ Facebook ไม่สำเร็จ", "ลองใหม่ภายหลังนะคะ");
-  }
-});
+/* (t-021) FB login flow เดิมตัดออกพร้อมปุ่ม — ไม่มี event ผูกกับ btnFbLogin อีกต่อไป */
 
-$("btnSubscribe").addEventListener("click", () => {
-  window.open("https://www.facebook.com/1071926269337612", "_blank");
-});
+/* (t-021) ปุ่มสมัคร FB + FB login เดิมตัดออก — หน้าจ่ายเป็น QR ในเว็บ + PIN แทน
+   เก็บ loadFbSdk/checkSubscriber ไว้เผื่อระบบ subscriber กลับมา (ไม่มีปุ่มเรียกแล้ว) */
 
 /* ── PIN Verify ── */
 $("btnPin").addEventListener("click", verifyPin);

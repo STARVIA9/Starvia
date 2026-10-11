@@ -6,9 +6,28 @@
 <title>Pick a Card · STARVIA — ไพ่ประจำวันของคุณ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="pick-a-card.css?v=8">
+<link rel="stylesheet" href="pick-a-card.css?v=12">
 </head>
 <body>
+
+<script>
+/* STARVIA senior-mode boot — อ่าน starvia_mode ที่หน้าแรกเลือกไว้ (pitfall: คนเข้าตรงลิงก์ย่อยจาก LINE/FB ไม่เคยเห็น age gate ของหน้าแรก) */
+(function(){
+  var KEY='starvia_mode';
+  function apply(mode){
+    var b=document.body;
+    b.classList.remove('senior','normal');
+    if(mode==='senior'||mode==='normal'){ b.classList.add(mode); }
+  }
+  window.starviaChoose=function(mode){
+    try{ localStorage.setItem(KEY,mode); }catch(e){}
+    apply(mode);
+  };
+  var saved=null;
+  try{ saved=localStorage.getItem(KEY); }catch(e){}
+  if(saved){ apply(saved); }
+})();
+</script>
 
 <!-- ═══════════ TOP BAR ═══════════ -->
 <nav class="pac-top">
@@ -33,6 +52,16 @@
       <div class="dl"></div>
       <p class="pac-hd-sub">ตั้งจิตให้นิ่ง เลือกเรื่องที่อยากรู้<br>ไพ่ 1 ใบจะเฉลยทางให้วันนี้</p>
     </header>
+
+    <div class="qm-wrap">
+      <button class="qm-big" id="btnQuickPick">
+        <span class="qm-ico">🎴</span>
+        หยิบไพ่วันนี้เลย
+      </button>
+      <p class="qm-sub">กดปุ่มเดียว — ไม่ต้องเลือกหัวข้อ ไม่ต้องเลือกไพ่<br>แม่หมอจัดไพ่และคำทำนายให้ทันที</p>
+    </div>
+
+    <div class="qm-divider"><span>หรือเลือกหัวข้อเอง</span></div>
 
     <div class="topic-grid" id="topicGrid">
       <button class="tp" data-topic="career">
@@ -91,6 +120,16 @@
 
   <!-- ═══════════ SCREEN 3 · REVEAL ═══════════ -->
   <section class="scr scr-reveal" id="scrReveal">
+    <div class="breath-ov" id="breathOv" hidden>
+      <div class="breath-card">
+        <div class="breath-ico">🃏</div>
+        <div class="breath-t">ใบนี้ออกมาหาคุณโดยเฉพาะ</div>
+        <div class="breath-s">หลับตา นึกเรื่องที่อยากรู้ในใจ<br>แล้วแตะไพ่เพื่อเริ่ม</div>
+        <button class="breath-tap" id="breathTap">
+          <span class="breath-num" id="breathNum">แตะไพ่</span>
+        </button>
+      </div>
+    </div>
     <div class="rv-flip" id="rvFlip">
       <div class="rv-flip-in">
         <div class="rv-face rv-back">🃏</div>
@@ -116,6 +155,12 @@
       <p id="rvReading">…</p>
     </div>
 
+    <div class="rv-affirm card" id="rvAffirmBox">
+      <div class="phd">ประโยคประจำวัน · แคปเก็บไว้ได้</div>
+      <p class="rv-affirm-t" id="rvAffirm">…</p>
+      <button class="btn btn-o" id="btnShareAffirm">📤 แชร์ประโยคนี้</button>
+    </div>
+
     <div class="rv-grid">
       <div class="rv-box"><div class="rvb-l">🔮 เลขมงคล</div><div class="rvb-v" id="rvNum">7 · 23</div></div>
       <div class="rv-box"><div class="rvb-l">🎨 สีมงคล</div><div class="rvb-v" id="rvColor">ม่วงอ่อน</div></div>
@@ -123,11 +168,12 @@
       <div class="rv-box"><div class="rvb-l">⚠️ ควรเลี่ยง</div><div class="rvb-v rvb-dont" id="rvDont">การกู้ยืม</div></div>
     </div>
 
+    <!-- ปุ่ม mock (แชร์/เตือน) ตัดออกตามงาน t-021 — ห้าม ship ปุ่มหลอกหลัง paywall -->
     <div class="rv-actions">
-      <button class="btn btn-g" id="btnShare">📤 แชร์ผลไพ่</button>
-      <button class="btn btn-o" id="btnTomorrow">🔔 เตือนฉันพรุ่งนี้ 07:00</button>
+      <button class="btn btn-g" id="btnTrialSub" hidden>💜 ถูกใจไหม สมัคร 19฿ เปิดไพ่ทุกวัน</button>
+      <button class="btn btn-g" id="btnRvHome">← กลับหน้าแรก</button>
     </div>
-    <div class="rv-note">กลับมาหยิบใหม่ได้พรุ่งนี้นะคะ 💜</div>
+    <div class="rv-note" id="rvNote">กลับมาหยิบใหม่ได้พรุ่งนี้นะคะ 💜</div>
   </section>
 
   <!-- ═══════════ SCREEN 4 · HISTORY ═══════════ -->
@@ -165,10 +211,28 @@
         <span class="gp-n">19</span>
         <span class="gp-u">บาท / เดือน</span>
       </div>
-      <button class="btn btn-g gate-cta" id="btnSubscribe">💜 สมัครสมาชิกผ่าน Facebook</button>
-      <button class="btn btn-o gate-login" id="btnFbLogin">🔑 เป็นสมาชิกแล้ว? เข้าด้วย Facebook</button>
 
-      <div class="gate-or">— หรือ —</div>
+      <!-- จ่ายในเว็บ — QR PromptPay ใหญ่ ยอดฝังแน่นอน (t-021) -->
+      <div class="pay-inline">
+        <div class="pay-qr-box">
+          <img src="qr-19.png" alt="QR PromptPay 19 บาท" id="qrImg">
+        </div>
+        <div class="pay-hint">สแกน 1 ครั้ง — ยอด 19 บาท ฝังอยู่ใน QR แล้ว ไม่ต้องพิมพ์เลข</div>
+        <ol class="pay-steps">
+          <li><span class="n">1</span>เปิดแอปธนาคาร กดสแกน QR</li>
+          <li><span class="n">2</span>สแกนกล่องขาวด้านบน ยอด 19 บาทขึ้นเอง</li>
+          <li><span class="n">3</span>จ่ายเสร็จ กดปุ่มสีทองใหญ่ด้านล่างนี้</li>
+        </ol>
+        <button class="btn btn-g gate-cta" id="btnPaid">✓ จ่าย 19 บาทแล้ว</button>
+        <a class="btn btn-o gate-msg-btn" href="https://m.me/61573341702581" target="_blank" rel="noopener">💬 แจ้งสลิปส่ง Messenger</a>
+        <div class="pay-note">กดปุ่มสีฟ้า 👆 ส่งสลิปให้แม่หมอ → แม่หมอจะส่ง PIN กลับมาให้ → กรอก PIN ด้านล่าง</div>
+
+      <div class="gate-or">— ยังไม่แน่ใจ? —</div>
+      <button class="btn btn-g" id="btnTrialPick">🎴 ลองหยิบไพ่ฟรี 1 ใบ</button>
+      <div class="pay-note">ลองก่อนได้ ไม่ต้องจ่าย — ถูกใจค่อยสมัคร 19฿/เดือน</div>
+      </div>
+
+      <div class="gate-or">— มี PIN อยู่แล้ว? —</div>
       <div class="gate-pin-row">
         <input class="gate-pin-input" id="pinInput" placeholder="PIN (เช่น STAR-XXXX)" maxlength="14" autocomplete="off">
         <button class="btn btn-o" id="btnPin" style="padding:10px 16px;border-radius:10px">✓</button>
@@ -183,6 +247,16 @@
       <div class="pm-ic">🌙</div>
       <h3 class="pm-t">วันนี้เปิดไพ่ครบแล้วนะคะ</h3>
       <p class="pm-d">ไพ่ประจำวัน 1 ใบต่อวัน<br>พรุ่งนี้ 07:00 กลับมาหยิบใบใหม่ได้เลย ✨</p>
+      <!-- แพ็กเครดิตหยิบเพิ่ม 19฿=+3 ใบ (QR เดิม+สลิป Messenger+PIN เครดิต) -->
+      <div class="gate-or">— อยากหยิบเพิ่มคืนนี้? —</div>
+      <p class="pm-d">💜 <b>แพ็ก 19 บาท = หยิบเพิ่ม 3 ใบ</b><br>
+      สแกน QR เดิมที่หน้าสมาชิก → ส่งสลิปทาง Messenger<br>แม่หมอส่ง <b>PIN เครดิต</b> กลับมา → กรอกด้านล่างได้เลย</p>
+      <!-- แพ็ก 49฿=+10 ใบ ซ่อนไว้ก่อน — รอ QR-49 (ยอดฝัง 49) แล้วค่อยเปิด -->
+      <div class="gate-pin-row">
+        <input class="gate-pin-input" id="creditPinInput" placeholder="PIN เครดิต (เช่น STAR-XXXX)" maxlength="14" autocomplete="off">
+        <button class="btn btn-o" id="btnCreditRedeem" style="padding:10px 16px;border-radius:10px">✓</button>
+      </div>
+      <div id="creditPinMsg" class="gate-pin-msg" hidden></div>
       <div class="pm-actions">
         <button class="btn btn-g" id="btnModalHistory">📜 ดูประวัติของฉัน</button>
         <button class="btn btn-o" id="btnModalClose">← กลับหน้าหลัก</button>
@@ -211,6 +285,12 @@
 </footer>
 
 <script src="data/tarot-card-data.js?v=7"></script>
-<script src="pick-a-card.js?v=12"></script>
+<script src="pick-a-card.js?v=20"></script>
+
+<!-- STARVIA senior-mode toggle bar (เหมือนหน้าแรก — สลับได้ตลอดเวลา) -->
+<div class="starvia-toggle-bar" id="starvia-toggle-bar">
+  <button type="button" class="starvia-toggle-btn" onclick="starviaChoose('senior')" aria-label="สลับโหมดตัวใหญ่">👴 โหมดตัวใหญ่</button>
+  <button type="button" class="starvia-toggle-btn" onclick="starviaChoose('normal')" aria-label="สลับโหมดปกติ">👩 โหมดปกติ</button>
+</div>
 </body>
 </html>

@@ -5902,3 +5902,98 @@ body.senior .site-footer a{font-size:18px!important;color:#111!important;text-de
 @media (prefers-reduced-motion:reduce){
   .agegate *{animation:none!important;transition:none!important}
 }
+
+/* ===== 2026-09-02 CONTRAST FIX — พ่อแจ้ง "แท็บในมืด อ่านไม่เห็น" : สว่าง/คมชัดขึ้นเฉพาะกล่อง report ===== */
+/* กำลังวันประจำตัว (Weekday Power Card) */
+.weekday-power-card {
+  background: radial-gradient(ellipse at 50% 0%, rgba(214,173,69,.16), transparent 60%),
+              linear-gradient(180deg, rgba(34,22,64,.96), rgba(17,10,34,.98));
+  border-color: rgba(214,173,69,.34);
+}
+.wpc-badge { background: rgba(255,255,255,.10); border-color: rgba(201,162,39,.32); }
+.wpc-badge-label { color: #EDE4FA; }
+.wpc-badge-value { color: #FFFFFF; }
+.wpc-color-hint { color: #EAE0F8; }
+.wpc-color-hint strong {
+  font-weight: 800;
+  text-shadow: 0 0 6px rgba(0,0,0,.95), 0 1px 3px rgba(0,0,0,.9);
+  background: rgba(255,255,255,.12);
+  padding: 1px 10px;
+  border-radius: 999px;
+  margin-left: 3px;
+}
+.wpc-energy { color: #F2EAD6; }
+.wpc-action { background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.10); }
+
+/* หมอทักรายเดือน (Monthly Life Map) */
+.mlm-mystic-sub { color: #C9B8EC; }
+.mlm-mystic-quote { color: #CDBEF0; }
+.mlm-pill, .mlm-domain, .mlm-week, .mlm-ritual {
+  background: rgba(255,255,255,.065);
+  border-color: rgba(201,162,39,.20);
+  color: #EFE8FB;
+}
+.mlm-domain p, .mlm-week p, .mlm-money-list li, .mlm-score-row { color: #F0E9FC; }
+.mlm-score-row strong { color: var(--g2); }
+.mlm-omen { color: #CBBDF0; background: rgba(155,138,184,.14); }
+.mlm-moo-text, .mlm-action { color: #E4D8BC; }
+.mlm-day-label, .mlm-day-advice, .mlm-cal-day span { color: #EAE0F8; }
+.mlm-ritual-day { color: #FFD86B; background: rgba(201,162,39,.18); }
+.mlm-phase-up    { color: #7BE0A6; background: rgba(76,175,80,.16); border-color: rgba(76,175,80,.42); }
+.mlm-phase-stable{ color: #FFD86B; background: rgba(255,216,107,.14); border-color: rgba(255,216,107,.38); }
+.mlm-phase-warn  { color: #FF7D74; background: rgba(239,83,80,.16); border-color: rgba(239,83,80,.42); }
+
+/* ===== 2026-09-02 SENIOR 60+ — การ์ด report ม่วงเข้ม + ตัวหนังสือดำ = อ่านไม่เห็น → พื้นสว่างเหลือง/ดำ ===== */
+body.senior .weekday-power-card,
+body.senior .mlm-pill,
+body.senior .mlm-domain,
+body.senior .mlm-week,
+body.senior .mlm-ritual,
+body.senior .mlm-summary,
+body.senior .mlm-mystic-intro,
+body.senior .mlm-moo-forecast,
+body.senior .mlm-omen,
+body.senior .mlm-action {
+  background: #ffffe0;
+  border: 2px solid #000;
+  color: #111;
+}
+body.senior .wpc-badge {
+  background: #fff;
+  border: 2px solid #000;
+}
+body.senior .wpc-action {
+  background: #fffbe8;
+  border: 2px solid #000;
+}
+body.senior .wpc-badge-label,
+body.senior .wpc-color-hint,
+body.senior .mlm-mystic-sub,
+body.senior .mlm-mystic-quote,
+body.senior .mlm-domain p,
+body.senior .mlm-week p,
+body.senior .mlm-money-list li,
+body.senior .mlm-score-row,
+body.senior .mlm-day-label,
+body.senior .mlm-day-advice,
+body.senior .mlm-cal-day span,
+body.senior .mlm-ritual-day,
+body.senior .mlm-moo-text,
+body.senior .mlm-omen,
+body.senior .mlm-domain-label {
+  color: #111;
+}
+body.senior .wpc-color-hint strong {
+  background: transparent;
+  padding: 0;
+  text-shadow: none;
+  color: #c62828;
+}
+body.senior .mlm-phase-up   { color: #1b5e20; background: #c8e6c9; border: 1px solid #000; }
+body.senior .mlm-phase-stable{ color: #7a4a00; background: #ffe082; border: 1px solid #000; }
+body.senior .mlm-phase-warn  { color: #b71c1c; background: #ffcdd2; border: 1px solid #000; }
+body.senior .mlm-lucky-day,
+body.senior .mlm-ritual-day,
+body.senior .mlm-score-row strong { color: #7a4a00; }
+body.senior .mlm-score-bar { background: #d9cfa8; }
+body.senior .mlm-score-bar i { background: linear-gradient(90deg, #7a4a00, #4a2f8a); }

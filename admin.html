@@ -238,6 +238,7 @@
             <select id="issue-plan">
               <option value="premium_199">Premium 199 (เว็บหลัก)</option>
               <option value="premium_fb">19฿/เดือน (Facebook — ไพ่ประจำวัน)</option>
+              <option value="credit_3">💜 เครดิตหยิบเพิ่ม 19฿ = +3 ใบ</option>
             </select>
           </div>
           <div class="form-group" style="flex:2">
@@ -511,7 +512,7 @@ function renderPinTable() {
       '</div>';
     return '<tr>' +
       '<td><span class="pin-code" onclick="copyPin(\'' + esc(p.pin) + '\')">' + esc(p.pin) + '</span></td>' +
-      '<td>' + esc(p.plan) + '</td>' +
+      '<td>' + esc(planLabel(p.plan)) + '</td>' +
       '<td>' + fmtDate(p.created) + '</td>' +
       '<td>' + fmtDate(p.expires) + '</td>' +
       '<td>' + (p.used ? fmtDate(p.used) : '-') + '</td>' +
@@ -621,6 +622,10 @@ function escapeCSV(value) {
   return s;
 }
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+function planLabel(p) {
+  var m = {premium_199:'Premium 199', premium_fb:'19฿/เดือน', credit_3:'💜 เครดิต +3', credit_10:'💜 เครดิต +10'};
+  return m[p] || p;
+}
 function fmtDate(d) { if (!d) return '-'; try { return new Date(d).toLocaleDateString('th-TH',{year:'numeric',month:'short',day:'numeric'}); } catch(e){ return d; } }
 function fmtNum(n) { return Number.isFinite(n) ? n.toLocaleString('th-TH') : '-'; }
 function decodeJwtPayload(t) { try { var p = String(t||'').split('.')[1]; return JSON.parse(atob(p.replace(/-/g,'+').replace(/_/g,'/'))); } catch(e){ return null; } }
