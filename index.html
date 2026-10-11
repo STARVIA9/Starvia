@@ -187,54 +187,18 @@
 <canvas id="cv"></canvas>
 <div id="main-content">
 
-  <!-- V20: Hero — text ลอยบน+ล่าง ไม่บังหน้าแม่หมอ (เหมือน hero-mockup.html V17) -->
-  <section class="hero-splash" aria-label="STARVIA hero">
-    <div class="hero-frame">
-      <video class="hero-video-bg" autoplay muted loop playsinline preload="metadata"
-             poster="assets/hero/mama-kara-loop-poster.jpg" aria-hidden="true">
-        <source src="assets/hero/mama-kara-loop.webm" type="video/webm">
-        <source src="assets/hero/mama-kara-loop.mp4" type="video/mp4">
-      </video>
-      <div class="hero-overlay" aria-hidden="true"></div>
-      <div class="hero-vignette" aria-hidden="true"></div>
-
-      <!-- TOP: tag + STARVIA logo -->
-      <div class="hero-top">
-        <div class="hd-tag" id="hd-tag" aria-hidden="false">✦ ค้นพบตัวเองผ่านดวงดาว ✦</div>
-        <h1 id="hd-ttl">STARVIA</h1>
-      </div>
-
-      <!-- BOTTOM (Desktop only via CSS — Mobile ย้ายออกไป .hero-cta-panel ใต้ hero): kicker + price + title + desc + actions + promise -->
-      <div class="hero-text">
-        <div class="hero-kicker" id="hd-sub">นพเคราะห์ · ราศีจักร · ลัคนา · ดวงชะตา</div>
-        <div class="hero-price">✦ Premium 199 บาท/เดือน · รู้จักตัวเองลึกกว่านี้ ✦</div>
-        <h2 class="hero-title">รู้จักตัวเองจากวันเกิด <span class="nowrap">ไม่ใช่แค่ดูดวง</span></h2>
-        <p class="hero-desc">STARVIA ช่วยถอดรหัสจุดแข็ง ความรัก งาน เงิน และจังหวะชีวิต ผ่านโหราศาสตร์ไทยโบราณแบบอ่านง่าย</p>
-        <div class="hero-actions" aria-label="ทางลัดเริ่มใช้งาน">
-          <a class="hero-primary" href="#fc0">เริ่มดูดวงฟรี</a>
-          <button class="tarot-trigger" onclick="openTarot()" aria-label="เปิดไพ่ทำนาย">
-            <span class="tarot-trigger-emoji" aria-hidden="true">🎴</span> หยิบไพ่ทำนาย
-          </button>
-        </div>
-        <div id="brand-promise" class="brand-promise">ดาวไม่ได้ตัดสินชีวิตคุณ - ดาวช่วยให้คุณมองเห็นตัวเองชัดขึ้น</div>
-      </div>
+  <!-- Slim brand header (แทน hero วิดีโอแม่หมอเก่า — ถอด 12 ต.ค.69 รอ asset แม่หมอปัจจุบัน) -->
+  <header class="brand-slim" aria-label="STARVIA">
+    <a class="hd-tag" href="#fc0" style="text-decoration:none">✦ ค้นพบตัวเองผ่านดวงดาว ✦</a>
+    <h1 class="brand-slim-logo">STARVIA</h1>
+    <p class="brand-promise">ดาวไม่ได้ตัดสินชีวิตคุณ - ดาวช่วยให้คุณมองเห็นตัวเองชัดขึ้น</p>
+    <div class="hero-actions" aria-label="ทางลัดเริ่มใช้งาน">
+      <a class="hero-primary" href="#fc0">เริ่มดูดวงฟรี</a>
+      <button class="tarot-trigger" onclick="openTarot()" aria-label="เปิดไพ่ทำนาย">
+        <span class="tarot-trigger-emoji" aria-hidden="true">🎴</span> หยิบไพ่ทำนาย
+      </button>
     </div>
-
-    <!-- V26: Mobile CTA panel ใต้ hero (แสดงเฉพาะ mobile) — เอาปุ่มออกจาก vdo ไม่ทับแมว -->
-    <div class="hero-cta-panel" aria-label="เริ่มใช้งาน STARVIA">
-      <div class="hero-kicker">นพเคราะห์ · ราศีจักร · ลัคนา · ดวงชะตา</div>
-      <div class="hero-price">✦ Premium 199 บาท/เดือน · รู้จักตัวเองลึกกว่านี้ ✦</div>
-      <h2 class="hero-title">รู้จักตัวเองจากวันเกิด <span class="nowrap">ไม่ใช่แค่ดูดวง</span></h2>
-      <p class="hero-desc">STARVIA ช่วยถอดรหัสจุดแข็ง ความรัก งาน เงิน และจังหวะชีวิต ผ่านโหราศาสตร์ไทยโบราณแบบอ่านง่าย</p>
-      <div class="hero-actions" aria-label="ทางลัดเริ่มใช้งาน">
-        <a class="hero-primary" href="#fc0">เริ่มดูดวงฟรี</a>
-        <button class="tarot-trigger" onclick="openTarot()" aria-label="เปิดไพ่ทำนาย">
-          <span class="tarot-trigger-emoji" aria-hidden="true">🎴</span> หยิบไพ่ทำนาย
-        </button>
-      </div>
-      <div class="brand-promise">ดาวไม่ได้ตัดสินชีวิตคุณ - ดาวช่วยให้คุณมองเห็นตัวเองชัดขึ้น</div>
-    </div>
-  </section>
+  </header>
 
   <div class="w">
 
@@ -261,78 +225,26 @@
         </div>
       </div>
       <div class="row">
-        <div class="f"><label for="d0">วันเกิด (ค.ศ.)</label><input id="d0" type="date" aria-required="true"></div>
+        <div class="f"><label for="d0">วันเกิด (วัน/เดือน/ปี ค.ศ.)</label><input id="d0" type="date" aria-required="true"></div>
         <div class="f"><label for="t0">เวลาเกิด <span class="opt-label">(ไม่บังคับ)</span></label><input id="t0" type="time" placeholder="06:00"></div>
       </div>
       <button class="btn" id="btn0" disabled>✦ เปิดดวงชะตา ✦</button>
       <div class="trust-strip">🔒 ข้อมูลวันเกิดของคุณใช้ประมวลผลบนหน้าจอเท่านั้น ระบบไม่บันทึกข้อมูลส่วนตัวลงเซิร์ฟเวอร์</div>
     </div>
 
-  <!-- P0: Daily Fortune Widget -->
-  <section class="daily-fortune-section compact-daily reveal" aria-label="ดวงวันนี้">
-    <div class="daily-fortune-card">
-      <div class="df-header">
-        <span class="df-emoji" aria-hidden="true">✦</span>
-        <span class="df-label">จังหวะของวันนี้</span>
-        <span class="df-streak" id="df-streak" title="เช็กติดต่อกัน"></span>
-        <span class="df-date" id="df-date"></span>
-      </div>
-      <div class="df-body">
-        <p class="df-quote" id="df-quote">"กำลังโหลดดวงวันนี้..."</p>
-        <div class="df-details">
-          <div class="df-item">
-            <span class="df-item-icon">🔥</span>
-            <span class="df-item-label">ธาตุประจำวัน</span>
-            <span class="df-item-value" id="df-element">-</span>
-          </div>
-          <div class="df-item">
-            <span class="df-item-icon">🎯</span>
-            <span class="df-item-label">สิ่งที่ควรโฟกัส</span>
-            <span class="df-item-value" id="df-focus">-</span>
-          </div>
-          <div class="df-item">
-            <span class="df-item-icon">⚠️</span>
-            <span class="df-item-label">ข้อควรระวัง</span>
-            <span class="df-item-value" id="df-warning">-</span>
-          </div>
-        </div>
-        <!-- Lucky Section: Color, Numbers, Time -->
-        <div class="df-lucky-section" id="df-lucky-section"></div>
-        <!-- Fortune Card of the Day -->
-        <div class="df-card-section">
-          <div class="daily-tarot-section" id="daily-tarot-section">
-            <div class="daily-tarot-date"></div>
-            <div class="daily-tarot-card" onclick="flipDailyTarot()">
-              <div class="daily-tarot-front">🃏</div>
-              <div class="daily-tarot-back"></div>
-            </div>
-            <div class="daily-tarot-meaning" style="display:none"></div>
-            <button class="daily-tarot-share" style="display:none" onclick="shareDailyTarot()">📤 แชร์</button>
-          </div>
-        </div>
-        <!-- Share & Viral Section -->
-        <div class="df-share-section" id="df-share-section"></div>
-      </div>
-      <div class="df-footer">
-        <span class="df-footer-text" id="df-footer-msg">อัปเดตทุกวัน — กลับมาเช็กใหม่พรุ่งนี้นะคะ ✨</span>
-      </div>
-    </div>
-  </section>
-
   <!-- P0: Social Proof Section (เลขจริงจากเพจ STARVIA ผ่าน /v1/stats/public) -->
   <section class="social-proof-section reveal" aria-label="ความน่าเชื่อถือ">
     <!-- Authority Badge -->
     <div class="sp-authority" id="sp-authority"></div>
     <div class="social-proof-grid">
-      <!-- Followers (real, live) -->
-      <div class="sp-stat-card">
-        <div class="sp-stat-number" id="sp-total-count">17,619+</div>
-        <div class="sp-stat-label">คนติดตาม STARVIA (เพจจริง)</div>
-      </div>
-      <!-- FB Page CTA -->
-      <div class="sp-stat-card">
-        <a class="sp-stat-number sp-fb-link" href="https://www.facebook.com/1071926269337612" target="_blank" rel="noopener">เพจ STARVIA →</a>
-        <div class="sp-stat-label">อ่านรีวิวจริงจากผู้ติดตาม</div>
+      <!-- Followers (real, live) — heritage style -->
+      <div class="sp-heritage">
+        <div class="sp-rule-top" aria-hidden="true">❖ ─── ❖ ─── ❖</div>
+        <div class="sp-stat-number sp-num-heritage" id="sp-total-count">17,619+</div>
+        <div class="sp-stat-label">ผู้ติดตามเพจ STARVIA</div>
+        <div class="sp-live-row">เข้าชม <strong id="sp-visits-total">–</strong> · วันนี้ <strong id="sp-visits-today">–</strong> · เปิดอ่าน <strong id="sp-reads-total">–</strong></div>
+        <a class="sp-fb-link" href="https://www.facebook.com/1071926269337612" target="_blank" rel="noopener">อ่านรีวิวจากผู้ติดตาม →</a>
+        <div class="sp-rule-bottom" aria-hidden="true">❖ ─── ❖ ─── ❖</div>
       </div>
     </div>
     <!-- Rotating Testimonials -->
@@ -396,7 +308,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="f"><label for="d1a">วันเดือนปีเกิด (ค.ศ.)</label><input id="d1a" type="date" aria-required="true"></div>
+        <div class="f"><label for="d1a">วันเดือนปีเกิด (วัน/เดือน/ปี ค.ศ.)</label><input id="d1a" type="date" aria-required="true"></div>
         <div class="f"><label for="t1a">เวลาเกิด <span class="opt-label">(ไม่บังคับ)</span></label><input id="t1a" type="time" placeholder="06:00"></div>
       </div>
       <div class="cdiv" id="cdiv1">✦ พบกับ ✦</div>
@@ -408,7 +320,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="f"><label for="d1b">วันเดือนปีเกิด (ค.ศ.)</label><input id="d1b" type="date" aria-required="true"></div>
+        <div class="f"><label for="d1b">วันเดือนปีเกิด (วัน/เดือน/ปี ค.ศ.)</label><input id="d1b" type="date" aria-required="true"></div>
         <div class="f"><label for="t1b">เวลาเกิด <span class="opt-label">(ไม่บังคับ)</span></label><input id="t1b" type="time" placeholder="06:00"></div>
       </div>
       <button class="btn" id="btn1" disabled>💖 เปิดดวงความรัก</button>
@@ -426,7 +338,7 @@
           <select id="g2"><option>ชาย</option><option>หญิง</option><option>ไม่ระบุ</option></select>
         </div>
       </div>
-        <div class="f"><label for="d2">วันเดือนปีเกิด (ค.ศ.)</label><input id="d2" type="date" aria-required="true"></div>
+        <div class="f"><label for="d2">วันเดือนปีเกิด (วัน/เดือน/ปี ค.ศ.)</label><input id="d2" type="date" aria-required="true"></div>
       <button class="btn" id="btn2" disabled>◈ ดูฤกษ์งามยามดี ◈</button>
     </div>
     <div id="r2"></div>
@@ -447,9 +359,9 @@
   <!-- STARVIA Footer -->
 <footer role="contentinfo" class="site-footer" style="text-align:center;padding:40px 0 20px;border-top:1px solid rgba(201,162,39,.1);margin-top:30px">
   <div style="font-family:Georgia,'Times New Roman',serif;font-size:20px;font-weight:700;background:linear-gradient(135deg,#8B6914,#C9A227 50%,#f0d96a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.08em;margin-bottom:6px">STARVIA</div>
-  <div style="font-size:10px;letter-spacing:.35em;color:#5B3FA6;text-transform:uppercase;margin-bottom:10px">ค้นพบดวงดาว เข้าใจตัวเอง</div>
+  <div style="font-size:13px;letter-spacing:.35em;color:#B79DF0;text-transform:uppercase;margin-bottom:10px">ค้นพบดวงดาว เข้าใจตัวเอง</div>
   <div style="width:60px;height:1px;background:linear-gradient(90deg,transparent,rgba(201,162,39,.4),transparent);margin:0 auto 10px"></div>
-  <div style="font-size:10px;color:#5a4a7a;letter-spacing:.1em;margin-bottom:10px">โหราศาสตร์ไทยโบราณ · นพเคราะห์ · ดวงชะตา</div>
+  <div style="font-size:12px;color:#9d8bd0;letter-spacing:.1em;margin-bottom:10px">โหราศาสตร์ไทยโบราณ · นพเคราะห์ · ดวงชะตา</div>
   <div style="font-size:10px;color:#6f5f91;letter-spacing:.04em">
     <a href="privacy.html" style="color:#8c7bb3;text-decoration:none">นโยบายความเป็นส่วนตัว</a>
     <span style="opacity:.45;margin:0 8px">·</span>

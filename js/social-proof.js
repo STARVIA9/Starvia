@@ -5,6 +5,24 @@
 (function() {
   'use strict';
 
+  // ===== HIT BEACON (นับจริง — ครั้งเดียวต่อ session) =====
+  function hit(type, tab) {
+    try {
+      if (typeof fetch !== 'function' || typeof sessionStorage === 'undefined') return;
+      var key = 'sv_' + type + '_' + (tab || 'x');
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, '1');
+      fetch('/v1/stats/hit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: type, tab: tab })
+      }).catch(function () {});
+    } catch (e) {}
+  }
+
+  function trackVisit() { hit('visit'); }
+  function trackRead(tab) { hit('read', tab); }
+
   // ===== REAL STATS (เลขจริงจากเพจผ่าน /v1/stats/public) =====
   // ไม่มีสูตรวิ่งแล้ว — ตัวเลขมาจาก API เพจจริงเท่านั้น (12 ต.ค.69)
   var REAL_FALLBACK = 17619; // ยอดติดตามจริง ณ 11 ต.ค.69 (fallback ระหว่างรอ API)
@@ -33,8 +51,21 @@
     show(REAL_FALLBACK, false);
     if (typeof fetch !== 'function') return;
     fetch('/v1/stats/public').then(function (r) { return r.json(); }).then(function (d) {
-      if (d && d.success && d.followers) show(d.followers, true);
+      if (!d || !d.success) return;
+      if (d.followers) show(d.followers, true);
+      fillLiveCounts(d);
     }).catch(function () { /* คงเลข fallback จริง */ });
+  }
+
+  // เติมตัวเลขนับจริงของเว็บ (เข้าชม/วันนี้/เปิดอ่าน)
+  function fillLiveCounts(d) {
+    function set(id, n) {
+      var el = document.getElementById(id);
+      if (el && typeof n === 'number') el.textContent = fmt(n);
+    }
+    set('sp-visits-total', d.visitsTotal);
+    set('sp-visits-today', d.visitsToday);
+    set('sp-reads-total', d.readsTotal);
   }
 
   // ===== ANIMATED COUNTER =====
@@ -186,6 +217,7 @@
   function init() {
     renderAuthorityBadge();
     renderStats();
+    trackVisit();
     setupTestimonialRotation();
   }
 
@@ -198,6 +230,8 @@
   window.SocialProof = {
     TESTIMONIALS: TESTIMONIALS,
     animateCounter: animateCounter,
-    refreshRealStats: refreshRealStats
+    refreshRealStats: refreshRealStats,
+    trackVisit: trackVisit,
+    trackRead: trackRead
   };
 })();

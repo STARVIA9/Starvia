@@ -147,6 +147,9 @@
     root.classList.remove('cm-menu');
     root.classList.add('cm-doc');
     en.el.classList.add('cm-open');
+    if (typeof window !== 'undefined' && window.SocialProof && window.SocialProof.trackRead) {
+      window.SocialProof.trackRead(root.id || 'r0');
+    }
     root.insertBefore(backTop, en.el);
     if (en.el.nextSibling) root.insertBefore(backBottom, en.el.nextSibling);
     else root.appendChild(backBottom);

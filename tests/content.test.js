@@ -50,16 +50,17 @@ describe('Thai astrology content data', () => {
     expect(sharedIndex).toBeLessThan(individualIndex);
   });
 
-  it('presents a premium Thai-first landing value ladder before the report form', () => {
+  it('presents a slim brand header (no hero video) before the report form', () => {
     const html = fs.readFileSync(path.resolve('index.html'), 'utf8');
 
-    expect(html).toContain('รู้จักตัวเองจากวันเกิด');
-    expect(html).toContain('ไม่ใช่แค่ดูดวง');
-    expect(html).toContain('Premium 199 บาท/เดือน');
+    expect(html).toContain('brand-slim');
+    expect(html).toContain('เริ่มดูดวงฟรี');
     expect(html).toContain('รู้จักตัวเองลึกกว่าที่เคย');
     expect(html).toContain('4 มิติที่จะเปลี่ยนมุมมอง');
     expect(html).toContain('เริ่มจากข้อมูลพื้นฐาน');
     expect(html).toContain('ใช้เวลาไม่ถึง 30 วินาที');
+    expect(html).not.toContain('hero-splash');
+    expect(html).not.toContain('mama-kara-loop.mp4');
     expect(html).not.toContain('Free + Premium');
   });
 
@@ -71,19 +72,18 @@ describe('Thai astrology content data', () => {
     const valueIndex = html.indexOf('value-section');
 
     expect(formIndex).toBeGreaterThan(-1);
-    expect(dailyIndex).toBeGreaterThan(-1);
+    expect(dailyIndex).toBe(-1); // daily widget removed by design (12 ต.ค.69)
     expect(socialIndex).toBeGreaterThan(-1);
     expect(valueIndex).toBeGreaterThan(-1);
-    expect(formIndex).toBeLessThan(dailyIndex);
     expect(formIndex).toBeLessThan(socialIndex);
     expect(formIndex).toBeLessThan(valueIndex);
   });
 
-  it('keeps the landing daily fortune as a compact teaser instead of a full report wall', () => {
+  it('has no landing daily fortune widget (removed by design — card menu covers readings)', () => {
     const html = fs.readFileSync(path.resolve('index.html'), 'utf8');
 
-    expect(html).toContain('daily-fortune-section compact-daily');
-    expect(html).toContain('df-lucky-section');
+    expect(html).not.toContain('daily-fortune-section');
+    expect(html).not.toContain('จังหวะของวันนี้');
   });
 
   it('does not contain broken #premium-preview links', () => {
