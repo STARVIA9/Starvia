@@ -1821,14 +1821,15 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.4) sepia(1) h
 .section-toggle {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   cursor: pointer;
   user-select: none;
-  padding: 12px 16px;
+  padding: 16px 18px;
+  min-height: 56px;
   margin-bottom: 0;
   border-radius: 14px 14px 0 0;
-  background: linear-gradient(135deg, rgba(142,114,216,.06) 0%, rgba(214,173,69,.1) 100%);
-  border: 1px solid rgba(214,173,69,.15);
+  background: linear-gradient(135deg, rgba(142,114,216,.24) 0%, rgba(214,173,69,.28) 100%);
+  border: 2px solid rgba(214,173,69,.45);
   border-bottom: none;
   transition: background .2s;
 }
@@ -1843,21 +1844,21 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.4) sepia(1) h
 }
 .section-toggle-arrow {
   display: inline-block;
-  font-size: 11px;
-  color: var(--g);
+  font-size: 14px;
+  color: #FFE9A8;
   transition: transform .3s cubic-bezier(.4,0,.2,1);
   width: 14px;
   text-align: center;
 }
 .section-toggle-label {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--g);
+  font-size: 17px;
+  font-weight: 800;
+  color: #FFE9A8;
   letter-spacing: .04em;
 }
 .section-toggle-hint {
-  font-size: 11px;
-  color: var(--tx2);
+  font-size: 13px;
+  color: #D8CFA8;
   font-weight: 400;
   letter-spacing: .03em;
 }
