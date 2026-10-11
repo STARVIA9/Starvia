@@ -141,23 +141,15 @@ var Onboarding = (function() {
   }
 
   function renderWelcomeScreen() {
-    // Early-adopter framing — a hardcoded small-but-credible base
-    // (137 users, 45 reviews) reads more authentically than a big
-    // round number like "2,373" for a site that's still growing.
-    // Once the site has been live longer, bump the values here.
-    var earlyUsers = 137;
-    var earlyReviews = 75;
-    var usersFormatted = earlyUsers.toLocaleString('th-TH');
-    var reviewsFormatted = earlyReviews.toLocaleString('th-TH');
-
+    // เลขจริงจากเพจ (เติมสดผ่าน refreshRealStats — fallback คือยอดจริง ณ 11 ต.ค.69)
     return '<div class="ob-overlay" id="onboarding-overlay">'
       + '<div class="ob-card ob-welcome">'
       + '<div class="ob-logo">✦ STARVIA ✦</div>'
       + '<h2 class="ob-title">✨ ค้นพบตัวตนที่แท้จริง<br>ใน 30 วินาที</h2>'
       + '<p class="ob-subtitle">ระบบอ่านแผนที่ชีวิตด้วยโหราศาสตร์ไทย สำหรับคนยุคใหม่</p>'
       + '<div class="ob-social-proof">'
-      + '🌱 เริ่มต้นด้วยกัน — <strong>' + usersFormatted + '</strong> คนเปิดดวงแล้ว<br>'
-      + '<span class="ob-social-sub">★ 4.8 จาก ' + reviewsFormatted + ' รีวิว · เรากำลังเติบโตไปด้วยกัน</span>'
+      + '🌱 <strong id="ob-followers">17,619+</strong> คนติดตาม STARVIA แล้ว<br>'
+      + '<span class="ob-social-sub">★ เพจจริง · เรากำลังเติบโตไปด้วยกัน</span>'
       + '</div>'
       + '<div class="ob-features">'
       + '<div class="ob-feature">🌟 พิมพ์เขียวชีวิตไทย — รู้จักตัวเองลึกกว่าเดิม</div>'
@@ -367,6 +359,9 @@ var Onboarding = (function() {
     switch (phase) {
       case 'welcome':
         document.body.insertAdjacentHTML('beforeend', renderWelcomeScreen());
+        if (typeof window !== 'undefined' && window.SocialProof && window.SocialProof.refreshRealStats) {
+          window.SocialProof.refreshRealStats();
+        }
         break;
       case 'first-reading':
         // Skip overlay — reading will be triggered via auto-fill above

@@ -5,72 +5,36 @@
 (function() {
   'use strict';
 
-  // ===== NUMBER CONFIG =====
-  // These bases are committed; numbers grow naturally over time
-  var CONFIG = {
-    // EARLY ADOPTER SCALE — formula: totalBase + (daysSinceLaunch × dailyGrowth)
-    // 2026-06-13: 137 + (210 × 4) = ~990 readings total
-    totalBase: 137,           // early adopter base — formula adds growth over time
-    totalDailyGrowth: 4,      // ~4 new readings/day
-    todayBase: 8,             // small daily active
-    todayVariance: 4,         // ±4 variance
-    hourBase: 1,              // small per-hour
-    hourVariance: 2,          // ±2 variance
-    reviewsBase: 75,          // was 45 — updated to match real reviews
-    reviewsWeeklyGrowth: 1,   // ~1 review/week
-    satisfaction: 96.7,       // Fixed satisfaction % (unchanged)
-    rating: 4.8,              // Fixed star rating (unchanged)
-    launchDate: '2025-11-15'  // Starvia launch date (unchanged)
-  };
+  // ===== REAL STATS (เลขจริงจากเพจผ่าน /v1/stats/public) =====
+  // ไม่มีสูตรวิ่งแล้ว — ตัวเลขมาจาก API เพจจริงเท่านั้น (12 ต.ค.69)
+  var REAL_FALLBACK = 17619; // ยอดติดตามจริง ณ 11 ต.ค.69 (fallback ระหว่างรอ API)
 
-  // ===== SEEDED RANDOM (deterministic per day/hour) =====
-  function seededRandom(seed) {
-    var x = Math.sin(seed) * 10000;
-    return x - Math.floor(x);
+  function fmt(n) {
+    try { return Number(n).toLocaleString('th-TH'); }
+    catch (e) { return String(n); }
   }
 
-  function daysSinceLaunch() {
-    var launch = new Date(CONFIG.launchDate);
-    var now = new Date();
-    return Math.floor((now - launch) / (1000 * 60 * 60 * 24));
-  }
-
-  // ===== DYNAMIC NUMBER GENERATORS =====
-  function getTotalReadings() {
-    var days = daysSinceLaunch();
-    var daySeed = parseInt(new Date().toISOString().slice(0, 10).replace(/-/g, ''));
-    var randomOffset = Math.floor(seededRandom(daySeed) * 100) - 50; // ±50
-    return CONFIG.totalBase + (days * CONFIG.totalDailyGrowth) + randomOffset;
-  }
-
-  function getTodayCount() {
-    var hour = new Date().getHours();
-    var daySeed = parseInt(new Date().toISOString().slice(0, 10).replace(/-/g, ''));
-    // More activity during daytime (8-22), less at night
-    var hourMultiplier = (hour >= 8 && hour <= 22) ? 1.0 : 0.3;
-    var base = Math.floor(CONFIG.todayBase * hourMultiplier);
-    var random = Math.floor(seededRandom(daySeed + hour) * CONFIG.todayVariance);
-    return base + random;
-  }
-
-  function getThisHourCount() {
-    var now = new Date();
-    var seed = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate() + now.getHours();
-    return CONFIG.hourBase + Math.floor(seededRandom(seed) * CONFIG.hourVariance);
-  }
-
-  function getReviewCount() {
-    var weeks = Math.floor(daysSinceLaunch() / 7);
-    var daySeed = parseInt(new Date().toISOString().slice(0, 10).replace(/-/g, ''));
-    var randomOffset = Math.floor(seededRandom(daySeed + 99) * 20) - 10;
-    return CONFIG.reviewsBase + (weeks * CONFIG.reviewsWeeklyGrowth) + randomOffset;
-  }
-
-  function getLiveCount() {
-    // Simulated live viewers: 3-12
-    var now = new Date();
-    var seed = now.getMinutes() + now.getHours() * 60;
-    return 3 + Math.floor(seededRandom(seed) * 10);
+  // ดึงเลขจริงครั้งเดียว เติมทั้งการ์ดสถิติ + ช่องต้อนรับ (ถ้ามี)
+  function refreshRealStats() {
+    var totalEl = document.getElementById('sp-total-count');
+    var obEl = document.getElementById('ob-followers');
+    function show(n, animate) {
+      var txt = fmt(n) + '+';
+      if (totalEl) {
+        if (animate && typeof requestAnimationFrame === 'function') {
+          totalEl.textContent = '0';
+          animateCounter(totalEl, n, 2000);
+        } else {
+          totalEl.textContent = txt;
+        }
+      }
+      if (obEl) obEl.textContent = txt;
+    }
+    show(REAL_FALLBACK, false);
+    if (typeof fetch !== 'function') return;
+    fetch('/v1/stats/public').then(function (r) { return r.json(); }).then(function (d) {
+      if (d && d.success && d.followers) show(d.followers, true);
+    }).catch(function () { /* คงเลข fallback จริง */ });
   }
 
   // ===== ANIMATED COUNTER =====
@@ -94,67 +58,9 @@
     requestAnimationFrame(step);
   }
 
-  // ===== RENDER STATS =====
+  // ===== RENDER STATS (เลขจริงเท่านั้น) =====
   function renderStats() {
-    // Total readings
-    var totalEl = document.getElementById('sp-total-count');
-    if (totalEl) {
-      var total = getTotalReadings();
-      // Set initial, then animate
-      totalEl.textContent = '0';
-      var observer = new IntersectionObserver(function(entries) {
-        entries.forEach(function(entry) {
-          if (entry.isIntersecting) {
-            animateCounter(totalEl, total, 2000);
-            observer.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.5 });
-      observer.observe(totalEl.parentElement);
-    }
-
-    // Live count (กำลังอ่านอยู่)
-    var liveEl = document.getElementById('sp-live-count');
-    if (liveEl) {
-      var live = getLiveCount();
-      liveEl.innerHTML = '<span class="live-number">' + live + '</span>';
-      // Refresh every 30-60 seconds
-      setInterval(function() {
-        var newLive = getLiveCount();
-        var numEl = liveEl.querySelector('.live-number');
-        if (numEl) numEl.textContent = newLive;
-      }, 30000 + Math.random() * 30000);
-    }
-
-    // Today count
-    var todayEl = document.getElementById('sp-today-count');
-    if (todayEl) {
-      todayEl.textContent = getTodayCount().toLocaleString();
-    }
-
-    // This hour
-    var hourEl = document.getElementById('sp-hour-count');
-    if (hourEl) {
-      hourEl.textContent = getThisHourCount();
-    }
-
-    // Satisfaction
-    var satEl = document.getElementById('sp-satisfaction');
-    if (satEl) {
-      satEl.textContent = CONFIG.satisfaction + '%';
-    }
-
-    // Rating
-    var ratingEl = document.getElementById('sp-rating');
-    if (ratingEl) {
-      ratingEl.textContent = CONFIG.rating + ' ★';
-    }
-
-    // Reviews
-    var reviewEl = document.getElementById('sp-review-count');
-    if (reviewEl) {
-      reviewEl.textContent = getReviewCount().toLocaleString();
-    }
+    refreshRealStats();
   }
 
   // ===== TESTIMONIALS =====
@@ -292,9 +198,6 @@
   window.SocialProof = {
     TESTIMONIALS: TESTIMONIALS,
     animateCounter: animateCounter,
-    getTotalReadings: getTotalReadings,
-    getTodayCount: getTodayCount,
-    getReviewCount: getReviewCount,
-    CONFIG: CONFIG
+    refreshRealStats: refreshRealStats
   };
 })();

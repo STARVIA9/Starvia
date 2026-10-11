@@ -18,6 +18,7 @@ import { createPayment, paymentWebhook, verifyPayment, paymentStatus } from '../
 import { handleChat, chatInfo } from '../_lib/chat.js';
 import { handleAgentRequest } from '../_lib/agent-card.js';
 import { getPickState, drawPick, redeemCredit } from '../_lib/pick.js';
+import { getPublicStats } from '../_lib/stats.js';
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -142,6 +143,11 @@ export async function onRequest(context) {
       if (segments[1] === 'state' && request.method === 'GET') return getPickState(context);
       if (segments[1] === 'draw' && request.method === 'POST') return drawPick(context);
       if (segments[1] === 'redeem' && request.method === 'POST') return redeemCredit(context);
+    }
+
+    // ── Public Stats (เลขจริงจากเพจ — ไม่ต้อง auth) ──
+    if (segments[0] === 'stats') {
+      if (segments[1] === 'public' && request.method === 'GET') return getPublicStats(context);
     }
 
     return json({ success: false, error: 'NOT_FOUND', path: path }, 404);
