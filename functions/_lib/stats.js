@@ -89,6 +89,7 @@ export async function getPublicStats(context) {
     readsToday: reads.today,
     readsByTab: reads.tabs,
   });
+}
 
 // POST /v1/stats/hit — นับจริง (ไม่เก็บข้อมูลส่วนตัว มีแค่ตัวเลขรวม)
 // body: { type: 'visit' | 'read', tab?: 'r0'|'r1'|'r2' }
