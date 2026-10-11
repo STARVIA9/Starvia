@@ -21,12 +21,15 @@ export async function getPublicStats(context) {
   const { env } = context;
   const kv = env.STARVIA_KV;
 
-  // 1. แคชก่อน (เร็ว + ไม่เปลืองโควตา FB)
+  // 1. แคชก่อน (เร็ว + ไม่เปลืองโควตา FB) — เช็กอายุเองด้วย กันคีย์เก่าค้างไม่มี TTL
   if (kv) {
     try {
       const cached = await kv.get(CACHE_KEY, { type: 'json' });
       if (cached && cached.followers) {
-        return json({ success: true, followers: cached.followers, updatedAt: cached.updatedAt, cached: true });
+        const ageMs = Date.now() - Date.parse(cached.updatedAt || 0);
+        if (ageMs >= 0 && ageMs < CACHE_TTL * 1000) {
+          return json({ success: true, followers: cached.followers, updatedAt: cached.updatedAt, cached: true });
+        }
       }
     } catch (e) {
       // ตกไปดึงสด
