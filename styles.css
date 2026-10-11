@@ -6039,7 +6039,7 @@ body.senior .cm-d{font-size:18px!important}
 body.senior .cm-menu-sub{font-size:17px!important}
 /* ขลัง: หัวข้อหน้าที่เปิดอยู่ — แถบม่วงเข้มขอบทอง */
 body.senior .cm-open>.section-toggle{background:linear-gradient(135deg,#2a1650 0%,#4a2a8a 100%)!important;border:3px solid #D6AD45!important;border-radius:16px!important}
-body.senior .cm-open>.section-toggle .section-toggle-label{color:#FFE9A8!important;font-size:22px!important}
+body.senior #r0 .cm-open>.section-toggle .section-toggle-label,body.senior #r1 .cm-open>.section-toggle .section-toggle-label,body.senior #r2 .cm-open>.section-toggle .section-toggle-label{color:#FFE9A8!important;font-size:22px!important}
 body.senior .cm-open>.section-toggle .section-toggle-hint{color:#E8D48B!important;font-size:17px!important}
 body.senior .cm-open>.section-toggle .section-toggle-arrow,body.senior .cm-open>.section-toggle .section-toggle-cta{color:#D6AD45!important}
 
