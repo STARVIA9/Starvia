@@ -369,4 +369,6 @@ function renderCouple(na,pa,ra,la,ria,lia,nb,pb,rb,lb2,rib,lib,u,RA2,dateA,dateB
       cards.forEach(function(el){ window._revealObserver.observe(el); });
     }
   })();
+  // Card Menu จิ้มการ์ดดูทีละหน้า (12 ต.ค.69)
+  if (typeof CardMenu !== 'undefined' && CardMenu.build) CardMenu.build('r1');
 }

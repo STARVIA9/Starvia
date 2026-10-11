@@ -1203,6 +1203,9 @@ function renderInd(nm,gd,ds,ts,p,r,l,ri,li,u, birthDay, birthMonth, birthYearBE)
   if (typeof ShareViral !== 'undefined' && ShareViral.renderPersonalizedShare) {
     ShareViral.renderPersonalizedShare('ind-share-section', p.man, nm);
   }
+
+  // Card Menu จิ้มการ์ดดูทีละหน้า (12 ต.ค.69)
+  if (typeof CardMenu !== 'undefined' && CardMenu.build) CardMenu.build('r0');
 }
 
 // ===== NEW CONTENT RENDERERS (Phase 2) =====
