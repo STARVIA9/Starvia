@@ -32,6 +32,7 @@ const jsFiles = [
   'js/renderer-individual.js',
   'js/renderer-couple.js',
   'js/renderer-auspicious.js',
+  'js/card-menu.js',
   'js/daily-fortune.js',
   'js/onboarding.js',
   'js/gamification.js',
