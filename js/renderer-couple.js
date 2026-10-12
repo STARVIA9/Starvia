@@ -139,7 +139,7 @@ function buildLoveDestinyModel(dateA,dateB,total,elS,plS,angS,lgS,pa,pb,ria,rib)
   if(wb.shiftedFromPast) shiftedText.push('รอบเดิมของคนที่สอง (' + wb.baseLabel + ') ผ่านไปแล้ว ระบบอ่านรอบถัดไป');
   var timingStatus = hasOverlap
     ? 'จังหวะรักของทั้งคู่ซ้อนกันจริงในช่วงนี้ จึงเหมาะกับการขยับความสัมพันธ์หรือวางแผนอนาคตร่วมกัน'
-    : 'จังหวะรักของทั้งคู่ไม่ซ้อนกันโดยตรง ระบบจึงอ่านเป็น “ช่วงประสานกลาง” ที่ต้องใช้การนัดหมาย การสื่อสาร และการเปิดโอกาสมากกว่าปล่อยให้จังหวะพาไปเอง';
+    : 'จังหวะรักของทั้งคู่มาไม่พร้อมกัน — ต้องนัด ต้องคุย ต้องเปิดโอกาส อย่าปล่อยให้เวลาพาไปเอง';
   if(shiftedText.length) timingStatus += ' · ' + shiftedText.join(' · ');
   var openness = Math.max(48, Math.min(96, Math.round(total * .42 + elS * .18 + plS * .16 + angS * .16 + lgS * .08)));
   var channelMap = {
@@ -376,4 +376,6 @@ function renderCouple(na,pa,ra,la,ria,lia,nb,pb,rb,lb2,rib,lib,u,RA2,dateA,dateB
       cards.forEach(function(el){ window._revealObserver.observe(el); });
     }
   })();
+  // Card Menu จิ้มการ์ดดูทีละหน้า (12 ต.ค.69)
+  if (typeof CardMenu !== 'undefined' && CardMenu.build) CardMenu.build('r1');
 }

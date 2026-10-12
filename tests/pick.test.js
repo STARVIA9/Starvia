@@ -1,6 +1,16 @@
 // Pick-a-Card API — quota + streak (real, KV-backed)
 import { describe, expect, it } from 'vitest';
 import { todayKey, refreshDaily, applyDraw, getPickState, drawPick } from '../functions/_lib/pick.js';
+import { signHS256 } from '../functions/_lib/jwt.js';
+
+const TEST_JWT_SECRET = 'test-secret-with-enough-length-for-pick';
+
+// B (2026-09-24): pick API requires member JWT (premium_fb / premium_199)
+// since PIN-credit feature. Tests must send a valid Bearer token.
+async function makeMemberToken(plan = 'premium_199') {
+  const now = Math.floor(Date.now() / 1000);
+  return signHS256({ sub: 'test-user', plan, iat: now, exp: now + 3600 }, TEST_JWT_SECRET);
+}
 
 // ── Mock KV (implements the small subset pick.js uses) ──
 function makeKV() {
@@ -20,8 +30,10 @@ function makeKV() {
   };
 }
 
-function makeContext({ method = 'GET', body = null, kv, ip = '1.2.3.4', ua = 'vitest/1.0' } = {}) {
-  const init = { method, headers: { 'content-type': 'application/json', 'user-agent': ua } };
+function makeContext({ method = 'GET', body = null, kv, ip = '1.2.3.4', ua = 'vitest/1.0', token = null } = {}) {
+  const headers = { 'content-type': 'application/json', 'user-agent': ua };
+  if (token) headers.authorization = `Bearer ${token}`;
+  const init = { method, headers };
   if (body !== null) init.body = typeof body === 'string' ? body : JSON.stringify(body);
   const request = new Request('https://test.local/v1/pick/state', init);
   // inject cf-connecting-ip
@@ -32,7 +44,7 @@ function makeContext({ method = 'GET', body = null, kv, ip = '1.2.3.4', ua = 'vi
     },
     configurable: true,
   });
-  return { request, env: { STARVIA_KV: kv } };
+  return { request, env: { STARVIA_KV: kv, STARVIA_JWT_SECRET: TEST_JWT_SECRET } };
 }
 
 // ── Pure logic ──
@@ -103,10 +115,11 @@ describe('applyDraw (quota spend + streak + history)', () => {
   });
 });
 
-// ── HTTP handlers ──
+// ── HTTP handlers (member JWT required) ──
 describe('GET /v1/pick/state', () => {
   it('returns fresh state for a first-time user', async () => {
-    const resp = await getPickState(makeContext({ kv: makeKV() }));
+    const token = await makeMemberToken();
+    const resp = await getPickState(makeContext({ kv: makeKV(), token }));
     expect(resp.status).toBe(200);
     const body = await resp.json();
     expect(body.success).toBe(true);
@@ -116,17 +129,25 @@ describe('GET /v1/pick/state', () => {
     expect(body.today).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 
+  it('returns 401 without member token', async () => {
+    const resp = await getPickState(makeContext({ kv: makeKV() }));
+    expect(resp.status).toBe(401);
+    expect((await resp.json()).error).toBe('TOKEN_REQUIRED');
+  });
+
   it('keeps existing quota when queried again the same day', async () => {
     const kv = makeKV();
-    await getPickState(makeContext({ kv }));
-    const resp1 = await drawPick(makeContext({ method: 'POST', body: { slug: 'the_fool', name: 'The Fool', emoji: '🃏', topic: 'career' }, kv }));
+    const token = await makeMemberToken();
+    await getPickState(makeContext({ kv, token }));
+    const resp1 = await drawPick(makeContext({ method: 'POST', body: { slug: 'the_fool', name: 'The Fool', emoji: '🃏', topic: 'career' }, kv, token }));
     expect((await resp1.json()).quotaLeft).toBe(0);
-    const resp2 = await getPickState(makeContext({ kv }));
+    const resp2 = await getPickState(makeContext({ kv, token }));
     expect((await resp2.json()).quotaLeft).toBe(0);
   });
 
   it('returns 500 when KV is not bound', async () => {
-    const resp = await getPickState(makeContext({ kv: null }));
+    const token = await makeMemberToken();
+    const resp = await getPickState(makeContext({ kv: null, token }));
     expect(resp.status).toBe(500);
     const body = await resp.json();
     expect(body.error).toBe('KV_NOT_BOUND');
@@ -136,10 +157,11 @@ describe('GET /v1/pick/state', () => {
 describe('POST /v1/pick/draw', () => {
   it('draws a card and spends quota', async () => {
     const kv = makeKV();
+    const token = await makeMemberToken();
     const resp = await drawPick(makeContext({
       method: 'POST',
       body: { slug: 'the_moon', name: 'The Moon', emoji: '🌙', topic: 'love' },
-      kv,
+      kv, token,
     }));
     expect(resp.status).toBe(200);
     const body = await resp.json();
@@ -150,8 +172,9 @@ describe('POST /v1/pick/draw', () => {
 
   it('rejects a second draw the same day with 429 QUOTA_EXCEEDED', async () => {
     const kv = makeKV();
-    await drawPick(makeContext({ method: 'POST', body: { slug: 'the_sun' }, kv }));
-    const resp = await drawPick(makeContext({ method: 'POST', body: { slug: 'the_moon' }, kv }));
+    const token = await makeMemberToken();
+    await drawPick(makeContext({ method: 'POST', body: { slug: 'the_sun' }, kv, token }));
+    const resp = await drawPick(makeContext({ method: 'POST', body: { slug: 'the_moon' }, kv, token }));
     expect(resp.status).toBe(429);
     const body = await resp.json();
     expect(body.error).toBe('QUOTA_EXCEEDED');
@@ -159,7 +182,8 @@ describe('POST /v1/pick/draw', () => {
 
   it('rejects a draw without slug with 400 MISSING_CARD', async () => {
     const kv = makeKV();
-    const resp = await drawPick(makeContext({ method: 'POST', body: { topic: 'love' }, kv }));
+    const token = await makeMemberToken();
+    const resp = await drawPick(makeContext({ method: 'POST', body: { topic: 'love' }, kv, token }));
     expect(resp.status).toBe(400);
     const body = await resp.json();
     expect(body.error).toBe('MISSING_CARD');
@@ -167,8 +191,9 @@ describe('POST /v1/pick/draw', () => {
 
   it('different fingerprints get independent quota', async () => {
     const kv = makeKV();
-    await drawPick(makeContext({ method: 'POST', body: { slug: 'the_sun' }, kv, ip: '1.2.3.4' }));
-    const resp = await drawPick(makeContext({ method: 'POST', body: { slug: 'the_moon' }, kv, ip: '5.6.7.8' }));
+    const token = await makeMemberToken();
+    await drawPick(makeContext({ method: 'POST', body: { slug: 'the_sun' }, kv, ip: '1.2.3.4', token }));
+    const resp = await drawPick(makeContext({ method: 'POST', body: { slug: 'the_moon' }, kv, ip: '5.6.7.8', token }));
     expect(resp.status).toBe(200);
     expect((await resp.json()).quotaLeft).toBe(0);
   });

@@ -141,16 +141,15 @@ var Onboarding = (function() {
   }
 
   function renderWelcomeScreen() {
-    // เลขจริงจาก /v1/stats/public — เติมหลัง overlay ขึ้นจอ (ดู fillWelcomeStats)
-    // ระหว่างรอ API โชว์ "…" ไม่โชว์เลขมั่ว
+    // เลขจริงจากเพจ (เติมสดผ่าน refreshRealStats — fallback คือยอดจริง ณ 11 ต.ค.69)
     return '<div class="ob-overlay" id="onboarding-overlay">'
       + '<div class="ob-card ob-welcome">'
       + '<div class="ob-logo">✦ STARVIA ✦</div>'
       + '<h2 class="ob-title">✨ ค้นพบตัวตนที่แท้จริง<br>ใน 30 วินาที</h2>'
       + '<p class="ob-subtitle">ระบบอ่านแผนที่ชีวิตด้วยโหราศาสตร์ไทย สำหรับคนยุคใหม่</p>'
       + '<div class="ob-social-proof">'
-      + '🌱 เริ่มต้นด้วยกัน — <strong id="ob-users-count">…</strong> คนเปิดดวงแล้ว<br>'
-      + '<span class="ob-social-sub" id="ob-vote-line">กำลังโหลดข้อมูลจริง…</span>'
+      + '🌱 <strong id="ob-followers">17,619+</strong> คนติดตาม STARVIA แล้ว<br>'
+      + '<span class="ob-social-sub">★ เพจจริง · เรากำลังเติบโตไปด้วยกัน</span>'
       + '</div>'
       + '<div class="ob-features">'
       + '<div class="ob-feature">🌟 พิมพ์เขียวชีวิตไทย — รู้จักตัวเองลึกกว่าเดิม</div>'
@@ -162,31 +161,6 @@ var Onboarding = (function() {
       + '<p class="ob-hint">ใช้เวลาไม่ถึง 30 วินาที · ไม่ต้องสมัครสมาชิก</p>'
       + '</div>'
       + '</div>';
-  }
-
-  // เติมเลขจริงในจอ welcome (เรียกหลัง overlay ขึ้น DOM แล้ว)
-  // API ล้ม = ซ่อนแถบสถิติทั้งแถบ ไม่โชว์เลขมั่ว
-  function fillWelcomeStats() {
-    var usersEl = document.getElementById('ob-users-count');
-    var voteEl = document.getElementById('ob-vote-line');
-    if (!usersEl && !voteEl) return;
-    fetch('/v1/stats/public', { headers: { 'Accept': 'application/json' } })
-      .then(function(res) { return res.json(); })
-      .then(function(s) {
-        if (!s || s.success === false) throw new Error('stats api failed');
-        if (usersEl) usersEl.textContent = Number(s.reportsTotal || 0).toLocaleString('th-TH');
-        if (voteEl) {
-          if (s.ratingPct == null) {
-            voteEl.textContent = '★ เปิดดวงแล้วช่วยกันโหวต "ตรงไหม" นะคะ';
-          } else {
-            voteEl.textContent = '★ ' + s.ratingPct + '% จาก ' + Number(s.votesTotal || 0).toLocaleString('th-TH') + ' คนโหวตว่าตรง';
-          }
-        }
-      })
-      .catch(function() {
-        var box = document.querySelector('#onboarding-overlay .ob-social-proof');
-        if (box) box.style.display = 'none';
-      });
   }
 
   function renderBirthForm() {
@@ -385,7 +359,9 @@ var Onboarding = (function() {
     switch (phase) {
       case 'welcome':
         document.body.insertAdjacentHTML('beforeend', renderWelcomeScreen());
-        fillWelcomeStats();
+        if (typeof window !== 'undefined' && window.SocialProof && window.SocialProof.refreshRealStats) {
+          window.SocialProof.refreshRealStats();
+        }
         break;
       case 'first-reading':
         // Skip overlay — reading will be triggered via auto-fill above

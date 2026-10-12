@@ -257,6 +257,8 @@ function renderAusp(nm,p,pw,u){
       cards.forEach(function(el){ window._revealObserver.observe(el); });
     }
   })();
+  // Card Menu จิ้มการ์ดดูทีละหน้า (12 ต.ค.69)
+  if (typeof CardMenu !== 'undefined' && CardMenu.build) CardMenu.build('r2');
 }
 
 // Max date

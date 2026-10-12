@@ -68,7 +68,7 @@ var CosmicEvents = (function() {
       return;
     }
 
-    var banner = createBannerElement(event.emoji, event.title, event.subtitle, event.cta, false, event.zodiac);
+    var banner = createBannerElement(event.emoji, event.title, event.subtitle, event.cta, false, event.zodiac, impactFor(event));
     insertBanner(banner);
   }
 
@@ -81,7 +81,8 @@ var CosmicEvents = (function() {
       next.subtitle,
       null,
       true,  // subtle mode
-      next.zodiac
+      next.zodiac,
+      impactFor(next)
     );
     insertBanner(banner);
   }
@@ -104,7 +105,27 @@ var CosmicEvents = (function() {
     return '<img class="ceb-zodiac-icon" src="assets/zodiac/' + num + '-' + ZODIAC_EN[idx] + '.svg?v=2" width="' + size + '" height="' + size + '" alt="ราศี' + thaiName + '">';
   }
 
-  function createBannerElement(emoji, title, subtitle, cta, subtle, zodiacName) {
+  // เปลี่ยนปุ๊บกระทบอะไร — ภาษาบ้านๆ ต่อท้ายแถบ (12 ต.ค.69)
+  function impactFor(e) {
+    if (!e) return '';
+    if (e.type === 'moon_phase') {
+      if (/Full/i.test(e.title || '')) return 'อารมณ์ ความสัมพันธ์ เรื่องที่สุกงอม';
+      return 'การเริ่มต้น สิ่งใหม่ ตั้งเป้าหมาย';
+    }
+    if (e.type === 'season') return 'จังหวะชีวิต เปลี่ยนฤดูกาล วางแผนใหม่';
+    if (e.type === 'ingress') {
+      var p = e.planet || '';
+      if (p === 'Venus') return 'ความรัก การเงิน ความสุข';
+      if (p === 'Mars') return 'งาน พลัง การแข่งขัน';
+      if (p === 'Jupiter') return 'โชค ผู้ใหญ่ การเรียน';
+      if (p === 'Mercury') return 'สื่อสาร เดินทาง เอกสาร';
+      if (p === 'Saturn') return 'งานหนัก ภาระ ความอดทน';
+      return 'จังหวะชีวิตโดยรวม';
+    }
+    return '';
+  }
+
+  function createBannerElement(emoji, title, subtitle, cta, subtle, zodiacName, impact) {
     var div = document.createElement('div');
     div.className = 'cosmic-event-banner' + (subtle ? ' is-upcoming' : '');
 
@@ -115,6 +136,9 @@ var CosmicEvents = (function() {
     inner += '<span class="ceb-title">' + escapeHTML(title) + '</span>';
     if (subtitle) {
       inner += '<span class="ceb-subtitle">' + escapeHTML(subtitle) + '</span>';
+    }
+    if (impact) {
+      inner += '<span class="ceb-impact">👉 กระทบ: ' + escapeHTML(impact) + '</span>';
     }
     inner += '</span>';
 

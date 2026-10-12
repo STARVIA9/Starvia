@@ -1,195 +1,145 @@
-// STARVIA Real Stats — เลขจริงทั้งหมด (นับใน STARVIA_KV + ดึง FB Graph)
-// แทนที่ตัวเลขสุ่มใน social-proof.js (totalBase/todayVariance/satisfaction ฯลฯ)
-//
-// Counters (KV):
-//   stats:reports:total          — เปิดรายงานดูดวงสะสม (frontend ping ครั้งเดียวตอนรายงานขึ้น)
-//   stats:reports:YYYY-MM-DD     — เปิดรายงานรายวัน
-//   stats:draws:total            — หยิบไพ่สะสม (นับใน drawPick สำเร็จ)
-//   stats:premium:total          — ปลดล็อกพรีเมียมสะสม (นับใน verify/redeem สำเร็จ)
-//   stats:votes:up / :down       — โหวต "ตรงไหม" สะสม
-//   stats:voted:{day}:{iphash}   — กันโหวตซ้ำ (1 IP = 1 โหวต/วัน)
-//   stats:fb                     — แคช {followers, comments[], updatedAt} อายุ 24 ชม.
+// STARVIA Public Stats — เลขจริงจากเพจ (KV-cache 6 ชม.)
+// Token อยู่ฝั่งเซิร์ฟเวอร์เท่านั้น ห้ามเรียก Graph API จากเบราว์เซอร์ตรงๆ
 
-import { jsonResponse, errorResponse, getClientIp } from './cors.js';
+const CACHE_KEY = 'stats:fb';
+const VISITS_KEY = 'stats:visits';
+const READS_KEY = 'stats:reads';
+const CACHE_TTL = 6 * 3600; // 6 ชั่วโมง
+const PAGE_ID_FALLBACK = '1071926269337612';
 
-const GRAPH_VERSION = 'v22.0';
-const FB_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
-const MIN_VOTES_FOR_PCT = 3; // โหวตน้อยกว่า 3 → ไม่โชว์ % (ฐานน้อยไป)
-
-function dayKey(d = new Date()) {
-  return d.toISOString().slice(0, 10);
-}
-
-async function getNum(kv, key) {
-  const v = await kv.get(key);
-  const n = v ? parseInt(v, 10) : 0;
-  return Number.isFinite(n) && n >= 0 ? n : 0;
-}
-
-async function incr(kv, key) {
-  const n = (await getNum(kv, key)) + 1;
-  await kv.put(key, String(n));
-  return n;
-}
-
-// hash IP แบบง่าย (ไม่เก็บ IP ดิบใน KV)
-function hashIp(ip, salt) {
-  const s = `${salt}:${ip}`;
-  let h1 = 0x811c9dc5;
-  for (let i = 0; i < s.length; i++) {
-    h1 ^= s.charCodeAt(i);
-    h1 = Math.imul(h1, 0x01000193) >>> 0;
-  }
-  return h1.toString(36);
-}
-
-export async function incrCounter(env, name, amount = 1) {
-  if (!env.STARVIA_KV) return null;
-  const key = `stats:${name}`;
-  const n = (await getNum(env.STARVIA_KV, key)) + amount;
-  await env.STARVIA_KV.put(key, String(n));
-  return n;
-}
-
-// ── POST /v1/stats/event {type:'report'} ──
-// frontend ยิงครั้งเดียวตอนรายงานแสดงผลสำเร็จ (กันยิงซ้ำฝั่ง frontend ด้วย flag)
-export async function recordEvent(context) {
-  const { request, env } = context;
-  if (!env.STARVIA_KV) return errorResponse(500, 'KV_NOT_BOUND', 'เซิร์ฟเวอร์ยังไม่พร้อม');
-  let body = {};
+// วันที่แบบไทย (Asia/Bangkok) — YYYY-MM-DD
+function bkkDate() {
   try {
-    body = await request.json();
+    const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Bangkok', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+    return parts; // YYYY-MM-DD
   } catch (e) {
-    return errorResponse(400, 'BAD_JSON', 'ส่ง {type:"report"} มาด้วย');
-  }
-  if (body.type !== 'report') {
-    return errorResponse(400, 'BAD_TYPE', 'type ที่นับได้ตอนนี้: report');
-  }
-  const total = await incr(env.STARVIA_KV, 'stats:reports:total');
-  const today = await incr(env.STARVIA_KV, `stats:reports:${dayKey()}`);
-  return jsonResponse({ success: true, total, today });
-}
-
-// ── POST /v1/stats/vote {vote:'up'|'down'} ──
-// 1 IP = 1 โหวต/วัน (กันปั๊มคะแนน)
-export async function recordVote(context) {
-  const { request, env } = context;
-  if (!env.STARVIA_KV) return errorResponse(500, 'KV_NOT_BOUND', 'เซิร์ฟเวอร์ยังไม่พร้อม');
-  let body = {};
-  try {
-    body = await request.json();
-  } catch (e) {
-    return errorResponse(400, 'BAD_JSON', 'ส่ง {vote:"up"|"down"} มาด้วย');
-  }
-  if (body.vote !== 'up' && body.vote !== 'down') {
-    return errorResponse(400, 'BAD_VOTE', 'vote ต้องเป็น up หรือ down');
-  }
-  const ip = getClientIp(request);
-  const salt = env.STARVIA_JWT_SECRET || env.STARVIA_ADMIN_JWT_SECRET || 'starvia-stats';
-  const day = dayKey();
-  const seenKey = `stats:voted:${day}:${hashIp(ip, salt)}`;
-  if (await env.STARVIA_KV.get(seenKey)) {
-    const s = await readPublicCounters(env);
-    return jsonResponse({ success: false, error: 'ALREADY_VOTED', message: 'โหวตวันนี้แล้ว ขอบคุณค่ะ', ...s });
-  }
-  await incr(env.STARVIA_KV, body.vote === 'up' ? 'stats:votes:up' : 'stats:votes:down');
-  await env.STARVIA_KV.put(seenKey, '1', { expirationTtl: 2 * 24 * 60 * 60 });
-  const s = await readPublicCounters(env);
-  return jsonResponse({ success: true, message: 'ขอบคุณสำหรับคะแนนค่ะ', ...s });
-}
-
-async function readPublicCounters(env) {
-  const kv = env.STARVIA_KV;
-  const [reportsTotal, reportsToday, drawsTotal, premiumTotal, votesUp, votesDown] = await Promise.all([
-    getNum(kv, 'stats:reports:total'),
-    getNum(kv, `stats:reports:${dayKey()}`),
-    getNum(kv, 'stats:draws:total'),
-    getNum(kv, 'stats:premium:total'),
-    getNum(kv, 'stats:votes:up'),
-    getNum(kv, 'stats:votes:down'),
-  ]);
-  const votesTotal = votesUp + votesDown;
-  const ratingPct =
-    votesTotal >= MIN_VOTES_FOR_PCT ? Math.round((votesUp / votesTotal) * 1000) / 10 : null;
-  return { reportsTotal, reportsToday, drawsTotal, premiumTotal, votesUp, votesDown, votesTotal, ratingPct };
-}
-
-// ── Facebook: ยอดผู้ติดตาม + คอมเมนต์ล่าสุด (แคช 24 ชม) ──
-async function fetchFbData(env) {
-  const token = env.FACEBOOK_PAGE_TOKEN;
-  const pageId = String(env.FACEBOOK_PAGE_ID || '').trim();
-  if (!token || !pageId) return { followers: null, comments: [], fbError: 'FB_NOT_CONFIGURED' };
-  try {
-    const base = `https://graph.facebook.com/${GRAPH_VERSION}`;
-    const pageResp = await fetch(
-      `${base}/${pageId}?fields=followers_count,fan_count&access_token=${encodeURIComponent(token)}`
-    );
-    const page = await pageResp.json();
-    const followers = pageResp.ok ? page.followers_count ?? page.fan_count ?? null : null;
-
-    const comments = [];
-    try {
-      const postsResp = await fetch(
-        `${base}/${pageId}/posts?fields=created_time,comments.limit(20){message,from{name},created_time}&limit=6&access_token=${encodeURIComponent(token)}`
-      );
-      const posts = await postsResp.json();
-      if (postsResp.ok && Array.isArray(posts.data)) {
-        for (const p of posts.data) {
-          const list = p.comments?.data || [];
-          for (const c of list) {
-            const text = String(c.message || '').trim();
-            if (text.length < 2) continue;
-            comments.push({
-              name: c.from?.name || 'ผู้ติดตาม',
-              text: text.slice(0, 300),
-              time: c.created_time || null,
-            });
-          }
-        }
-        comments.sort((a, b) => String(b.time || '').localeCompare(String(a.time || '')));
-      }
-    } catch (e) {
-      // อ่านคอมเมนต์ไม่ได้ → คืนเฉพาะยอดผู้ติดตาม
-    }
-    return { followers, comments: comments.slice(0, 8), updatedAt: new Date().toISOString() };
-  } catch (e) {
-    return { followers: null, comments: [], fbError: String(e.message || e).slice(0, 120) };
+    return new Date().toISOString().slice(0, 10);
   }
 }
 
-async function getFbCached(env) {
-  const kv = env.STARVIA_KV;
-  let cached = null;
-  try {
-    cached = await kv.get('stats:fb', { type: 'json' });
-  } catch (e) {
-    cached = null;
-  }
-  const stale =
-    !cached || !cached.updatedAt || Date.now() - new Date(cached.updatedAt).getTime() > FB_CACHE_TTL_MS;
-  if (!stale) return cached;
-  const fresh = await fetchFbData(env);
-  // กันแคชเสียทับของดี: ถ้าดึงล้มเหลวและเคยมีของเก่า → ใช้ของเก่าต่อ
-  if ((fresh.followers == null && fresh.comments.length === 0) && cached) return cached;
-  try {
-    await kv.put('stats:fb', JSON.stringify(fresh));
-  } catch (e) {
-    // แคชไม่ได้ก็คืนข้อมูลสดไป
-  }
-  return fresh;
+function json(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Access-Control-Allow-Origin': '*',
+      'Cache-Control': 'public, max-age=300',
+    },
+  });
 }
 
-// ── GET /v1/stats/public ──
+// GET /v1/stats/public — ไม่ต้อง auth
 export async function getPublicStats(context) {
   const { env } = context;
-  if (!env.STARVIA_KV) return errorResponse(500, 'KV_NOT_BOUND', 'เซิร์ฟเวอร์ยังไม่พร้อม');
-  const counters = await readPublicCounters(env);
-  const fb = await getFbCached(env);
-  return jsonResponse({
+  const kv = env.STARVIA_KV;
+
+  // 1. แคชก่อน (เร็ว + ไม่เปลืองโควตา FB) — เช็กอายุเองด้วย กันคีย์เก่าค้างไม่มี TTL
+  var fb = null;
+  if (kv) {
+    try {
+      const cached = await kv.get(CACHE_KEY, { type: 'json' });
+      if (cached && cached.followers) {
+        const ageMs = Date.now() - Date.parse(cached.updatedAt || 0);
+        if (ageMs >= 0 && ageMs < CACHE_TTL * 1000) {
+          fb = { followers: cached.followers, updatedAt: cached.updatedAt, cached: true };
+        }
+      }
+    } catch (e) {
+      // ตกไปดึงสด
+    }
+  }
+
+  // 2. ดึงสดจากเพจ (ถ้าแคชหมดอายุ)
+  if (!fb) {
+    const token = env.FACEBOOK_PAGE_TOKEN;
+    const pageId = String(env.FACEBOOK_PAGE_ID || PAGE_ID_FALLBACK).trim();
+    if (!token) return json({ success: false, error: 'NOT_CONFIGURED' }, 503);
+    try {
+      const r = await fetch(
+        'https://graph.facebook.com/v24.0/' + pageId + '?fields=fan_count,followers_count&access_token=' + encodeURIComponent(token)
+      );
+      if (!r.ok) throw new Error('FB_' + r.status);
+      const d = await r.json();
+      const followers = d.followers_count || d.fan_count || 0;
+      if (!followers) throw new Error('FB_EMPTY');
+      const payload = { followers: followers, updatedAt: new Date().toISOString() };
+      if (kv) {
+        try {
+          await kv.put(CACHE_KEY, JSON.stringify(payload), { expirationTtl: CACHE_TTL });
+        } catch (e) {
+          // แคชพังก็ยังตอบเลขสดได้
+        }
+      }
+      fb = { followers: payload.followers, updatedAt: payload.updatedAt, cached: false };
+    } catch (e) {
+      return json({ success: false, error: 'FB_FETCH_FAILED' }, 502);
+    }
+  }
+
+  // 3. ตัวเลขนับจริงของเว็บเอง
+  const visits = await readCounter(kv, VISITS_KEY);
+  const reads = await readCounter(kv, READS_KEY);
+  return json({
     success: true,
-    ...counters,
-    fbFollowers: fb.followers ?? null,
-    fbUpdatedAt: fb.updatedAt || null,
-    comments: fb.comments || [],
+    followers: fb.followers,
+    followersUpdatedAt: fb.updatedAt,
+    visitsTotal: visits.total,
+    visitsToday: visits.today,
+    readsTotal: reads.total,
+    readsToday: reads.today,
+    readsByTab: reads.tabs,
   });
+}
+
+// POST /v1/stats/hit — นับจริง (ไม่เก็บข้อมูลส่วนตัว มีแค่ตัวเลขรวม)
+// body: { type: 'visit' | 'read', tab?: 'r0'|'r1'|'r2' }
+export async function recordHit(context) {
+  const { request, env } = context;
+  const kv = env.STARVIA_KV;
+  if (!kv) return json({ success: false, error: 'NO_KV' }, 503);
+  let body = {};
+  try {
+    body = await request.json();
+  } catch (e) {
+    return json({ success: false, error: 'BAD_BODY' }, 400);
+  }
+  const type = body.type === 'read' ? 'read' : 'visit';
+  const key = type === 'read' ? READS_KEY : VISITS_KEY;
+  const today = bkkDate();
+  let store = { total: 0, days: {}, tabs: {} };
+  try {
+    const cur = await kv.get(key, { type: 'json' });
+    if (cur && typeof cur.total === 'number') store = cur;
+  } catch (e) {}
+  store.total = (store.total || 0) + 1;
+  store.days = store.days || {};
+  store.days[today] = (store.days[today] || 0) + 1;
+  if (type === 'read') {
+    const tab = ['r0', 'r1', 'r2'].includes(body.tab) ? body.tab : 'r0';
+    store.tabs = store.tabs || {};
+    store.tabs[tab] = (store.tabs[tab] || 0) + 1;
+  }
+  // ตัดวันเก่าเกิน 60 วัน (กัน KV บวม)
+  const keys = Object.keys(store.days).sort();
+  while (keys.length > 60) delete store.days[keys.shift()];
+  try {
+    await kv.put(key, JSON.stringify(store));
+  } catch (e) {
+    return json({ success: false, error: 'KV_WRITE_FAILED' }, 502);
+  }
+  return json({ success: true, type: type, total: store.total });
+}
+
+// อ่านตัวเลขนับจริง (ไม่พังถ้า KV ว่าง)
+async function readCounter(kv, key) {
+  const out = { total: 0, today: 0, tabs: {} };
+  if (!kv) return out;
+  try {
+    const cur = await kv.get(key, { type: 'json' });
+    if (!cur) return out;
+    out.total = cur.total || 0;
+    out.today = (cur.days && cur.days[bkkDate()]) || 0;
+    out.tabs = cur.tabs || {};
+  } catch (e) {}
+  return out;
 }

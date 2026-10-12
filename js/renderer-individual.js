@@ -346,7 +346,6 @@ function buildMonthlyLifeMapHtml(model, premiumUnlocked){
     + '</div>'
     + '<div class="mlm-summary"><strong>🌟 พลังงานหลักของเดือนนี้:</strong> ' + escapeHTML(model.elementFocus) + '</div>'
     + '<div class="mlm-grid">'
-    + '<div class="mlm-pill mlm-pill-focus"><span>🔮 โฟกัส</span>' + escapeHTML(model.elementFocus) + '</div>'
     + '<div class="mlm-pill mlm-pill-warn"><span>⚡ วันที่ควรระวัง</span>' + escapeHTML(model.elementWarning) + '</div>'
     + '<div class="mlm-pill mlm-pill-action"><span>✨ สิ่งที่ควรทำ</span>' + escapeHTML(model.elementAction) + '</div>'
     + '</div>';
@@ -732,6 +731,56 @@ function buildLifeTimeline(kind, p, ageY, ageM){
 }
 
 var __collapsibleIdCounter = 0;
+// ===== Easy summary (สรุปเข้าใจง่าย vs แบบละเอียด) — 11 ต.ค.69 =====
+// การ์ดสั้น 3 ข้อสำหรับผู้สูงอายุ + ปุ่มฟังเสียง ไม่แตะ logic เดิม
+function buildEasySummary(briefData, topDomains){
+  var esc = (typeof escapeHTML === 'function') ? escapeHTML : function(s){ return String(s == null ? '' : s); };
+  var topLine = '';
+  if (topDomains && topDomains.length) {
+    var names = topDomains.slice(0, 2).map(function(d){ return d.label + ' ' + d.score + '/100'; }).join(' · ');
+    topLine = '<li><span class="easy-ico">🌟</span><span><strong>ช่วงนี้เด่นเรื่อง:</strong> ' + esc(names) + '</span></li>';
+  }
+  var html = '<div class="easy-summary" id="easy-summary">'
+    + '<span class="easy-kicker">✦ สรุปเข้าใจง่ายใน 30 วินาที ✦</span>'
+    + '<div class="easy-title">วันนี้ควรทำอะไร สรุปสั้นๆ</div>'
+    + '<ul class="easy-list">'
+    + '<li><span class="easy-ico">🎯</span><span><strong>ควรทำ:</strong> ' + esc(briefData.focus) + '</span></li>'
+    + '<li><span class="easy-ico">⚠️</span><span><strong>ระวัง:</strong> ' + esc(briefData.warning) + '</span></li>'
+    + '<li><span class="easy-ico">🙏</span><span><strong>ทำเลย:</strong> ' + esc(briefData.action) + '</span></li>'
+    + topLine
+    + '</ul>'
+    + '<div class="easy-btn-row">'
+    + '<button class="easy-btn ghost" data-action="easy-details">📖 อ่านแบบละเอียด</button>'
+    + '<button class="easy-btn" data-action="easy-speak">🔊 ฟังเสียงสรุป</button>'
+    + '</div>'
+    + '</div>';
+  return html;
+}
+
+function speakEasySummary(){
+  try {
+    var el = document.getElementById('easy-summary');
+    var text = el ? el.innerText.replace(/📖.*$/s, '').trim() : 'สรุปดวงวันนี้';
+    var synth = window.speechSynthesis;
+    if (!synth) return;
+    synth.cancel();
+    var utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'th-TH';
+    utter.rate = 0.9;
+    synth.speak(utter);
+  } catch (e) {}
+}
+
+if (typeof document !== 'undefined' && document.addEventListener) {
+document.addEventListener('click', function(ev){
+  var btn = ev.target && ev.target.closest ? ev.target.closest('[data-action="easy-details"],[data-action="easy-speak"]') : null;
+  if (!btn) return;
+  if (btn.getAttribute('data-action') === 'easy-speak') { speakEasySummary(); return; }
+  var first = document.querySelector('.collapsible-section .section-toggle');
+  if (first) { first.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+});
+}
+
 function wrapCollapsible(label, hint, content, startCollapsed) {
   var collapsedClass = startCollapsed ? ' collapsed' : '';
   var sectionId = 'colsec-' + (++__collapsibleIdCounter);
@@ -1049,6 +1098,7 @@ function renderInd(nm,gd,ds,ts,p,r,l,ri,li,u, birthDay, birthMonth, birthYearBE)
   }
 
   wrap.innerHTML = blueprintCardHtml
+    + buildEasySummary(briefData, sortedDomains.slice(0, 2))
     + '<div class="streak-progress-anchor"></div>'
     + '<div class="streak-discount-anchor"></div>'
     + badgesHtml
@@ -1153,6 +1203,9 @@ function renderInd(nm,gd,ds,ts,p,r,l,ri,li,u, birthDay, birthMonth, birthYearBE)
   if (typeof ShareViral !== 'undefined' && ShareViral.renderPersonalizedShare) {
     ShareViral.renderPersonalizedShare('ind-share-section', p.man, nm);
   }
+
+  // Card Menu จิ้มการ์ดดูทีละหน้า (12 ต.ค.69)
+  if (typeof CardMenu !== 'undefined' && CardMenu.build) CardMenu.build('r0');
 }
 
 // ===== NEW CONTENT RENDERERS (Phase 2) =====
