@@ -381,6 +381,25 @@ function resetM(mode){
   }, 300);
 }
 
+// ponytail: one clear path for all modes — wipe mode inputs + saved state, then show form
+var CLEAR_FIELDS = [['n0','g0','d0','t0'],['n1a','g1a','d1a','t1a','n1b','g1b','d1b','t1b'],['n2','g2x','d2']];
+function clearM(mode){
+  var fields = CLEAR_FIELDS[mode] || [];
+  for(var i=0;i<fields.length;i++){
+    var el = document.getElementById(fields[i]);
+    if(el) el.value = '';
+  }
+  try {
+    var raw = localStorage.getItem('starvia_form_state_v1');
+    if(raw){
+      var s = JSON.parse(raw);
+      for(var j=0;j<fields.length;j++){ delete s[fields[j]]; }
+      localStorage.setItem('starvia_form_state_v1', JSON.stringify(s));
+    }
+  } catch(_){}
+  resetM(mode);
+}
+
 // ═══ Lottery Results Card ═══
 function loadLotteryResults(){
   var section = document.getElementById('lottery-results-section');

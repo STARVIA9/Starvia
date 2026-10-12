@@ -1195,7 +1195,7 @@ function renderInd(nm,gd,ds,ts,p,r,l,ri,li,u, birthDay, birthMonth, birthYearBE)
       +'<div class="mc-t">"'+p.man+'"</div></div>'
       + '<div id="ind-share-section" class="ind-share-section"></div>'
       + consultHtml
-      +'<div class="rbt"><button class="rbtn" data-action="reset-mode" data-mode="0">'+u.r0+'</button></div>'
+      +'<div class="rbt"><button class="rbtn" data-action="reset-mode" data-mode="0">'+u.r0+'</button> <button class="rbtn rbtn-clear" data-action="clear-mode" data-mode="0">🗑 ล้างข้อมูลดูใหม่</button></div>'
     );
   }
 

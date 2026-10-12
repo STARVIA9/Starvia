@@ -244,7 +244,7 @@ function renderSingleLoveOpportunity(na,pa,ra,la,ria,lia,u,RA2,dateA){
     + '<div class="ld-ref">' + escapeHTML(model.reference) + '</div>'
     + '</div>'
     + '<div class="ld-note">🔭 ถ้าอยากดูดวงตัวเองล้วนๆ ไม่เกี่ยวกับความรัก กดปุ่ม "ดูแค่ดวงตัวเอง" ด้านล่างได้เลย</div>'
-    + '<div class="rbt"><button class="rbtn" data-action="reset-mode" data-mode="1">' + (u.r1 || 'เริ่มใหม่') + '</button> <button class="rbtn" onclick="document.getElementById(\'mn0\').click()">✦ ดูแค่ดวงตัวเอง</button></div>';
+    + '<div class="rbt"><button class="rbtn" data-action="reset-mode" data-mode="1">' + (u.r1 || 'เริ่มใหม่') + '</button> <button class="rbtn rbtn-clear" data-action="clear-mode" data-mode="1">🗑 ล้างข้อมูล</button> <button class="rbtn" onclick="document.getElementById(\'mn0\').click()">✦ ดูแค่ดวงตัวเอง</button></div>';
 }
 
 function buildLoveDestinyCard(model, na, nb){
@@ -362,7 +362,7 @@ function renderCouple(na,pa,ra,la,ria,lia,nb,pb,rb,lb2,rib,lib,u,RA2,dateA,dateB
   wrap.insertAdjacentHTML('beforeend',
     '<div class="mc" style="margin-top:20px;"><div class="mc-l">✦ '+u.cm+' ✦</div>'
     +'<div class="mc-t">"'+u.cv2+'"</div></div>'
-    +'<div class="rbt"><button class="rbtn" data-action="reset-mode" data-mode="1">'+u.r1+'</button></div>'
+    +'<div class="rbt"><button class="rbtn" data-action="reset-mode" data-mode="1">'+u.r1+'</button> <button class="rbtn rbtn-clear" data-action="clear-mode" data-mode="1">🗑 ล้างข้อมูลดูคู่ใหม่</button></div>'
   );
   // ✨ Scroll-triggered reveal — all report cards float up when scrolled into view
   (function(){

@@ -244,7 +244,7 @@ function renderAusp(nm,p,pw,u){
     + buildAuspiciousTimingHtml(pw)
     + routineHtml
     + mantraHtml
-    + '<div class="rbt"><button class="rbtn" data-action="reset-mode" data-mode="2">' + u.r2 + '</button></div>';
+    + '<div class="rbt"><button class="rbtn" data-action="reset-mode" data-mode="2">' + u.r2 + '</button> <button class="rbtn rbtn-clear" data-action="clear-mode" data-mode="2">🗑 ล้างข้อมูลดูใหม่</button></div>';
   // ✨ Scroll-triggered reveal — all report cards float up when scrolled into view
   (function(){
     var cards = wrap.querySelectorAll(':scope > .card, :scope > .mc, :scope > .collapsible-section');

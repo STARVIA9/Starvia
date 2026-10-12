@@ -6208,3 +6208,9 @@ body.senior .mlm-ritual-day,
 body.senior .mlm-score-row strong { color: #7a4a00; }
 body.senior .mlm-score-bar { background: #d9cfa8; }
 body.senior .mlm-score-bar i { background: linear-gradient(90deg, #7a4a00, #4a2f8a); }
+
+/* ปุ่มล้างข้อมูลท้ายรายงาน — พื้นทองตัวเข้ม เด่นกว่าปุ่มเริ่มใหม่ (พ่อหาไม่เจอ 12 ต.ค.69) */
+.rbtn-clear{background:#D6AD45;border:2px solid #D6AD45;color:#09061c;font-weight:700;font-size:15px;min-height:52px;padding:12px 26px}
+.rbtn-clear:hover{background:#e6c65c;border-color:#e6c65c}
+body.senior .rbtn{font-size:17px;min-height:56px;padding:12px 26px;border-width:2px}
+body.senior .rbtn-clear{background:#D6AD45;color:#111;border:2px solid #000;font-size:18px;min-height:56px}
