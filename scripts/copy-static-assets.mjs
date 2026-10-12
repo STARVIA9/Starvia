@@ -57,6 +57,7 @@ const otherFiles = [
   'assets/qr-payment.jpg',
   'privacy.html',
   'terms.html',
+  'about.html',
   'admin.html',
   'share.html',
   'quiz.html',

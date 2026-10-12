@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STARVIA · ดวงของคุณ อ่านจากวันเกิดคุณ</title>
+<style>
+:root{--bg0:#09061c;--bg1:#120a2d;--gold:#D6AD45;--gold2:#FFE9A8;--cream:#F8F1DF;--mut:#c9bce8;--card:rgba(255,255,255,.045);--line:rgba(214,173,69,.28)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:linear-gradient(180deg,var(--bg0),var(--bg1));color:var(--cream);font-family:"Sarabun",system-ui,sans-serif;line-height:2;min-height:100vh;font-size:18px}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(1px 1px at 12% 22%,#fff8,transparent),radial-gradient(1px 1px at 68% 8%,#fff7,transparent),radial-gradient(1.5px 1.5px at 84% 34%,#fff6,transparent),radial-gradient(1px 1px at 32% 58%,#fff5,transparent),radial-gradient(1px 1px at 52% 82%,#fff6,transparent)}
+.wrap{max-width:680px;margin:0 auto;padding:48px 22px 140px;position:relative}
+.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:6px 18px;color:var(--gold);font-size:14px;letter-spacing:.15em}
+h1{font-size:clamp(40px,9vw,64px);line-height:1.3;margin:20px 0 12px;font-weight:800}
+h1 .gold{color:var(--gold)}
+.lead{color:var(--cream);font-size:20px;max-width:34em}
+.proof{display:flex;align-items:center;gap:10px;margin:18px 0 4px;color:var(--gold2);font-size:17px;font-weight:700}
+.btn-gold{display:block;width:100%;background:var(--gold);color:#09061c;font-weight:800;font-size:20px;border:none;border-radius:16px;padding:17px;cursor:pointer;margin-top:20px;font-family:inherit}
+.btn-ghost{display:block;width:100%;background:transparent;color:var(--cream);border:2px solid var(--line);border-radius:16px;padding:14px;font-size:18px;cursor:pointer;margin-top:12px;font-family:inherit}
+.micro{text-align:center;color:var(--mut);font-size:15px;margin-top:10px}
+.sec{margin-top:64px}
+.kick{color:var(--gold);letter-spacing:.2em;font-size:14px;font-weight:700}
+.sec-title{font-size:clamp(26px,6vw,34px);margin:4px 0 6px;font-weight:800;line-height:1.5}
+.sec-sub{color:var(--mut);font-size:17px;margin-bottom:20px}
+.card{background:var(--card);border:1px solid rgba(214,173,69,.16);border-radius:18px;padding:24px 22px;margin:14px 0}
+.num{font-size:16px;color:var(--gold);letter-spacing:.25em;font-weight:800}
+.card h3{font-size:23px;margin:6px 0 4px}
+.card p{color:var(--mut);font-size:17px}
+.card p b{color:var(--cream)}
+.price{font-size:56px;font-weight:800;line-height:1.1}
+.price small{font-size:18px;color:var(--mut);font-weight:400}
+.old{color:var(--mut);font-size:17px}
+.save{display:inline-block;background:rgba(214,173,69,.15);color:var(--gold2);border-radius:999px;padding:2px 14px;font-size:15px;font-weight:700;margin-top:6px}
+.feat{list-style:none;margin:16px 0 6px}
+.feat li{padding:9px 0;color:var(--cream);font-size:17px;border-bottom:1px dashed rgba(214,173,69,.15)}
+.feat li b{color:var(--gold);font-weight:800;margin-right:8px}
+.hl{border:2px solid var(--gold);position:relative;box-shadow:0 0 34px rgba(214,173,69,.18)}
+.badge{position:absolute;top:-16px;right:18px;background:var(--gold);color:#09061c;font-weight:800;font-size:14px;border-radius:999px;padding:4px 16px}
+.risk{text-align:center;color:var(--gold2);font-size:16px;margin-top:14px}
+details.faq{background:var(--card);border:1px solid rgba(214,173,69,.16);border-radius:14px;padding:16px 20px;margin:12px 0}
+details.faq summary{cursor:pointer;font-weight:700;font-size:19px;line-height:1.7}
+details.faq p{color:var(--mut);font-size:17px;margin-top:10px}
+details.faq p b{color:var(--cream)}
+.close{text-align:center;margin-top:72px}
+.close .line{font-size:clamp(23px,5.5vw,30px);color:var(--cream);line-height:1.8;margin-bottom:8px}
+.close .push{color:var(--mut);font-size:17px;margin-bottom:6px}
+.sticky{position:fixed;left:0;right:0;bottom:0;z-index:50;display:none;background:rgba(9,6,28,.96);border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom))}
+.sticky.show{display:flex;gap:10px}
+.sticky button{flex:1;border-radius:12px;font-size:17px;font-weight:800;padding:13px 6px;cursor:pointer;font-family:inherit}
+.sticky .s-free{background:transparent;color:var(--cream);border:2px solid var(--line)}
+.sticky .s-pro{background:var(--gold);color:#09061c;border:none}
+footer{margin-top:64px;text-align:center;color:var(--mut);font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="pill">✦ STARVIA ✦</span>
+  <h1>ดวงของคุณ<br><span class="gold">อ่านจากวันเกิดคุณ</span></h1>
+  <p class="lead">ไม่ใช่ดวงรวมราศีที่ใครก็อ่านได้ — ระบบอ่านจากวันเดือนปีเกิดของคุณคนเดียว แล้วบอกเป็นภาษาคน ไม่ต้องตีความเอง</p>
+  <div class="proof">★ คนติดตามแล้ว 17,619+ คน · เพจจริงดูได้</div>
+  <button class="btn-gold" onclick="location.href='/'">เริ่มดูดวงฟรี →</button>
+  <p class="micro">ฟรี ไม่ต้องสมัคร · 1 นาทีได้คำทำนายแรก</p>
+
+  <div class="sec">
+    <div class="kick">3 ขั้นตอน</div>
+    <div class="sec-title">จากวันเกิดถึงคำตอบ</div>
+    <p class="sec-sub">ไม่ต้องเรียนโหราศาสตร์ ไม่ต้องรอคิวหมอดู ทำเองจบในมือถือเครื่องเดียว</p>
+    <div class="card"><div class="num">01 · 30 วินาที</div><h3>กรอกวันเกิด</h3><p>แค่วันเดือนปี <b>รู้เวลาตกฟากยิ่งแม่น</b> ข้อมูลอยู่บนหน้าจอคุณ ไม่ส่งไปไหน ล้างเมื่อไหร่หายเกลี้ยง</p></div>
+    <div class="card"><div class="num">02 · เลือกเรื่องเดียว</div><h3>จิ้มเรื่องที่คาใจ</h3><p><b>ดวงตัวเอง ดวงคู่ ฤกษ์ดี หรือหยิบไพ่ถาม</b> ไม่ต้องอ่านทั้งเล่ม ดูเฉพาะเรื่องที่อยากรู้วันนี้</p></div>
+    <div class="card"><div class="num">03 · ได้คำตอบ</div><h3>สรุปสั้นใน 30 วิ</h3><p>อ่านจบรู้เลยว่าต้องทำอะไรต่อ <b>อยากลึกค่อยปลดล็อกฉบับเต็ม</b> — เห็นของฟรีก่อน จ่ายทีหลัง</p></div>
+    <button class="btn-gold" onclick="location.href='/'">ลองขั้นที่ 1 ฟรี →</button>
+  </div>
+
+  <div class="sec">
+    <div class="kick">ค่าดู</div>
+    <div class="sec-title">ดูฟรีก่อน ถูกใจค่อยจ่าย</div>
+    <p class="sec-sub">ไม่มีค่าธรรมเนียมแอบแฝง ไม่มีตัดเงินอัตโนมัติ เห็นของก่อนทุกครั้ง</p>
+
+    <div class="card"><h3>ดูฟรี</h3><div class="price">0<small> บาท</small></div>
+      <ul class="feat"><li><b>＋</b>ดวงรายวันทุกเช้า</li><li><b>＋</b>สรุปดวงเบื้องต้นใน 30 วิ</li><li><b>＋</b>หยิบไพ่ทดลองถามได้</li></ul>
+      <button class="btn-ghost" onclick="location.href='/'">เริ่มแบบฟรี</button></div>
+
+    <div class="card"><h3>ไพ่รายวัน</h3><div class="price">19<small> บาท</small></div>
+      <ul class="feat"><li><b>＋</b>ทุกอย่างในแบบฟรี</li><li><b>＋</b>ไพ่ทักประจำวันทุกเช้า</li><li><b>＋</b>หยิบไพ่เพิ่มได้ จ่ายครั้งเดียวจบ</li></ul>
+      <button class="btn-ghost" onclick="location.href='/'">รับไพ่ 19 บาท</button></div>
+
+    <div class="card hl"><span class="badge">คนเลือกเยอะสุด</span><h3>ฉบับเต็มรายเดือน</h3>
+      <div class="price">199<small> บาท/เดือน</small></div>
+      <div class="old"><s>590 บาท</s></div><span class="save">ประหยัด 391 บาท · ตกวันละประมาณ 7 บาท</span>
+      <ul class="feat"><li><b>＋</b>รายงานเต็ม 40+ หัวข้อ เขียนเพื่อคุณคนเดียว</li><li><b>＋</b>ดวงคู่ 5 ข้อ + จังหวะรัก + วิธีดูแลกัน</li><li><b>＋</b>หมอทักรายเดือน + คัมภีร์แก้ดวง 6 ด้าน</li><li><b>＋</b>เลขลาภลอยครบชุด + กราฟชีวิตส่วนตัว</li></ul>
+      <button class="btn-gold" onclick="location.href='/'">ปลดล็อกฉบับเต็ม 199 บาท</button>
+      <p class="risk">ดูของฟรีก่อนได้ ไม่ชอบไม่ต้องจ่ายสักบาท</p></div>
+  </div>
+
+  <div class="sec">
+    <div class="kick">ถามกันตรง ๆ</div>
+    <div class="sec-title">ก่อนตัดสินใจ</div>
+    <details class="faq" open><summary>ข้อมูลวันเกิดของฉันไปไหน?</summary><p><b>ไม่ไปไหน</b> ประมวลผลบนหน้าจอมือถือของคุณเท่านั้น ระบบไม่บันทึกชื่อ-วันเกิดลงเซิร์ฟเวอร์ กดล้างเมื่อไหร่หายเกลี้ยง</p></details>
+    <details class="faq"><summary>ต้องสมัครสมาชิกไหม?</summary><p><b>ไม่ต้อง</b> กรอกแล้วดูได้เลย ไม่ขอเบอร์ ไม่ขอไลน์ ไม่ทักไปขายของทีหลัง</p></details>
+    <details class="faq"><summary>19 บาทกับ 199 บาทต่างกันยังไง?</summary><p><b>19 บาทคือไพ่</b> จ่ายครั้งเดียวจบ <b>199 บาทต่อเดือนคือรายงานฉบับเต็ม</b> 40+ หัวข้อ รวมดวงคู่ 5 ข้อและวิธีแก้ดวง เริ่มจากฟรีก่อนได้เสมอ</p></details>
+    <details class="faq"><summary>ถ้าดูแล้วไม่ตรงล่ะ?</summary><p>ของฟรีดูก่อนได้เลย <b>ไม่ต้องจ่ายสักบาทจนกว่าจะรู้สึกว่าใช่</b> คำทำนายอ่านจากวันเกิดคุณเอง ไม่ใช่ดวงรวมที่ทายใครก็ได้</p></details>
+    <details class="faq"><summary>จ่ายเงินยังไง ปลอดภัยไหม?</summary><p>สแกน QR ในเว็บ จ่ายครั้งเดียวจบ <b>ไม่มีผูกบัตร ไม่มีตัดเงินอัตโนมัติ</b> ได้รหัสแล้วกรอกดูได้ทันที</p></details>
+  </div>
+
+  <div class="close">
+    <p class="line">"ดาวไม่ได้ตัดสินชีวิตคุณ<br>ดาวช่วยให้คุณมองเห็นตัวเองชัดขึ้น"</p>
+    <p class="push">รายงานฉบับเต็มราคาเปิดตัว 199 บาท (จาก 590) — ดูของฟรีก่อนได้</p>
+    <button class="btn-gold" onclick="location.href='/'">เริ่มดูดวงฟรี →</button>
+    <p class="micro">1 นาทีได้คำทำนายแรก · ไม่ชอบไม่ต้องจ่าย</p>
+  </div>
+
+  <footer>STARVIA · ค้นพบดวงดาว เข้าใจตัวเอง</footer>
+</div>
+
+<div class="sticky" id="stickyBar">
+  <button class="s-free" onclick="location.href='/'">ดูฟรีก่อน</button>
+  <button class="s-pro" onclick="location.href='/'">ฉบับเต็ม 199฿</button>
+</div>
+<script>
+(function(){
+  var bar = document.getElementById('stickyBar');
+  function onScroll(){
+    bar.classList.toggle('show', window.scrollY > window.innerHeight * 0.9);
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+})();
+</script>
+</body>
+</html>
