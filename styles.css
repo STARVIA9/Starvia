@@ -1308,6 +1308,7 @@ input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.4) sepia(1) h
   .cr-steps{grid-template-columns:1fr}
   .cr-step{min-height:auto}
   .detail-tabs-card{padding:12px}
+}
 
 /* Life Domain Forecast Matrix */
 .domain-matrix {
