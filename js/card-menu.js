@@ -22,6 +22,9 @@
     {k:'ตัวตน', t:'ฉบับเต็ม (พรีเมียม)', d:'เจาะลึกตัวตน งาน เงิน รัก แบบละเอียด', lockName:true},
     {k:'matrix-card', t:'คะแนนคู่ของคุณ', d:'ดูว่าเข้ากันกี่เปอร์เซ็นต์', byClass:true},
     {k:'conversion-cta', t:'เปิดทางความรัก', d:'แผนเฉพาะคู่ + ดวงสมพงษ์', byClass:true},
+    {k:'love-destiny-card', t:'จังหวะรักของคุณ', d:'ช่วงที่ดวงเปิดพร้อมกัน + เจอที่ไหน', byClass:true},
+    {k:'action-plan-card', t:'พิมพ์เขียวความสัมพันธ์', d:'จุดแข็ง หลุมพราง วิธีดูแลกัน', byClass:true},
+    {k:'love-five-card', t:'ดวงคู่ 5 ข้อ', d:'เนื้อคู่ อยู่กันยืด แผลใจ ถูกชะตา', byClass:true},
     {k:'ausp-header', t:'ดวงวันนี้ของคุณ', d:'ภาพรวมตามธาตุประจำตัว', byClass:true},
     {k:'ausp-today', t:'วันนี้เหมาะทำอะไร', d:'คะแนนวัน + สิ่งควรโฟกัส', byClass:true},
     {k:'ausp-week', t:'ปฏิทิน 7 วัน', d:'วันไหนดี วันไหนควรระวัง', byClass:true},
@@ -63,7 +66,7 @@
     if (el.classList.contains('collapsible-section')) return true;
     if (el.id === 'lottery-results-section') return el.textContent.trim().length > 50;
     var c = el.className || '';
-    return /matrix-card|conversion-cta|ausp-header-card|ausp-today-card|ausp-week-card|ausp-vinai-card|at-card|wellness-card/.test(c)
+    return /matrix-card|conversion-cta|love-destiny-card|action-plan-card|love-five-card|ausp-header-card|ausp-today-card|ausp-week-card|ausp-vinai-card|at-card|wellness-card/.test(c)
       && el.textContent.trim().length > 50;
   }
 

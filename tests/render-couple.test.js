@@ -368,6 +368,53 @@ describe('Couple mode rendering', () => {
     expect(output).toContain('ล้างข้อมูลดูคู่ใหม่');
   });
 
+  it('renders five-layers card from single-source data for premium', () => {
+    const dom = new JSDOM('<!doctype html><div id="r1"></div>');
+    const pa = planet('อาทิตย์', 'ไฟ', 0);
+    const pb = planet('เสาร์', 'ไฟ', 0);
+    const context = loadContext(dom, {
+      getPL: () => [pa, pb],
+      ELC: [[78]],
+      PLC: [[78, 78], [78, 78]],
+      getELD: () => [['ไฟเจอไฟ']],
+      rasiAngle: () => [78, 'มุม'],
+      isPremiumUnlocked: () => true,
+    });
+    // โหลดต้นฉบับจริง (ไม่ใช่ข้อมูลจำลอง)
+    vm.runInContext(fs.readFileSync(path.resolve('data/love-five-layers.js'), 'utf8'), context);
+    const ra = sign('เมษ');
+    const rb = sign('สิงห์');
+    const RA2 = [ra, rb];
+
+    context.renderCouple('A', pa, ra, ra, 0, 0, 'B', pb, rb, rb, 1, 1, coupleUi(), RA2);
+    const output = dom.window.document.getElementById('r1').innerHTML;
+    expect(output).toContain('เปิดดวงสมพงษ์ทั้ง 5 ข้อ');
+    expect(dom.window.document.querySelectorAll('#r1 details.five-layer').length).toBe(5);
+    expect(output).toContain('เป็นเนื้อคู่กันไหม');
+    expect(output).toContain('ถูกชะตากันไหม');
+  });
+
+  it('hides five-layers card for free readers', () => {
+    const dom = new JSDOM('<!doctype html><div id="r1"></div>');
+    const pa = planet('อาทิตย์', 'ไฟ', 0);
+    const pb = planet('เสาร์', 'ไฟ', 0);
+    const context = loadContext(dom, {
+      getPL: () => [pa, pb],
+      ELC: [[78]],
+      PLC: [[78, 78], [78, 78]],
+      getELD: () => [['ไฟเจอไฟ']],
+      rasiAngle: () => [78, 'มุม'],
+    });
+    vm.runInContext(fs.readFileSync(path.resolve('data/love-five-layers.js'), 'utf8'), context);
+    const ra = sign('เมษ');
+    const rb = sign('สิงห์');
+    const RA2 = [ra, rb];
+
+    context.renderCouple('A', pa, ra, ra, 0, 0, 'B', pb, rb, rb, 1, 1, coupleUi(), RA2);
+    const output = dom.window.document.getElementById('r1').innerHTML;
+    expect(output).not.toContain('เปิดดวงสมพงษ์ทั้ง 5 ข้อ');
+  });
+
   it('clearM wipes mode inputs and saved state', () => {
     const dom = new JSDOM('<!doctype html><div id="fc1"></div><div id="r1"></div>'
       + '<input id="n1a" value="A"><input id="d1a" value="2000-01-01">');

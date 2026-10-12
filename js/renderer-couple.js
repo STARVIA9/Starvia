@@ -263,6 +263,27 @@ function buildLoveDestinyCard(model, na, nb){
     + '</div>';
 }
 
+function buildFiveLayersCard(total){
+  // อ่านจากต้นฉบับกลาง data/love-five-layers.js — แก้คำที่เดียว เปลี่ยนทั้งเว็บ
+  if(typeof LOVE_FIVE_LAYERS === 'undefined' || !LOVE_FIVE_LAYERS.layers) return '';
+  var warm = total >= 70;
+  var items = LOVE_FIVE_LAYERS.layers.map(function(L, i){
+    var branch = warm ? L.strong : L.gentle;
+    return '<details class="five-layer"' + (i === 0 ? ' open' : '') + '>'
+      + '<summary>' + escapeHTML(L.title) + '</summary>'
+      + '<p>' + escapeHTML(L.lead) + '</p>'
+      + '<p>' + escapeHTML(branch) + '</p>'
+      + '<p class="five-closing">🤍 ' + escapeHTML(L.closing) + '</p>'
+      + '</details>';
+  }).join('');
+  return '<div class="love-five-card">'
+    + '<div class="ld-kicker">ดวงคู่ 5 ข้อ</div>'
+    + '<div class="ld-title">💕 เปิดดวงสมพงษ์ทั้ง 5 ข้อ</div>'
+    + '<div class="ld-summary">อ่านจากดวงของทั้งคู่ ไม่ใช่ดวงรวมทั่วไป กดแต่ละข้อเพื่ออ่านเต็มๆ</div>'
+    + items
+    + '</div>';
+}
+
 function renderCouple(na,pa,ra,la,ria,lia,nb,pb,rb,lb2,rib,lib,u,RA2,dateA,dateB){
   var wrap=document.getElementById('r1');
   na = escapeHTML(na);
@@ -356,7 +377,8 @@ function renderCouple(na,pa,ra,la,ria,lia,nb,pb,rb,lb2,rib,lib,u,RA2,dateA,dateB
         'อ่านจากดวงของทั้งคู่ ไม่ใช่ดวงรวมทั่วไป',
         '✦ ปลดล็อกดวงคู่เต็ม ✦'
       ))
-    + (premiumUnlocked ? actionPlanFullHtml : '');
+    + (premiumUnlocked ? actionPlanFullHtml : '')
+    + (premiumUnlocked ? buildFiveLayersCard(total) : '');
 
   // ปิดท้ายด้วย closing card + reset button
   wrap.insertAdjacentHTML('beforeend',

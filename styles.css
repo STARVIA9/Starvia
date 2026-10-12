@@ -6214,3 +6214,9 @@ body.senior .mlm-score-bar i { background: linear-gradient(90deg, #7a4a00, #4a2f
 .rbtn-clear:hover{background:#e6c65c;border-color:#e6c65c}
 body.senior .rbtn{font-size:17px;min-height:56px;padding:12px 26px;border-width:2px}
 body.senior .rbtn-clear{background:#D6AD45;color:#111;border:2px solid #000;font-size:18px;min-height:56px}
+
+/* การ์ดดวงคู่ 5 ข้อ — details พับได้ อ่านทีละข้อ (ต้นฉบับ data/love-five-layers.js) */
+.five-layer{margin:10px 0;border:1px solid rgba(214,173,69,.3);border-radius:12px;padding:10px 14px}
+.five-layer summary{cursor:pointer;font-weight:700;font-size:16px;color:#ffd86b;line-height:1.8}
+.five-layer p{font-size:15px;line-height:1.9;margin:8px 0}
+.five-closing{color:#efe8d6}

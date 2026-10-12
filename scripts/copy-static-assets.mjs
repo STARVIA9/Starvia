@@ -16,6 +16,7 @@ const jsFiles = [
   'data/life-periods.js',
   'data/yearly-transit.js',
   'data/couple-compatibility.js',
+  'data/love-five-layers.js',
   'data/rahu-ketu.js',
   'data/yearly-enhancement.js',
   'data/auspicious-timing.js',
