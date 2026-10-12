@@ -107,8 +107,6 @@ for (const file of otherFiles) {
 // Mapping: source dir → target dir (lets us pull from public/ but emit as dist/assets/)
 const extraDirs = [
   { src: 'assets/zodiac', dst: 'assets/zodiac' },
-  { src: 'public/hero',   dst: 'assets/hero' },  // public/hero/* → dist/assets/hero/*
-  { src: 'assets/hero',   dst: 'assets/hero' },
   { src: 'public/pick-a-card', dst: 'pick-a-card', recursive: true },  // Pick-a-Card เว็บย่อย (78 ไพ่ + js + css + data)
 ];
 for (const { src, dst, recursive } of extraDirs) {
