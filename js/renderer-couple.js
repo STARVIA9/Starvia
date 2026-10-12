@@ -82,6 +82,16 @@ function getAgeFromBirthDate(value){
   return hadBirthday ? age : age - 1;
 }
 
+// แปลงคะแนนสูตรภายในเป็นคำพูด (กฎพ่อ: ห้ามโชว์ % ลอยๆ ที่ไม่ได้มาจากสถิติจริง)
+function scoreWord(s){
+  s = Math.round(s);
+  if(s >= 90) return 'สูงมาก';
+  if(s >= 80) return 'สูง';
+  if(s >= 70) return 'ค่อนข้างสูง';
+  if(s >= 60) return 'ปานกลาง';
+  return 'ต้องดูแลเป็นพิเศษ';
+}
+
 function loveDigitFromDate(value){
   var d = parseBirthDateSafe(value);
   if(!d) return 6;
@@ -218,7 +228,7 @@ function renderSingleLoveOpportunity(na,pa,ra,la,ria,lia,u,RA2,dateA){
     + '<div class="ld-title">💖 โอกาสเจอคู่ของคุณ</div>'
     + '<div class="ld-summary"><strong>' + na + '</strong> ยังไม่ต้องมีข้อมูลอีกฝ่าย ก็อ่านจังหวะรักจากดวงตัวเองได้ — ช่วงเด่นคือ <span>' + escapeHTML(model.window.label) + '</span></div>'
     + '<div class="ld-grid">'
-    + '<div class="ld-box"><small>โอกาสเปิดใจ/เจอคนใหม่</small><strong>' + model.chance + '%</strong><p>เด่นเป็นพิเศษช่วง ' + escapeHTML(model.monthHint) + ' ของรอบปีที่จังหวะรักเปิด</p></div>'
+    + '<div class="ld-box"><small>โอกาสเปิดใจ/เจอคนใหม่</small><strong>' + escapeHTML(scoreWord(model.chance)) + '</strong><p>เด่นเป็นพิเศษช่วง ' + escapeHTML(model.monthHint) + ' ของรอบปีที่จังหวะรักเปิด</p></div>'
     + '<div class="ld-box"><small>มีแนวโน้มเจอที่ไหน</small><p>' + escapeHTML(model.channel) + '</p></div>'
     + '</div>'
     + '<div class="ld-two">'
@@ -233,30 +243,22 @@ function renderSingleLoveOpportunity(na,pa,ra,la,ria,lia,u,RA2,dateA){
       ))
     + '<div class="ld-ref">' + escapeHTML(model.reference) + '</div>'
     + '</div>'
-    + '<div class="rbt"><button class="rbtn" data-action="reset-mode" data-mode="1">' + (u.r1 || 'เริ่มใหม่') + '</button></div>';
+    + '<div class="ld-note">🔭 ถ้าอยากดูดวงตัวเองล้วนๆ ไม่เกี่ยวกับความรัก กดปุ่ม "ดูแค่ดวงตัวเอง" ด้านล่างได้เลย</div>'
+    + '<div class="rbt"><button class="rbtn" data-action="reset-mode" data-mode="1">' + (u.r1 || 'เริ่มใหม่') + '</button> <button class="rbtn" onclick="document.getElementById(\'mn0\').click()">✦ ดูแค่ดวงตัวเอง</button></div>';
 }
 
 function buildLoveDestinyCard(model, na, nb){
-  // Couple mode fully unlocked — always render the full plan + risk note.
-  var loveDestinyHtml = '<div class="love-destiny-premium">'
-    + '<div class="ld-section-title">แผนเพิ่มโอกาสให้ได้คู่ที่เข้ากัน</div>'
-    + '<ol>' + model.premiumPlan.map(function(item){ return '<li>' + escapeHTML(item) + '</li>'; }).join('') + '</ol>'
-    + '<div class="ld-note"><strong>จุดที่ต้องระวัง:</strong> ' + escapeHTML(model.risk) + '</div>'
-    + '</div>';
+  // การ์ด 2/3: จังหวะรัก + เจอที่ไหน (เล่าเรื่องเดียว — แผนกับหลุมพรางย้ายไปการ์ด 3)
   return '<div class="love-destiny-card">'
-    + '<div class="ld-kicker">Love Timing Method</div>'
-    + '<div class="ld-title">💖 ดวงคู่รักของคุณกับเขา</div>'
-    + '<div class="ld-summary">ช่วงอายุที่ดวงความรักของ <strong>' + na + '</strong> และ <strong>' + nb + '</strong> มีจังหวะเปิดร่วมกัน: <span>' + escapeHTML(model.coupleLabel) + '</span></div>'
+    + '<div class="ld-kicker">Love Timing</div>'
+    + '<div class="ld-title">🕰 จังหวะรัก + เจอที่ไหน</div>'
+    + '<div class="ld-summary">ช่วงที่ดวงความรักของ <strong>' + na + '</strong> และ <strong>' + nb + '</strong> เปิดพร้อมกัน: <span>' + escapeHTML(model.coupleLabel) + '</span></div>'
     + '<div class="ld-status ' + (model.hasOverlap ? 'ld-overlap' : 'ld-no-overlap') + '">' + escapeHTML(model.timingStatus) + '</div>'
-    + '<div class="ld-grid">'
-    + '<div class="ld-box"><small>โอกาสความสัมพันธ์</small><strong>' + model.openness + '%</strong><p>คะแนนนี้รวมเคมีธาตุ ดาวประจำวัน ราศีสัมพันธ์ และลัคนา เพื่อดูแนวโน้ม ไม่ใช่ฟันธง</p></div>'
-    + '<div class="ld-box"><small>ทางที่มีโอกาสเจอคนที่ใช่</small><p>' + escapeHTML(model.channel) + '</p></div>'
-    + '</div>'
     + '<div class="ld-two">'
     + '<div><b>' + na + '</b><br>จังหวะเปิดเด่น: ' + escapeHTML(model.wa.label) + '</div>'
     + '<div><b>' + nb + '</b><br>จังหวะเปิดเด่น: ' + escapeHTML(model.wb.label) + '</div>'
     + '</div>'
-    + loveDestinyHtml
+    + '<div class="ld-note">📍 ทางที่มีโอกาสเจอคนที่ใช่: ' + escapeHTML(model.channel) + '</div>'
     + '<div class="ld-ref">' + escapeHTML(model.reference) + '</div>'
     + '</div>';
 }
@@ -265,7 +267,7 @@ function renderCouple(na,pa,ra,la,ria,lia,nb,pb,rb,lb2,rib,lib,u,RA2,dateA,dateB
   var wrap=document.getElementById('r1');
   na = escapeHTML(na);
   nb = escapeHTML(nb);
-  // Option A: ฟรีดูแค่ % Compatibility, รายละเอียดล็อค Premium
+  // Option A: ฟรีดูแค่ระดับคำพูด, รายละเอียดล็อค Premium
   var premiumUnlocked = premiumIsUnlocked();
   var elS=ELC[pa.ei][pb.ei];
   var piA=getPL().indexOf(pa), piB=getPL().indexOf(pb);
@@ -286,31 +288,32 @@ function renderCouple(na,pa,ra,la,ria,lia,nb,pb,rb,lb2,rib,lib,u,RA2,dateA,dateB
                  total >= 60 ? 'Understanding Needed (คู่ที่ต้องใช้ความเข้าใจสูง)' :
                                'Karmic Lesson (คู่เวรคู่กรรม/บทเรียนสำคัญ)';
 
+  // ต้นฉบับกลางเรื่องธาตุคู่ (กฎพ่อ: เล่าเรื่องเดียวที่เดียว — ตาราง 10 คู่คือต้นฉบับ)
+  var pairKey = (typeof COUPLE_COMPATIBILITY !== 'undefined')
+    ? (COUPLE_COMPATIBILITY[pa.el + '-' + pb.el] ? pa.el + '-' + pb.el : pb.el + '-' + pa.el) : null;
+  var pairInfo = (pairKey && COUPLE_COMPATIBILITY[pairKey]) || null;
+  var chemPara = pairInfo ? (pairInfo.meaning + ' 💡 ' + pairInfo.advice) : elDesc;
+  var chemLove = pairInfo ? ('คู่นี้' + pairInfo.love) : gradeLbl;
+  var bondLine = total >= 80 ? 'ผูกพันแน่น — ผ่านช่วงเบื่อได้ถ้าตั้งใจดูแลกัน'
+    : total >= 60 ? 'ไปได้ยาวถ้าคุยกันสม่ำเสมอ ไม่ปล่อยให้เงียบค้างคา'
+    : 'คู่นี้มาเพื่อบทเรียน — อยู่กันได้ถ้าเคารพขอบเขตกัน';
+
   var loveDestiny = buildLoveDestinyModel(dateA, dateB, total, elS, plS, angS, lgS, pa, pb, ria, rib);
   var loveDestinyHtml = buildLoveDestinyCard(loveDestiny, na, nb);
 
   var dharma = getCoupleDharmaType(total, elS, pa.ei === pb.ei);
-  // Always render the full Dharma card (no teaser)
-  var dharmaHtml = '<div class="dharma-card">'
-    + '<div class="dharma-kicker">Couple Dharma Map</div>'
-    + '<div class="dharma-label">' + escapeHTML(dharma.label) + '</div>'
-    + '<div class="dharma-title">' + escapeHTML(dharma.title) + '</div>'
-    + '<div class="dharma-intro">' + escapeHTML(dharma.intro) + '</div>'
-    + '<div class="dharma-grid">'
-    + '<div><strong>สิ่งที่คู่นี้มาเรียนรู้ร่วมกัน</strong><br>' + escapeHTML(dharma.meaning) + '</div>'
-    + '<div><strong>วิธีดูแลความสัมพันธ์</strong><br>' + escapeHTML(dharma.advice) + '</div>'
-    + '</div>'
-    + '</div>';
+  // หลุมพรางเดียว (รวมคำเตือนทุกที่ไว้ข้อเดียว — กฎพ่อ: เล่าเรื่องเดียวที่เดียว)
+  var pitfallOne = loveDestiny.risk + ((pairInfo && pairInfo.warning) ? ' · ระวัง' + pairInfo.warning : '');
 
   // 4-dimensional score breakdown — always render
   var scoreBreakdownHtml = '<div class="cg2">'
-    +'<div class="ci2"><div class="ci2l">'+u.ec+'</div><div class="ci2s">'+pa.el+' + '+pb.el+'</div><div class="ci2v">'+elS+'%</div></div>'
-    +'<div class="ci2"><div class="ci2l">'+u.pc+'</div><div class="ci2s">'+pa.s+' + '+pb.s+'</div><div class="ci2v">'+plS+'%</div></div>'
-    +'<div class="ci2"><div class="ci2l">'+u.rc+'</div><div class="ci2s">'+ra.s+' + '+rb.s+'</div><div class="ci2v">'+angS+'%</div></div>'
-    +'<div class="ci2"><div class="ci2l">'+u.lc+'</div><div class="ci2s">'+RA2[lia].s+' + '+RA2[lib].s+'</div><div class="ci2v">'+lgS+'%</div></div>'
+    +'<div class="ci2"><div class="ci2l">'+u.ec+'</div><div class="ci2s">'+pa.el+' + '+pb.el+'</div><div class="ci2v">'+escapeHTML(scoreWord(elS))+'</div></div>'
+    +'<div class="ci2"><div class="ci2l">'+u.pc+'</div><div class="ci2s">'+pa.s+' + '+pb.s+'</div><div class="ci2v">'+escapeHTML(scoreWord(plS))+'</div></div>'
+    +'<div class="ci2"><div class="ci2l">'+u.rc+'</div><div class="ci2s">'+ra.s+' + '+rb.s+'</div><div class="ci2v">'+escapeHTML(scoreWord(angS))+'</div></div>'
+    +'<div class="ci2"><div class="ci2l">'+u.lc+'</div><div class="ci2s">'+RA2[lia].s+' + '+RA2[lib].s+'</div><div class="ci2v">'+escapeHTML(scoreWord(lgS))+'</div></div>'
     +'</div>';
 
-  // สร้าง Viral Matrix Card
+  // สร้าง Viral Matrix Card (การ์ด 1/3: สรุปคู่ของคุณ)
   var matrixHtml = '<div class="matrix-card">'
     + '<div class="mx-names">'
     + '<div class="mx-person"><div class="mx-n">' + na + '</div><div class="mx-p">' + pa.s + ' ' + pa.n + ' · ธาตุ' + pa.el + '</div></div>'
@@ -320,37 +323,39 @@ function renderCouple(na,pa,ra,la,ria,lia,nb,pb,rb,lb2,rib,lib,u,RA2,dateA,dateB
 
     + '<div class="mx-score-wrap">'
     + '<div class="mx-title">The Compatibility Matrix</div>'
-    + '<div class="mx-score">' + total + '% <span class="mx-grade">' + gradeLtr + '</span></div>'
+    + '<div class="mx-score">' + escapeHTML(scoreWord(total)) + ' <span class="mx-grade">' + gradeLtr + '</span></div>'
     + '<div class="mx-lbl">' + gradeLbl + '</div>'
     + '<div class="mx-lbl dharma-chip">' + escapeHTML(dharma.label) + '</div>'
     + '</div>'
 
     + '<div class="chem-box">'
-    + '<div class="chem-title"><span style="font-size:14px">⚗️</span> ปฏิกิริยาเคมีธาตุ (Element Chemistry)</div>'
-    + '<div class="chem-desc">' + elDesc + '</div>'
+    + '<div class="chem-title"><span style="font-size:14px">⚗️</span> เคมีธาตุของคู่นี้</div>'
+    + '<div class="chem-desc">' + escapeHTML(chemPara) + '</div>'
+    + '<div class="chem-desc">⚗️ เคมีดึงดูด: ' + escapeHTML(chemLove) + '</div>'
+    + '<div class="chem-desc">🪐 พันธะระยะยาว: ' + escapeHTML(bondLine) + '</div>'
     + '</div>' // ปิด chem-box
+    + (premiumUnlocked ? scoreBreakdownHtml : '')
     + '</div>' // ปิด matrix-card
     // ปุ่มเซฟรูปภาพถูกเอาออกตามคำขอผู้ใช้
 
-  // สร้าง Action Plan HTML — always full version
+  // การ์ด 3/3: แผน 3 ขั้น + หลุมพรางเดียว (รวมธรรมะคู่ไว้ในนี้ ไม่แยกการ์ด)
   var strG = elS>=80 ? 'ธาตุ'+pa.el+'และ'+pb.el+'ที่ส่งเสริมกันอย่างเป็นธรรมชาติ' : 'ความแตกต่างของธาตุที่ทำให้อีกฝ่ายได้เห็นมุมมองใหม่';
-  var strW = pa.ei===pb.ei ? 'การสะท้อนจุดอ่อนของกันและกันจนขยายใหญ่ขึ้น' : 'การตีความความแตกต่างว่าเป็นความขัดแย้งแทนที่จะมองว่าเป็นการเติมเต็ม';
   var actionPlanFullHtml = '<div class="action-plan-card" style="margin-top:0;">'
     + '<div class="ap-title">✦ พิมพ์เขียวความสัมพันธ์ ✦</div>'
-    + '<div class="ap-step"><div class="ap-num">1</div><div class="ap-content"><h4>จุดแข็งที่ต้องรักษา</h4><p>ความสัมพันธ์นี้มีจุดเด่นเรื่อง <strong>' + strG + '</strong> จงใช้สิ่งนี้เป็นกาวใจในวันที่ทะเลาะกัน</p></div></div>'
-    + '<div class="ap-step"><div class="ap-num">2</div><div class="ap-content"><h4>หลุมพรางที่ต้องระวัง</h4><p>สิ่งที่ดวงเตือนคือ <strong>' + strW + '</strong> เมื่อเกิดปัญหานี้ ให้หยุดพัก 15 นาทีก่อนคุยต่อเพื่อลดการใช้อารมณ์</p></div></div>'
-    + '<div class="ap-step"><div class="ap-num">3</div><div class="ap-content"><h4>คำแนะนำจากดวงดาว</h4><p>ความสัมพันธ์ที่ยั่งยืนไม่ได้เกิดจากดวงที่สมบูรณ์แบบ แต่เกิดจากคนสองคนที่ไม่ยอมแพ้ต่อกัน หมั่นสื่อสารความต้องการอย่างตรงไปตรงมาและให้เกียรติกันเสมอ</p></div></div>'
+    + '<div class="dharma-chip">' + escapeHTML(dharma.label) + ' · ' + escapeHTML(dharma.title) + '</div>'
+    + '<div class="ap-step"><div class="ap-num">1</div><div class="ap-content"><h4>จุดแข็งที่ต้องรักษา</h4><p>ความสัมพันธ์นี้มีจุดเด่นเรื่อง <strong>' + strG + '</strong> ' + escapeHTML(dharma.meaning) + '</p></div></div>'
+    + '<div class="ap-step"><div class="ap-num">2</div><div class="ap-content"><h4>หลุมพรางเดียวที่ต้องระวัง</h4><p>' + escapeHTML(pitfallOne) + ' เมื่อเกิดอาการนี้ ให้หยุดพัก 15 นาทีก่อนคุยต่อเพื่อลดการใช้อารมณ์</p></div></div>'
+    + '<div class="ap-step"><div class="ap-num">3</div><div class="ap-content"><h4>คำแนะนำจากดวงดาว</h4><p>ความสัมพันธ์ที่ยั่งยืนไม่ได้เกิดจากดวงที่สมบูรณ์แบบ แต่เกิดจากคนสองคนที่ไม่ยอมแพ้ต่อกัน วิธีของคู่นี้คือ ' + escapeHTML(dharma.advice) + '</p></div></div>'
     + '</div>';
 
+  // 3 การ์ด: สรุปคู่ (โชว์เสมอ) + จังหวะรัก + แผน 3 ขั้น (พรีเมียม)
   wrap.innerHTML = matrixHtml
     + (premiumUnlocked ? loveDestinyHtml : buildConversionCta(
         '💕 ดูแผนเปิดทางความรัก + ดวงคู่สมพงศ์',
         'จังหวะรัก · วิธีดูแล · หลุมพราง',
-        '94% บอกว่าตรงกับความสัมพันธ์จริง',
+        'อ่านจากดวงของทั้งคู่ ไม่ใช่ดวงรวมทั่วไป',
         '✦ ปลดล็อกดวงคู่เต็ม ✦'
       ))
-    + (premiumUnlocked ? dharmaHtml : '')
-    + (premiumUnlocked ? scoreBreakdownHtml : '')
     + (premiumUnlocked ? actionPlanFullHtml : '');
 
   // ปิดท้ายด้วย closing card + reset button

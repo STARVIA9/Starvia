@@ -69,7 +69,7 @@ describe('Couple mode rendering', () => {
 
     const output = dom.window.document.getElementById('r1').innerHTML;
     expect(output).toContain('Compatibility Matrix');
-    expect(output).toContain('%');
+    expect(output).not.toContain('%');
     expect(output).toContain('สมชาย');
     expect(output).toContain('สมหญิง');
     expect(output).toContain('เคมีธาตุ');
@@ -164,7 +164,7 @@ describe('Couple mode rendering', () => {
     expect(output).toContain('Compatibility Matrix');
     expect(output).toContain('คู่');
     // Premium content always visible (per user decision 2026-06-07)
-    expect(output).toContain('สิ่งที่คู่นี้มาเรียนรู้ร่วมกัน');
+    expect(output).toContain('จุดแข็งที่ต้องรักษา');
     expect(output).toContain('พิมพ์เขียวความสัมพันธ์');
     expect(output).toContain('วิธีดูแลความสัมพันธ์');
     // No lock wrappers anywhere
@@ -217,7 +217,7 @@ describe('Couple mode rendering', () => {
     context.renderCouple('A', pa, ra, ra, 0, 0, 'B', pb, rb, rb, 1, 1, coupleUi(), RA2);
 
     const output = dom.window.document.getElementById('r1').innerHTML;
-    expect(output).toContain('สิ่งที่คู่นี้มาเรียนรู้ร่วมกัน');
+    expect(output).toContain('จุดแข็งที่ต้องรักษา');
     expect(output).toContain('พิมพ์เขียวความสัมพันธ์');
     expect(dom.window.document.querySelector('.cg2.is-locked')).toBeNull();
   });

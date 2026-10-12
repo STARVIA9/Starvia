@@ -542,7 +542,7 @@ describe('Monthly Life Map subscription feature', () => {
     expect(output).toContain('แผนที่ชีวิตรายเดือน STARVIA');
     expect(output).not.toContain('3 วันเด่นประจำเดือน');
     expect(dom.window.document.querySelectorAll('.mlm-day').length).toBe(0);
-    expect(output).toContain('คะแนน');
+    expect(output).toContain('จังหวะเดือนนี้');
     // New teaser system shows conversion CTA instead of lock-overlay
     expect(output).toContain('conversion-cta');
     expect(output).not.toContain('สรุปรายสัปดาห์ 4 สัปดาห์');

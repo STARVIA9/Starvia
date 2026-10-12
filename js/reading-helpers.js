@@ -457,11 +457,11 @@ function buildCoupleCompatibilityHtml(myElement) {
     elements.forEach(function(e2) {
       var key = e1 + '-' + e2;
       var pair = COUPLE_COMPATIBILITY[key];
-      var score = pair ? pair.score : '-';
+      var word = pair ? (pair.love || '-') : '-';
       var isMyPair = (e1 === myElement || e2 === myElement);
       var cls = isMyPair ? 'cc-cell cc-highlight' : 'cc-cell';
       var title = pair ? (pair.love || '') + ' · ' + (pair.warning || '') + '\n' + (pair.meaning || '') : '';
-      html += '<td class="' + cls + '" title="' + escapeHTML(title) + '" onclick="showCcDetail(this)" data-pair="' + key + '">' + score + '</td>';
+      html += '<td class="' + cls + '" title="' + escapeHTML(title) + '" onclick="showCcDetail(this)" data-pair="' + key + '">' + escapeHTML(word) + '</td>';
     });
     html += '</tr>';
   });
@@ -487,8 +487,7 @@ function buildCoupleCompatibilityHtml(myElement) {
       var scoreColor = pair.score >= 80 ? '#4CAF50' : pair.score >= 65 ? '#C9A227' : '#FF9800';
       html += '<div class="cc-pair-row">';
       html += '<div class="cc-pair-label">' + (elementEmoji[myElement]||'') + ' ' + myElement + ' × ' + (elementEmoji[other]||'') + ' ' + other + '</div>';
-      html += '<div class="cc-pair-score" style="color:' + scoreColor + '">' + pair.score + '/100</div>';
-      html += '<div class="cc-pair-love">' + escapeHTML(pair.love || '') + '</div>';
+      html += '<div class="cc-pair-score" style="color:' + scoreColor + '">' + escapeHTML(pair.love || '') + '</div>';
       html += '<div class="cc-pair-meaning">' + escapeHTML(pair.meaning || '') + '</div>';
       if (pair.warning) html += '<div class="cc-pair-warning">⚠️ ' + escapeHTML(pair.warning) + '</div>';
       html += '<div class="cc-pair-advice">💡 ' + escapeHTML(pair.advice || '') + '</div>';
@@ -511,7 +510,7 @@ function showCcDetail(td) {
   if (!panel) return;
   var parts = key.split('-');
   var emoji1 = {'ไฟ':'🔥','น้ำ':'🌊','ลม':'💨','ดิน':'🌍'};
-  panel.querySelector('.cc-detail-title').innerHTML = (emoji1[parts[0]]||'') + ' ' + parts[0] + ' × ' + (emoji1[parts[1]]||'') + ' ' + parts[1] + ' — คะแนน ' + pair.score + '/100';
+  panel.querySelector('.cc-detail-title').innerHTML = (emoji1[parts[0]]||'') + ' ' + parts[0] + ' × ' + (emoji1[parts[1]]||'') + ' ' + parts[1] + ' — ' + escapeHTML(pair.love || '');
   var body = '';
   body += '<div class="cc-d-row"><strong>💕 ความรัก:</strong> ' + escapeHTML(pair.love || '-') + '</div>';
   body += '<div class="cc-d-row"><strong>💼 งาน:</strong> ' + escapeHTML(pair.career || '-') + '</div>';

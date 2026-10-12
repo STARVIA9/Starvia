@@ -91,9 +91,9 @@ describe('Couple Dharma Map', () => {
     context.renderCouple('พ่อ', pa, ra, ra, 0, 0, 'แม่', pb, rb, rb, 1, 1, ui, RA2);
 
     const output = dom.window.document.getElementById('r1').innerHTML;
-    expect(output).toContain('Couple Dharma Map');
+    expect(output).toContain('พิมพ์เขียวความสัมพันธ์');
     expect(output).toContain('คู่กระจกใจ');
-    expect(output).toContain('สิ่งที่คู่นี้มาเรียนรู้ร่วมกัน');
-    expect(dom.window.document.querySelector('.dharma-card')).toBeTruthy();
+    expect(output).toContain('จุดแข็งที่ต้องรักษา');
+    expect(dom.window.document.querySelector('.action-plan-card')).toBeTruthy();
   });
 });

@@ -233,7 +233,6 @@ function buildDomainCardV2(domain, isLocked){
     + '<div class="domain-score-badge" style="background:' + escapeHTML(domain.levelColor) + '20;color:' + escapeHTML(domain.levelColor) + ';border:1px solid ' + escapeHTML(domain.levelColor) + '40">'
     + '<span>' + escapeHTML(domain.levelIcon) + '</span>'
     + '<span>' + escapeHTML(domain.level) + '</span>'
-    + '<span>' + domain.score + '/100</span>'
     + '</div>'
     + '</div>';
   
@@ -279,8 +278,8 @@ function buildSingleDomainCard(domain, isLocked){
     + (domain.phase ? '<span class="mlm-phase ' + phaseClass + '">' + phaseEmoji + ' ' + escapeHTML(domain.phase) + '</span>' : '')
     + (domain.luckyDay ? '<span class="mlm-lucky-day">🌙 วันที่ ' + escapeHTML(String(domain.luckyDay)) + '</span>' : '')
     + '</div>'
-    + '<div class="mlm-score-row"><span>คะแนนความเด่น</span>'
-    + '<strong>' + escapeHTML(String(domain.score || 0)) + '/100</strong>'
+    + '<div class="mlm-score-row"><span>จังหวะเดือนนี้</span>'
+    + '<strong>' + escapeHTML(domain.phase || 'ทรงตัว') + '</strong>'
     + '</div>'
     + '<div class="mlm-score-bar"><i style="width:' + escapeHTML(String(domain.score || 0)) + '%"></i></div>';
 
@@ -969,7 +968,7 @@ function renderInd(nm,gd,ds,ts,p,r,l,ri,li,u, birthDay, birthMonth, birthYearBE)
     // teaser + CTA
     var lowestDomain = domainMatrix.domains.reduce(function(min, d){ return d.score < min.score ? d : min; }, domainMatrix.domains[0]);
     domainHtml += buildTeaserReveal('✦ ด้านที่ต้องระวังที่สุด ✦',
-      escapeHTML(lowestDomain.icon) + ' <span class="teaser-highlight">' + escapeHTML(lowestDomain.label) + '</span> คะแนน ' + lowestDomain.score + '/100 — "' + escapeHTML(lowestDomain.current) + '"')
+      escapeHTML(lowestDomain.icon) + ' <span class="teaser-highlight">' + escapeHTML(lowestDomain.label) + '</span> จังหวะ' + escapeHTML(lowestDomain.level || 'ควรดูแล') + ' — "' + escapeHTML(lowestDomain.current) + '"')
     + buildWarningTeaser('คุณมีจุดอ่อนซ่อนอยู่ใน ' + escapeHTML(lowestDomain.label) + ' — รู้ก่อน แก้ก่อน')
     + buildConversionCta(
       '📖 ดูคัมภีร์แก้ดวง 6 ด้าน · ปลดล็อก 199 บาท',
