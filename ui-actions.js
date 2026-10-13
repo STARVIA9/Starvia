@@ -221,6 +221,8 @@ function callPremiumVerifyApi(pin, cfg) {
   .then(function(res) { return res.json(); })
   .then(function(data) {
     if (data && data.success) {
+      // จำรหัสสมาชิกไว้ในเครื่องนี้ เผื่อสมาชิกเอาไปกรอกต่อที่เครื่องอื่น (13 ต.ค.69)
+      try { var pinStr = String(pin || '').trim().toUpperCase(); if (pinStr) localStorage.setItem('starviaPremiumPIN', pinStr); } catch (e) {}
       onPremiumVerified(data.token || null);
     } else {
       onPremiumFailed();

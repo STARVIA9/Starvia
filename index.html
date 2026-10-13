@@ -117,6 +117,19 @@
     </div>
   </section>
 
+  <!-- 💘 Promo: ดวงความรักคนโสด (13 ต.ค.69) — ต่อใต้ป้ายซองดวง -->
+  <section class="promo-pack reveal" id="promo-love" aria-label="ดวงความรักคนโสด">
+    <img class="promo-pack-img" src="assets/love-single-ad.png" alt="หญิงสาวใต้จันทร์เต็มดวงท่ามกลางกุหลาบ ดูดวงความรักคนโสด" loading="lazy">
+    <div class="promo-pack-body">
+      <div class="section-pill">💘 ดวงคนโสด</div>
+      <h2 class="section-title">ใครกำลังจะเดินเข้ามาในชีวิตคุณ?</h2>
+      <p class="section-desc">กรอกแค่วันเกิดตัวเองช่องเดียว — ดูว่าคนแบบไหนมีแนวโน้มเข้ามา จะเจอกันที่ไหน ช่วงไหนควรเปิดใจ</p>
+      <div class="hero-actions">
+        <button class="hero-primary" onclick="document.getElementById('mn1').click()">💘 ดูดวงความรักคนโสด</button>
+      </div>
+    </div>
+  </section>
+
   <!-- MODE 0 -->
   <div class="mode on" id="m0">
     <div class="card form-card reveal" id="fc0">
@@ -203,10 +216,6 @@
   <div class="mode" id="m1">
     <div class="card" id="fc1">
       <div class="couple-invite">
-        <div class="section-pill">♡ ดวงคู่รัก</div>
-        <h2>ความรักของคุณ…อยู่ในโหมดไหน?</h2>
-        <p>💑 <strong>มีคู่แล้ว</strong> — กรอกวันเกิดทั้งคู่ ดูว่าใจตรงกันแค่ไหน ช่วงไหนต้องดูแลกันเป็นพิเศษ</p>
-        <p>💘 <strong>มีคนในใจแต่ยังไม่เป็นแฟน</strong> — กรอกแค่วันเกิดตัวเองช่องเดียว ดูว่าคนแบบไหนกำลังจะเข้ามา จะเจอกันที่ไหน</p>
         <div class="couple-note">🔭 ถ้าอยากดูดวงตัวเองล้วนๆ ไม่เกี่ยวกับใครเลย — กดปุ่ม ✦ ดูดวงตัวเอง ด้านบนได้เลย</div>
       </div>
       <div id="heart-container" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0;"></div>
@@ -221,8 +230,12 @@
         <div class="f"><label for="d1a">วันเดือนปีเกิด (วัน/เดือน/ปี ค.ศ.)</label><input id="d1a" type="date" aria-required="true"></div>
         <div class="f"><label for="t1a">เวลาเกิด <span class="opt-label">(ไม่บังคับ)</span></label><input id="t1a" type="time" placeholder="06:00"></div>
       </div>
-      <div class="cdiv" id="cdiv1">✦ พบกับ ✦</div>
-      <div class="phd" id="phd1b">✦ บุคคลที่สอง</div>
+      <div class="cdiv cdiv-single" id="cdiv1">✦ เริ่มจากดวงของคุณก่อน ✦</div>
+      <button type="button" class="p2-toggle" id="p2toggle" onclick="document.getElementById('p2wrap').classList.add('open');this.style.display='none'">💑 ดูดวงคู่ — เพิ่มวันเกิดอีกคน</button>
+      <div class="p2-hint">ยังไม่รู้วันเกิดเขา? ไม่เป็นไร ดูของตัวเองก่อนได้เลย</div>
+      <div id="p2wrap">
+        <div class="cdiv" id="cdiv2">✦ พบกับ ✦</div>
+        <div class="phd" id="phd1b">✦ บุคคลที่สอง</div>
       <div class="row">
         <div class="f"><label for="n1b">ชื่อ</label><input id="n1b" type="text" placeholder="ชื่อคนที่สอง" aria-required="true"></div>
         <div class="f"><label for="g1b">เพศ</label>
@@ -232,6 +245,8 @@
       <div class="row">
         <div class="f"><label for="d1b">วันเดือนปีเกิด (วัน/เดือน/ปี ค.ศ.)</label><input id="d1b" type="date" aria-required="true"></div>
         <div class="f"><label for="t1b">เวลาเกิด <span class="opt-label">(ไม่บังคับ)</span></label><input id="t1b" type="time" placeholder="06:00"></div>
+      </div>
+        <button type="button" class="p2-hide" onclick="document.getElementById('n1b').value='';document.getElementById('d1b').value='';document.getElementById('t1b').value='';document.getElementById('p2wrap').classList.remove('open');document.getElementById('p2toggle').style.display='';if(typeof chkBtn==='function')chkBtn(1)">︿ ซ่อนส่วนนี้ ดูแค่ดวงตัวเอง</button>
       </div>
       <button class="btn" id="btn1" disabled>💖 เปิดดวงความรัก</button>
       <div class="quota-meter" id="q1"></div>

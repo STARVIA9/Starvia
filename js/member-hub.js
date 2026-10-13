@@ -343,9 +343,28 @@ var MemberHub = (function() {
     } else {
       badge = '<div class="member-status">💎 สมาชิก</div>';
     }
-    // พ่อสั่ง: ซ่อนไว้ก่อน กดปุ่มถึงโชว์
+    // พ่อสั่ง: ซ่อนไว้ก่อน กดปุ่มถึงโชว์ (+ รหัสสมาชิกเผื่อเอาไปกรอกเครื่องอื่น)
+    var savedPin = '';
+    try { savedPin = localStorage.getItem('starviaPremiumPIN') || ''; } catch (e) {}
+    var keyHtml = savedPin
+      ? '<div class="member-key">🔑 รหัสของคุณ: <b>' + esc(savedPin) + '</b> '
+        + '<button class="member-copy" onclick="MemberHub.copyPin()">คัดลอก</button>'
+        + '<br><small>เอาไปกรอกที่เครื่องอื่นได้เลย</small></div>'
+      : '';
     return '<div><button class="member-toggle" onclick="MemberHub.toggleStatus(this)">🔑 ดูวันสมาชิก</button>'
-      + '<div class="member-status-wrap" style="display:none">' + badge + '</div></div>';
+      + '<div class="member-status-wrap" style="display:none">' + badge + keyHtml + '</div></div>';
+  }
+
+  function copyPin(){
+    var pin = '';
+    try { pin = localStorage.getItem('starviaPremiumPIN') || ''; } catch (e) {}
+    if (!pin) return;
+    var btn = (typeof document !== 'undefined') ? document.querySelector('.member-copy') : null;
+    function done(){ if (btn) btn.textContent = 'คัดลอกแล้ว ✓'; }
+    function fallback(){ try { window.prompt('คัดลอกรหัส:', pin); } catch (e2) {} done(); }
+    if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(pin).then(done, fallback);
+    } else { fallback(); }
   }
 
   function toggleStatus(btn){
@@ -439,7 +458,7 @@ var MemberHub = (function() {
   }
 
   var api = {
-    init: init, render: render, renderHub: render, toggleStatus: toggleStatus,
+    init: init, render: render, renderHub: render, toggleStatus: toggleStatus, copyPin: copyPin,
     isMember: isMember, rollPack: rollPack, claimPack: claimPack, getClaim: getClaim, getAlbum: getAlbum,
     sharePack: sharePack,
     moonState: moonState, checkin: checkin, checkinProgress: checkinProgress,

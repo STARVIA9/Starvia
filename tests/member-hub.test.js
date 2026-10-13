@@ -68,6 +68,26 @@ describe('member hub', () => {
     expect(hub.isMember()).toBe(true);
   });
 
+  it('hides member key by default, reveals on tap, copies without throwing', () => {
+    dom.window.localStorage.setItem('starvia_premium', 'true');
+    dom.window.localStorage.setItem('starviaPremiumPIN', 'STAR-TEST1234');
+    const hub = loadHub(dom);
+    hub.render();
+    const hubEl = dom.window.document.getElementById('member-hub');
+    const btn = hubEl.querySelector('.member-toggle');
+    const wrap = hubEl.querySelector('.member-status-wrap');
+    expect(btn).toBeTruthy();
+    expect(wrap.style.display).toBe('none');
+    expect(wrap.textContent).toContain('STAR-TEST1234');
+    hub.toggleStatus(btn); // JSDOM ไม่รัน inline onclick — เรียกฟังก์ชันตัวเดียวกับปุ่ม
+    expect(wrap.style.display).toBe('');
+    expect(() => hub.copyPin()).not.toThrow();
+    // no saved PIN -> no key line
+    dom.window.localStorage.removeItem('starviaPremiumPIN');
+    hub.render();
+    expect(dom.window.document.getElementById('member-hub').querySelector('.member-key')).toBeNull();
+  });
+
   it('gives every god 5 fortune effects, a story, a mark and an element', () => {
     const hub = loadHub(dom);
     expect(hub.GODS.length).toBe(12);

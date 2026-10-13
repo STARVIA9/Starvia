@@ -97,6 +97,16 @@ function scoreWord(s){
   return 'ต้องดูแลเป็นพิเศษ';
 }
 
+function loveMoodFor(el){
+  var moodMap = {
+    'ไฟ': 'คึกคัก เสียงหัวเราะดัง มีพลังคนหนุ่มสาว ใจเต้นแรงตั้งแต่แรกเห็น',
+    'น้ำ': 'อบอุ่น เงียบสงบ แสงไฟนวล คุยกันได้ลึกโดยไม่ต้องเสียงดัง',
+    'ลม': 'ผ่อนคลาย เปิดกว้าง ได้คุยแลกเปลี่ยนความคิดกับคนหลากหลาย',
+    'ดิน': 'มั่นคง เป็นกันเอง เจอกันบ่อยจนคุ้นเคย ไว้ใจกันทีละนิด'
+  };
+  return moodMap[el] || moodMap['ลม'];
+}
+
 function loveDigitFromDate(value){
   var d = parseBirthDateSafe(value);
   if(!d) return 6;
@@ -168,6 +178,7 @@ function buildLoveDestinyModel(dateA,dateB,total,elS,plS,angS,lgS,pa,pb,ria,rib)
     coupleLabel: coupleStart + '–' + coupleEnd + ' ปี',
     openness: openness,
     channel: channelMap[mainEl] || channelMap['ลม'],
+    mood: loveMoodFor(mainEl),
     risk: risk,
     premiumPlan: premiumPlan,
     reference: 'อ้างอิงเชิงระบบ: วันเกิด → ดาวประจำวัน/ธาตุ, ราศีสัมพันธ์, ลัคนา และวงรอบ 7 ปีของจังหวะชีวิต ใช้เป็นแนวโน้มเพื่อวางแผนความสัมพันธ์ ไม่ใช่คำทำนายตายตัว'
@@ -198,6 +209,7 @@ function buildSingleLoveOpportunityModel(dateA, pa, ra, la, ria, lia, RA2){
   var chance = Math.max(52, Math.min(94, 58 + (digit * 3) + (piA * 2) + ((ria || 0) % 9)));
   var monthHints = ['ม.ค.–มี.ค.', 'เม.ย.–มิ.ย.', 'ก.ค.–ก.ย.', 'ต.ค.–ธ.ค.'];
   var monthHint = monthHints[(digit + piA) % monthHints.length];
+  var telCls = {'ไฟ': 'tel-fire', 'น้ำ': 'tel-water', 'ลม': 'tel-wind', 'ดิน': 'tel-earth'}[partnerEl] || 'tel-wind';
   return {
     window: windowA,
     chance: chance,
@@ -205,8 +217,12 @@ function buildSingleLoveOpportunityModel(dateA, pa, ra, la, ria, lia, RA2){
     partnerSignName: partnerSign.n || fallbackSigns[signIdx],
     partnerSignIndex: signIdx,
     partnerSignSymbol: partnerSign.s || '',
+    partnerTrait: partnerSign.trait || '',
+    partnerApply: partnerSign.apply || '',
+    partnerTel: telCls,
     partnerElement: partnerEl,
     channel: channelMap[partnerEl] || channelMap['ลม'],
+    mood: loveMoodFor(partnerEl),
     traits: traitMap[partnerEl] || traitMap['ลม'],
     signal: 'สัญญาณที่ควรสังเกตคือคนที่คุยแล้วใจนิ่งขึ้น ไม่เร่งให้ตัดสินใจ และมีความสม่ำเสมอมากกว่าคำหวานช่วงแรก',
     reference: 'อ้างอิงเชิงระบบ: วันเกิด → ดาวประจำวัน/ธาตุ, ราศีเกิด, ลัคนา และวงรอบ 7 ปีของจังหวะความรัก ใช้เป็นแนวโน้มเพื่อเปิดโอกาส ไม่ใช่คำฟันธงตายตัว'
@@ -234,11 +250,12 @@ function renderSingleLoveOpportunity(na,pa,ra,la,ria,lia,u,RA2,dateA){
     + '<div class="ld-summary"><strong>' + na + '</strong> ยังไม่ต้องมีข้อมูลอีกฝ่าย ก็อ่านจังหวะรักจากดวงตัวเองได้ — ช่วงเด่นคือ <span>' + escapeHTML(model.window.label) + '</span></div>'
     + '<div class="ld-grid">'
     + '<div class="ld-box"><small>โอกาสเปิดใจ/เจอคนใหม่</small><strong>' + escapeHTML(scoreWord(model.chance)) + '</strong><p>เด่นเป็นพิเศษช่วง ' + escapeHTML(model.monthHint) + ' ของรอบปีที่จังหวะรักเปิด</p></div>'
-    + '<div class="ld-box"><small>มีแนวโน้มเจอที่ไหน</small><p>' + escapeHTML(model.channel) + '</p></div>'
+    + '<div class="ld-box"><small>มีแนวโน้มเจอที่ไหน</small><p>' + escapeHTML(model.channel) + '</p><p>✦ บรรยากาศที่น่าเจอ: <strong class="' + model.partnerTel + '">' + escapeHTML(model.mood) + '</strong></p></div>'
     + '</div>'
     + '<div class="ld-two">'
     + '<div><b>ราศี/พลังที่มีแนวโน้มเข้ามา</b><br>' + rasiIconHtml(model.partnerSignIndex, model.partnerSignName, 28) + ' <strong>' + escapeHTML(model.partnerSignName) + '</strong> · ธาตุ' + escapeHTML(model.partnerElement) + '</div>'
-    + '<div><b>นิสัยคนที่มีแนวโน้มเข้ากัน</b><br>' + escapeHTML(model.traits) + '</div>'
+    + '<div class="' + model.partnerTel + '"><b>นิสัยคนที่มีแนวโน้มเข้ากัน</b><br>' + escapeHTML(model.traits) + '</div>'
+    + (model.partnerTrait ? '<div class="' + model.partnerTel + '" style="grid-column:1/-1"><b>ตัวตนราศี' + escapeHTML(model.partnerSignName) + ' — ' + escapeHTML(model.partnerTrait) + '</b><br>' + escapeHTML(model.partnerApply) + '</div>' : '')
     + '</div>'
     + (premiumIsUnlocked() ? loveTimingHtml : buildConversionCta(
         '💕 ดูแผนเปิดทางความรัก 3 ขั้น',
@@ -263,7 +280,7 @@ function buildLoveDestinyCard(model, na, nb){
     + '<div><b>' + na + '</b><br>จังหวะเปิดเด่น: ' + escapeHTML(model.wa.label) + '</div>'
     + '<div><b>' + nb + '</b><br>จังหวะเปิดเด่น: ' + escapeHTML(model.wb.label) + '</div>'
     + '</div>'
-    + '<div class="ld-note">📍 ทางที่มีโอกาสเจอคนที่ใช่: ' + escapeHTML(model.channel) + '</div>'
+    + '<div class="ld-note">📍 ทางที่มีโอกาสเจอคนที่ใช่: ' + escapeHTML(model.channel) + '<br>✦ บรรยากาศ: <strong>' + escapeHTML(model.mood) + '</strong></div>'
     + '<div class="ld-ref">' + escapeHTML(model.reference) + '</div>'
     + '</div>';
 }
