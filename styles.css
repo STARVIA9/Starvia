@@ -218,6 +218,8 @@ body.senior .quota-meter{font-size:15px;color:#7a4a00}
 .album-count{font-size:12px;color:var(--tx2);margin-top:8px}
 .moon-live{font-size:17px;color:var(--g2);font-weight:700;margin-bottom:8px}
 .moon-next{font-size:13px;color:var(--tx2)}
+.pack-god-img{width:150px;border-radius:12px;box-shadow:0 10px 26px rgba(0,0,0,.5);margin-bottom:10px}
+.album-cell img{width:100%;border-radius:6px;display:block}
 .check-card{font-size:14px;color:var(--tx)}
 @media(max-width:480px){.album-grid{grid-template-columns:repeat(4,1fr)}}
 /* 🎁 Promo banner (13 ต.ค.69) */
