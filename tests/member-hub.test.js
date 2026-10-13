@@ -68,6 +68,16 @@ describe('member hub', () => {
     expect(hub.isMember()).toBe(true);
   });
 
+  it('gives every god 3 fortune effects', () => {
+    const hub = loadHub(dom);
+    expect(hub.GODS.length).toBe(12);
+    hub.GODS.forEach((g) => {
+      expect(Array.isArray(g.fx)).toBe(true);
+      expect(g.fx.length).toBe(3);
+      expect(g.fx.join(' ')).toMatch(/งาน.*เงิน.*รัก/s);
+    });
+  });
+
   it('detects full-moon events from GENERATED_EVENTS', () => {
     const d = new Date();
     const today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
