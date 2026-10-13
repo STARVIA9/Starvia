@@ -43,18 +43,18 @@ var MemberHub = (function() {
 
   // ─── ก. ซองดวงรายเดือน ───
   var GODS = [
-    { z: 'เมษ', e: '♈', g: 'เทพแห่งไฟนักรบ', b: 'เดือนนี้ลุยก่อนได้เปรียบ อย่ารอพร้อม' },
-    { z: 'พฤษภ', e: '♉', g: 'เทพแห่งผืนดิน', b: 'ช้าแต่มั่นคง เงินที่รอจะมาตามนัด' },
-    { z: 'มิถุน', e: '♊', g: 'เทพแห่งลมข่าวสาร', b: 'คำพูดคือโชค พูดดีได้ดีเกินคาด' },
-    { z: 'กรกฎ', e: '♋', g: 'เทพแห่งจันทรา', b: 'ดูแลใจคนใกล้ตัว แล้วดวงจะดูแลคุณ' },
-    { z: 'สิงห์', e: '♌', g: 'เทพแห่งตะวัน', b: 'เฉิดฉายได้เลย เดือนนี้เวทีเป็นของคุณ' },
-    { z: 'กันย์', e: '♍', g: 'เทพแห่งระเบียบ', b: 'จัดโต๊ะจัดใจ โชคเข้าทางความเป็นระเบียบ' },
-    { z: 'ตุล', e: '♎', g: 'เทพแห่งตาชั่ง', b: 'ดีลที่ค้างจะลงตัวด้วยความยุติธรรม' },
-    { z: 'พิจิก', e: '♏', g: 'เทพแห่งน้ำลึก', b: 'สัญชาตญาณแม่นเป็นพิเศษ เชื่อเซนส์ตัวเอง' },
-    { z: 'ธนู', e: '♐', g: 'เทพแห่งลูกธนู', b: 'เล็งไกลเข้าไว้ เป้าหมายใหญ่มีลุ้น' },
-    { z: 'มกร', e: '♑', g: 'เทพแห่งภูผา', b: 'อดทนอีกนิด ยอดเขาอยู่แค่เอื้อม' },
-    { z: 'กุมภ์', e: '♒', g: 'เทพแห่งคลื่นใหม่', b: 'ไอเดียแปลกๆ เดือนนี้คือทอง' },
-    { z: 'มีน', e: '♓', g: 'เทพแห่งมหาสมุทร', b: 'ใจดีกับตัวเองบ้าง ดวงจะไหลลื่น' }
+    { z: 'เมษ', e: '♈', img: '01-aries', g: 'เทพแห่งไฟนักรบ', b: 'เดือนนี้ลุยก่อนได้เปรียบ อย่ารอพร้อม' },
+    { z: 'พฤษภ', e: '♉', img: '02-taurus', g: 'เทพแห่งผืนดิน', b: 'ช้าแต่มั่นคง เงินที่รอจะมาตามนัด' },
+    { z: 'มิถุน', e: '♊', img: '03-gemini', g: 'เทพแห่งลมข่าวสาร', b: 'คำพูดคือโชค พูดดีได้ดีเกินคาด' },
+    { z: 'กรกฎ', e: '♋', img: '04-cancer', g: 'เทพแห่งจันทรา', b: 'ดูแลใจคนใกล้ตัว แล้วดวงจะดูแลคุณ' },
+    { z: 'สิงห์', e: '♌', img: '05-leo', g: 'เทพแห่งตะวัน', b: 'เฉิดฉายได้เลย เดือนนี้เวทีเป็นของคุณ' },
+    { z: 'กันย์', e: '♍', img: '06-virgo', g: 'เทพแห่งระเบียบ', b: 'จัดโต๊ะจัดใจ โชคเข้าทางความเป็นระเบียบ' },
+    { z: 'ตุล', e: '♎', img: '07-libra', g: 'เทพแห่งตาชั่ง', b: 'ดีลที่ค้างจะลงตัวด้วยความยุติธรรม' },
+    { z: 'พิจิก', e: '♏', img: '08-scorpio', g: 'เทพแห่งน้ำลึก', b: 'สัญชาตญาณแม่นเป็นพิเศษ เชื่อเซนส์ตัวเอง' },
+    { z: 'ธนู', e: '♐', img: '09-sagittarius', g: 'เทพแห่งลูกธนู', b: 'เล็งไกลเข้าไว้ เป้าหมายใหญ่มีลุ้น' },
+    { z: 'มกร', e: '♑', img: '10-capricorn', g: 'เทพแห่งภูผา', b: 'อดทนอีกนิด ยอดเขาอยู่แค่เอื้อม' },
+    { z: 'กุมภ์', e: '♒', img: '11-aquarius', g: 'เทพแห่งคลื่นใหม่', b: 'ไอเดียแปลกๆ เดือนนี้คือทอง' },
+    { z: 'มีน', e: '♓', img: '12-pisces', g: 'เทพแห่งมหาสมุทร', b: 'ใจดีกับตัวเองบ้าง ดวงจะไหลลื่น' }
   ];
   var MONTH_MSG = [
     'เดือนนี้ดาวเข้าข้างคนกล้าตัดสินใจ — เรื่องที่ลังเลมานาน ได้เวลาตอบตัวเอง',
@@ -76,7 +76,7 @@ var MemberHub = (function() {
     var rarity = r < 0.05 ? 'legendary' : (r < 0.30 ? 'rare' : 'common');
     var mi = parseInt(ym.split('-')[1], 10) - 1;
     var god = GODS[((h >> 3) % 12 + 12) % 12];
-    var out = { ym: ym, rarity: rarity, god: god.z, gicon: god.e, godName: god.g, godBless: god.b, monthIndex: mi };
+    var out = { ym: ym, rarity: rarity, god: god.z, gicon: god.e, godImg: god.img, godName: god.g, godBless: god.b, monthIndex: mi };
     if (rarity === 'rare') {
       out.lucky = [pad(h % 90 + 10), pad((h >> 5) % 90 + 10)];
     } else if (rarity === 'legendary') {
@@ -168,14 +168,22 @@ var MemberHub = (function() {
 
   function esc(s){ return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
+  // ใบเก่าที่เคลมก่อนมีรูป (ไม่มี godImg) → เทียบจากชื่อราศี
+  function godImgFor(claim){
+    if (claim.godImg) return claim.godImg;
+    for (var i = 0; i < GODS.length; i++) if (GODS[i].z === claim.god) return GODS[i].img;
+    return '06-virgo';
+  }
+
   function albumHtml(){
     var album = getAlbum();
     var has = {};
     album.forEach(function (e) { has[e.god] = e; });
     var cells = GODS.map(function (g) {
       var got = has[g.z];
+      var face = got ? '<img src="assets/pack-cards/' + g.img + '.jpg" alt="เทพ' + g.z + '" loading="lazy">' : '<span>' + g.e + '</span>';
       return '<div class="album-cell' + (got ? ' got rar-' + got.rarity : '') + '">'
-        + '<span>' + g.e + '</span><small>' + g.z + '</small></div>';
+        + face + '<small>' + g.z + '</small></div>';
     }).join('');
     var gold = has['ไพ่ทอง'] ? '<div class="album-cell got rar-gold"><span>👑</span><small>ไพ่ทอง</small></div>' : '';
     return '<div class="album-grid">' + cells + gold + '</div>'
@@ -201,6 +209,7 @@ var MemberHub = (function() {
         + '<button class="rbtn rbtn-clear" data-action="pack-open">✉️ เปิดซองดวงเดือนนี้</button>';
     } else {
       html += '<div class="pack-open rar-' + claim.rarity + '">'
+        + '<img class="pack-god-img" src="assets/pack-cards/' + godImgFor(claim) + '.jpg" alt="ไพ่เทพ' + esc(claim.god) + '" loading="lazy">'
         + '<div class="pack-rar">' + RAR_EMO[claim.rarity] + ' ระดับ' + RAR_TXT[claim.rarity] + '</div>'
         + '<div class="pack-god">' + claim.gicon + ' ' + esc(claim.god) + ' · ' + esc(claim.godName) + '</div>'
         + '<p class="pack-bless">"' + esc(claim.godBless) + '"</p>';

@@ -147,7 +147,9 @@ async function loadState() {
   }
   renderMeta();
   renderHistory();
-  show(state.member ? "scrTopic" : "scrGate");
+  // ดีปลิงก์โฆษณา: .../pick-a-card/#member19 → เปิดหน้าสมัคร 19฿ เสมอ (13 ต.ค.69)
+  if (typeof location !== 'undefined' && location.hash === '#member19') show("scrGate");
+  else show(state.member ? "scrTopic" : "scrGate");
 }
 
 function boot() {
