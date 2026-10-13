@@ -740,9 +740,11 @@ var __collapsibleIdCounter = 0;
 // การ์ดสั้น 3 ข้อสำหรับผู้สูงอายุ + ปุ่มฟังเสียง ไม่แตะ logic เดิม
 function buildEasySummary(briefData, topDomains){
   var esc = (typeof escapeHTML === 'function') ? escapeHTML : function(s){ return String(s == null ? '' : s); };
+  // พ่อสั่ง 13 ต.ค.69: แถบสรุปเป็นเรื่องชีวิตประจำวัน ไม่เน้นการงาน
+  var EASY_DOMAIN_SHORT = {luck:'โชค', money:'การเงิน', health:'สุขภาพ', relationship:'ความรัก', career:'การงาน', supporters:'คนอุปถัมภ์'};
   var topLine = '';
   if (topDomains && topDomains.length) {
-    var names = topDomains.slice(0, 2).map(function(d){ return d.label + ' ' + d.score + '/100'; }).join(' · ');
+    var names = topDomains.slice(0, 2).map(function(d){ var lbl = EASY_DOMAIN_SHORT[d.key] || d.label; return lbl + ' ' + d.score + '/100'; }).join(' · ');
     topLine = '<li><span class="easy-ico">🌟</span><span><strong>ช่วงนี้เด่นเรื่อง:</strong> ' + esc(names) + '</span></li>';
   }
   var html = '<div class="easy-summary" id="easy-summary">'
