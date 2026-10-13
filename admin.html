@@ -231,7 +231,7 @@
           </div>
           <div class="form-group">
             <label>อายุ (วัน)</label>
-            <input type="number" id="issue-days" value="7" min="1" max="365">
+            <input type="number" id="issue-days" value="30" min="1" max="365">
           </div>
           <div class="form-group">
             <label>แผน</label>
@@ -482,9 +482,19 @@ function loadPins(search) {
   if (search) qs.push('q=' + encodeURIComponent(search));
   api('/pins' + (qs.length ? '?' + qs.join('&') : '')).then(function(d){
     allPins = d.pins || [];
-    filteredPins = allPins;
+    // หลังบ้านยังไม่รับ q — กรองในเครื่องแทน
+    var q = String(search !== undefined ? search : currentPinSearch()).trim().toLowerCase();
+    filteredPins = q ? allPins.filter(function(p){ return pinMatches(p, q); }) : allPins;
+    currentPage = 1;
     renderPinTable();
   }).catch(function(){ toast('โหลดรายการ PIN ไม่สำเร็จ', true); });
+}
+function currentPinSearch(){ var el = document.getElementById('pin-search'); return el ? el.value : ''; }
+function pinMatches(p, q){
+  return String(p.pin || '').toLowerCase().indexOf(q) !== -1
+    || String(p.note || '').toLowerCase().indexOf(q) !== -1
+    || String(p.plan || '').toLowerCase().indexOf(q) !== -1
+    || String(p.status || '').toLowerCase().indexOf(q) !== -1;
 }
 function renderPinTable() {
   var tbody = document.getElementById('pin-table');
@@ -508,6 +518,7 @@ function renderPinTable() {
     var actions = '<div class="actions">' +
       '<button class="btn btn-outline btn-icon" onclick="copyPin(\'' + esc(p.pin) + '\')" title="คัดลอก">คัดลอก</button>' +
       (canModify ? '<button class="btn btn-danger btn-sm" onclick="expirePin(\'' + esc(p.pin) + '\')" title="หมดอายุ">หมดอายุ</button>' : '') +
+      (canModify ? '<button class="btn btn-danger btn-sm" onclick="revokePin(\'' + esc(p.pin) + '\')" title="ยึดคืน">ยึดคืน</button>' : '') +
       (canModify ? '<button class="btn btn-danger btn-sm" onclick="deletePin(\'' + esc(p.pin) + '\')" title="ลบ">ลบ</button>' : '') +
       '</div>';
     return '<tr>' +
@@ -565,6 +576,17 @@ function deletePin(pin) {
     if (d.success) { toast('ลบแล้ว: ' + pin); loadPins(); loadStats(); }
     else { toast(d.message || 'ไม่สำเร็จ', true); }
   }).catch(function(){ toast('ลบไม่สำเร็จ', true); });
+}
+function revokePin(pin) {
+  if (!confirm('ยึดคืน PIN: ' + pin + ' ? (ใช้ต่อไม่ได้ทันที)')) return;
+  api('/pins/revoke', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({pin: pin})
+  }).then(function(d){
+    if (d.success) { toast('ยึดคืนแล้ว: ' + pin); loadPins(); loadStats(); }
+    else { toast(d.message || 'ไม่สำเร็จ', true); }
+  }).catch(function(){ toast('ยึดคืนไม่สำเร็จ', true); });
 }
 
 // ── Export ──

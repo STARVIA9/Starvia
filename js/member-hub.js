@@ -333,16 +333,27 @@ var MemberHub = (function() {
 
   function memberStatusHtml(){
     var s = premiumDaysLeft();
+    var badge;
     if (s.state === 'active') {
-      return '<div class="member-status">💎 สมาชิก · เหลืออีก ' + s.days + ' วัน</div>';
+      badge = '<div class="member-status">💎 สมาชิก · เหลืออีก ' + s.days + ' วัน</div>';
+    } else if (s.state === 'trial') {
+      badge = '<div class="member-status">🎁 สิทธิ์ทดลอง · เหลืออีก ' + s.hours + ' ชม.</div>';
+    } else if (s.state === 'expired') {
+      badge = '<div class="member-status member-expired">⏳ PIN หมดอายุแล้ว — กรอก PIN ใหม่เพื่อต่ออายุ</div>';
+    } else {
+      badge = '<div class="member-status">💎 สมาชิก</div>';
     }
-    if (s.state === 'trial') {
-      return '<div class="member-status">🎁 สิทธิ์ทดลอง · เหลืออีก ' + s.hours + ' ชม.</div>';
-    }
-    if (s.state === 'expired') {
-      return '<div class="member-status member-expired">⏳ PIN หมดอายุแล้ว — กรอก PIN ใหม่เพื่อต่ออายุ</div>';
-    }
-    return '<div class="member-status">💎 สมาชิก</div>';
+    // พ่อสั่ง: ซ่อนไว้ก่อน กดปุ่มถึงโชว์
+    return '<div><button class="member-toggle" onclick="MemberHub.toggleStatus(this)">🔑 ดูวันสมาชิก</button>'
+      + '<div class="member-status-wrap" style="display:none">' + badge + '</div></div>';
+  }
+
+  function toggleStatus(btn){
+    var wrap = btn.parentElement ? btn.parentElement.querySelector('.member-status-wrap') : null;
+    if (!wrap) return;
+    var show = wrap.style.display === 'none';
+    wrap.style.display = show ? '' : 'none';
+    btn.textContent = show ? '🔑 ซ่อนวันสมาชิก' : '🔑 ดูวันสมาชิก';
   }
 
   function render(){
@@ -428,7 +439,7 @@ var MemberHub = (function() {
   }
 
   var api = {
-    init: init, render: render, renderHub: render,
+    init: init, render: render, renderHub: render, toggleStatus: toggleStatus,
     isMember: isMember, rollPack: rollPack, claimPack: claimPack, getClaim: getClaim, getAlbum: getAlbum,
     sharePack: sharePack,
     moonState: moonState, checkin: checkin, checkinProgress: checkinProgress,

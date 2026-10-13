@@ -204,6 +204,8 @@ body.senior .quota-meter{font-size:15px;color:#7a4a00}
 .member-hub{margin:22px auto 18px;max-width:760px}
 .member-status{display:inline-block;font-size:13px;font-weight:700;color:var(--g);background:rgba(201,162,39,.10);border:1px solid rgba(201,162,39,.45);border-radius:50px;padding:6px 16px;margin:2px 0 12px;letter-spacing:.03em}
 .member-status.member-expired{color:#F44336;background:rgba(244,67,54,.08);border-color:rgba(244,67,54,.45)}
+.member-toggle{background:transparent;border:1px solid rgba(201,162,39,.35);color:var(--g);border-radius:50px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;margin:2px 0 12px;letter-spacing:.03em}
+.member-toggle:active{transform:scale(.97)}
 .pack-card,.moon-card,.check-card{background:linear-gradient(145deg,var(--surface),rgba(14,8,35,.78));border:1px solid var(--br);border-radius:var(--radius);padding:20px;margin-bottom:14px;text-align:center}
 .pack-sealed{font-size:18px;color:var(--g2);margin-bottom:12px;line-height:1.8}
 .pack-sealed small,.pack-lock small{color:var(--tx2);font-size:13px}

@@ -1,4 +1,19 @@
 // UI actions extracted from app.js
+// โหลด html2canvas ครั้งแรกตอนกดแชร์เท่านั้น (13 ต.ค.69: ไม่โหลดพร้อมหน้าเว็บแล้ว)
+var _html2canvasPromise = null;
+function ensureHtml2canvas(){
+  if (typeof html2canvas !== 'undefined') return Promise.resolve();
+  if (!_html2canvasPromise) {
+    _html2canvasPromise = new Promise(function(resolve, reject){
+      var s = document.createElement('script');
+      s.src = 'assets/html2canvas.min.js';
+      s.onload = function(){ resolve(); };
+      s.onerror = function(){ _html2canvasPromise = null; reject(new Error('load failed')); };
+      document.head.appendChild(s);
+    });
+  }
+  return _html2canvasPromise;
+}
 function saveImage(targetClass, fileName, evt) {
   var target = document.querySelector('.' + targetClass);
   if(!target) return;
@@ -22,11 +37,13 @@ function saveImage(targetClass, fileName, evt) {
   // ปรับแต่งสีพื้นหลังเล็กน้อยก่อนถ่ายรูป
   target.style.background = 'linear-gradient(180deg, #1A1035, #0d0828)';
 
-  // ถ่ายรูป
-  html2canvas(target, {
-    scale: 2, // รูปชัดระดับ HD (Retina)
-    backgroundColor: '#0d0828',
-    useCORS: true
+  // ถ่ายรูป (โหลดตัวถ่ายครั้งแรกตอนกดปุ่มนี้)
+  ensureHtml2canvas().then(function(){
+    return html2canvas(target, {
+      scale: 2, // รูปชัดระดับ HD (Retina)
+      backgroundColor: '#0d0828',
+      useCORS: true
+    });
   }).then(function(canvas) {
     // ซ่อนลายน้ำและคืนสีพื้นหลังเดิมหลังถ่ายเสร็จ
     wm.style.display = 'none';
