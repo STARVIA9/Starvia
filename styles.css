@@ -219,10 +219,19 @@ body.senior .quota-meter{font-size:15px;color:#7a4a00}
 .moon-live{font-size:17px;color:var(--g2);font-weight:700;margin-bottom:8px}
 .moon-next{font-size:13px;color:var(--tx2)}
 .pack-god-img{width:150px;border-radius:12px;box-shadow:0 10px 26px rgba(0,0,0,.5);margin-bottom:10px}
-.pack-fx{margin-top:10px;text-align:left;font-size:13.5px;line-height:2;color:var(--tx)}
+/* ✨ ตัวหนังสือศักดิ์สิทธิ์ (13 ต.ค.69 — พ่อสั่ง: ตัวเล็กไม่ส่ง ต้องมีแสง พรีเมียม) */
+.pack-rar{font-size:16px;letter-spacing:.2em;color:var(--g2);font-weight:700;text-shadow:0 0 14px rgba(214,173,69,.55)}
+.pack-rar::after{content:"❖ ─── ❖";display:block;font-size:12px;letter-spacing:.4em;color:#d4af3766;margin-top:6px}
+.pack-god{font-size:27px;margin:10px 0;font-weight:700;font-family:var(--font-display);background:linear-gradient(135deg,var(--g3),var(--g) 35%,var(--g2) 55%,var(--g));background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 14px rgba(214,173,69,.45));animation:sh 6s linear infinite;line-height:1.4}
+.pack-bless{font-size:16px;line-height:1.9;color:var(--g2);font-style:italic;text-shadow:0 0 10px rgba(244,217,135,.25)}
 .pack-story{margin:12px 0 4px;padding:12px 14px;border-radius:12px;background:#8e72d814;border:1px solid rgba(142,114,216,.3);text-align:left}
-.pack-story-t{display:block;font-size:12px;letter-spacing:.15em;color:var(--g2);font-weight:700;margin-bottom:6px}
-.pack-story p{font-size:14px;line-height:1.9;color:var(--tx);font-style:italic;margin:0}
+.pack-story-t{display:block;font-size:13px;letter-spacing:.2em;color:var(--g2);font-weight:700;margin-bottom:6px;text-shadow:0 0 10px rgba(214,173,69,.4)}
+.pack-story p{font-size:15px;line-height:1.9;color:var(--tx);font-style:italic;margin:0}
+.pack-fx{margin-top:10px;text-align:left;font-size:15px;line-height:2.05;color:var(--tx)}
+.pack-lucky{font-size:17px;color:var(--g);margin-top:10px;font-weight:700;text-shadow:0 0 12px rgba(214,173,69,.5)}
+body.senior .pack-god{font-size:30px;-webkit-text-fill-color:#000;background:none;filter:none;color:#000}
+body.senior .pack-rar,body.senior .pack-bless,body.senior .pack-lucky{text-shadow:none;font-size:18px;color:#000}
+body.senior .pack-story p{font-size:18px;color:#111}
 .pack-open.rar-legendary{border-color:var(--g);box-shadow:0 0 34px rgba(214,173,69,.35)}
 .pack-open.rar-rare{border-color:rgba(142,114,216,.6)}
 .album-cell img{width:100%;border-radius:6px;display:block}
