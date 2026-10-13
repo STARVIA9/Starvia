@@ -3,7 +3,7 @@
 // Renderers extracted from app.js
 // Shared helpers (rasiIconHtml, escapeHTML) are loaded from js/reading-helpers.js.
 
-function buildDailyBrief(p, dayOfWeek, personalColor) {
+function buildDailyBrief(p, dayOfWeek, personalColor, birthDayOfWeek) {
   var content = (typeof THAI_ASTRO_CONTENT !== 'undefined') ? THAI_ASTRO_CONTENT : null;
   var db = content && content.dailyBrief ? content.dailyBrief : null;
   if (!db) {
@@ -17,13 +17,24 @@ function buildDailyBrief(p, dayOfWeek, personalColor) {
       weekdayAction: ['สิ่งที่ควรทำวันนี้: หยุดพักสักครู่']
     };
   }
+  // 13 ต.ค.69: โฟกัส/ระวัง/ทำเลย แยกเฉพาะคนตามวันเกิด [วันปัจจุบัน][วันเกิด]
+  // รองรับข้อมูลเก่าแบบราบด้วย (fallback)
+  function pick(arr, fb) {
+    if (!arr) return fb;
+    if (Array.isArray(arr[dayOfWeek])) {
+      var row = arr[dayOfWeek];
+      var b = (typeof birthDayOfWeek === 'number' && birthDayOfWeek >= 0 && birthDayOfWeek <= 6) ? birthDayOfWeek : 0;
+      return row[b] || row[0] || fb;
+    }
+    return arr[dayOfWeek] || arr[0] || fb;
+  }
   var label = db.weekdayLabel[dayOfWeek] || db.weekdayLabel[0];
   var deity = db.weekdayDeity[dayOfWeek] || db.weekdayDeity[0];
   var elName = db.weekdayElement[dayOfWeek] || db.weekdayElement[0];
   var energy = db.weekdayEnergy[dayOfWeek] || db.weekdayEnergy[0];
-  var focus = db.weekdayFocus[dayOfWeek] || db.weekdayFocus[0];
-  var warning = db.weekdayWarning[dayOfWeek] || db.weekdayWarning[0];
-  var action = db.weekdayAction[dayOfWeek] || db.weekdayAction[0];
+  var focus = pick(db.weekdayFocus, 'โฟกัส: สิ่งที่สำคัญที่สุดวันนี้');
+  var warning = pick(db.weekdayWarning, 'ระวัง: อย่ารีบตัดสินใจ');
+  var action = pick(db.weekdayAction, 'สิ่งที่ควรทำวันนี้: หยุดพักสักครู่');
   var colorName = personalColor ? personalColor.name : '';
   var colorHex = personalColor ? personalColor.hex : '#C9A227';
   return { label: label, deity: deity, element: elName, energy: energy, colorName: colorName, colorHex: colorHex, focus: focus, warning: warning, action: action };
@@ -1042,7 +1053,8 @@ function renderInd(nm,gd,ds,ts,p,r,l,ri,li,u, birthDay, birthMonth, birthYearBE)
   var windfallLuckGuide = buildWindfallLuckGuide(p, ds, dayOfWeek);
   var windfallLuckHtml = buildWindfallLuckHtml(windfallLuckGuide, premiumUnlocked);
 
-  var briefData = buildDailyBrief(p, dayOfWeek, { name: pe.c1n, hex: pe.c1 });
+  var birthWeekday = (ds ? new Date(ds).getDay() : dayOfWeek);
+  var briefData = buildDailyBrief(p, dayOfWeek, { name: pe.c1n, hex: pe.c1 }, birthWeekday);
   // กำลังวันประจำตัว — compact identity card
   var elementColors = { 'ไฟ': '#E8534A', 'น้ำ': '#5B9BD5', 'ลม': '#B8A8D8', 'ดิน': '#A0A060' };
   var ec = elementColors[briefData.element] || 'var(--g)';
