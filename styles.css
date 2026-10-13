@@ -227,7 +227,10 @@ body.senior .quota-meter{font-size:15px;color:#7a4a00}
 .pack-story{margin:12px 0 4px;padding:12px 14px;border-radius:12px;background:#8e72d814;border:1px solid rgba(142,114,216,.3);text-align:left}
 .pack-story-t{display:block;font-size:13px;letter-spacing:.2em;color:var(--g2);font-weight:700;margin-bottom:6px;text-shadow:0 0 10px rgba(214,173,69,.4)}
 .pack-story p{font-size:15px;line-height:1.9;color:var(--tx);font-style:italic;margin:0}
+.fx-ico{width:22px;height:22px;border-radius:6px;vertical-align:-5px;margin-right:8px}
+.rar-ico{width:30px;height:30px;border-radius:8px;vertical-align:-7px;margin-right:8px}
 .pack-fx{margin-top:10px;text-align:left;font-size:15px;line-height:2.05;color:var(--tx)}
+.pack-fx>div{margin-bottom:2px}
 .pack-lucky{font-size:17px;color:var(--g);margin-top:10px;font-weight:700;text-shadow:0 0 12px rgba(214,173,69,.5)}
 body.senior .pack-god{font-size:30px;-webkit-text-fill-color:#000;background:none;filter:none;color:#000}
 body.senior .pack-rar,body.senior .pack-bless,body.senior .pack-lucky{text-shadow:none;font-size:18px;color:#000}

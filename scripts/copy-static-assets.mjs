@@ -111,6 +111,7 @@ for (const file of otherFiles) {
 // Mapping: source dir → target dir (lets us pull from public/ but emit as dist/assets/)
 const extraDirs = [
   { src: 'assets/zodiac', dst: 'assets/zodiac' },
+  { src: 'assets/icons', dst: 'assets/icons' },  // ไอคอนทองแทนอีมูจิ (13 ต.ค.69)
   { src: 'assets/pack-cards', dst: 'assets/pack-cards' },  // ไพ่ซองดวง 12 ราศี (13 ต.ค.69)
   { src: 'public/pick-a-card', dst: 'pick-a-card', recursive: true },  // Pick-a-Card เว็บย่อย (78 ไพ่ + js + css + data)
 ];

@@ -78,7 +78,20 @@ describe('member hub', () => {
       expect(typeof g.story).toBe('string');
       expect(g.story.length).toBeGreaterThan(30);
       expect(g.story).toContain('ผู้ที่ได้ไพ่ใบนี้');
+      expect(g.fx.join(' ')).not.toMatch(/[💼💰💕📜✉️💎🌟👑]/);
     });
+  });
+
+  it('renders gold icons instead of emoji', () => {
+    const hub = loadHub(dom);
+    dom.window.localStorage.setItem('starvia_premium', 'true');
+    hub.claimPack();
+    hub.render();
+    const html = dom.window.document.getElementById('member-hub').innerHTML;
+    expect(html).toContain('assets/icons/work.png');
+    expect(html).toContain('assets/icons/money.png');
+    expect(html).toContain('assets/icons/love.png');
+    expect(html).toContain('assets/icons/story.png');
   });
 
   it('shows a show-off button after claiming', () => {
