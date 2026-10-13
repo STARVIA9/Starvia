@@ -219,6 +219,23 @@ body.senior .quota-meter{font-size:15px;color:#7a4a00}
 .moon-live{font-size:17px;color:var(--g2);font-weight:700;margin-bottom:8px}
 .moon-next{font-size:13px;color:var(--tx2)}
 .pack-god-img{width:150px;border-radius:12px;box-shadow:0 10px 26px rgba(0,0,0,.5);margin-bottom:10px}
+/* ตราประจำใบ + แสงตามธาตุ (13 ต.ค.69 — พ่อสั่ง: เอกลักษณ์รายใบ เรืองแสงต่างกัน) */
+.god-mark{font-size:17px;font-weight:700;letter-spacing:.06em;margin:6px 0 2px;color:var(--g2);animation:godPulse 2.6s ease-in-out infinite}
+@keyframes godPulse{0%,100%{text-shadow:0 0 8px rgba(214,173,69,.35)}50%{text-shadow:0 0 22px rgba(214,173,69,.9)}}
+.pack-open.el-fire{box-shadow:0 0 30px rgba(255,140,60,.30)}
+.pack-open.el-fire .god-mark{color:#ffc38a;animation-name:godPulseFire}
+@keyframes godPulseFire{0%,100%{text-shadow:0 0 8px rgba(255,140,60,.4)}50%{text-shadow:0 0 24px rgba(255,160,80,.95)}}
+.pack-open.el-earth{box-shadow:0 0 30px rgba(156,204,101,.28)}
+.pack-open.el-earth .god-mark{color:#c5e1a5;animation-name:godPulseEarth}
+@keyframes godPulseEarth{0%,100%{text-shadow:0 0 8px rgba(156,204,101,.4)}50%{text-shadow:0 0 24px rgba(190,230,140,.95)}}
+.pack-open.el-air{box-shadow:0 0 30px rgba(206,147,216,.30)}
+.pack-open.el-air .god-mark{color:#e1bee7;animation-name:godPulseAir}
+@keyframes godPulseAir{0%,100%{text-shadow:0 0 8px rgba(206,147,216,.4)}50%{text-shadow:0 0 24px rgba(225,190,231,.95)}}
+.pack-open.el-water{box-shadow:0 0 30px rgba(129,212,250,.30)}
+.pack-open.el-water .god-mark{color:#b3e5fc;animation-name:godPulseWater}
+@keyframes godPulseWater{0%,100%{text-shadow:0 0 8px rgba(129,212,250,.4)}50%{text-shadow:0 0 24px rgba(180,230,255,.95)}}
+@media (prefers-reduced-motion:reduce){.god-mark{animation:none}}
+body.senior .god-mark{font-size:19px;color:#7a4a00;animation:none;text-shadow:none}
 /* ✨ ตัวหนังสือศักดิ์สิทธิ์ (13 ต.ค.69 — พ่อสั่ง: ตัวเล็กไม่ส่ง ต้องมีแสง พรีเมียม) */
 .pack-rar{font-size:16px;letter-spacing:.2em;color:var(--g2);font-weight:700;text-shadow:0 0 14px rgba(214,173,69,.55)}
 .pack-rar::after{content:"❖ ─── ❖";display:block;font-size:12px;letter-spacing:.4em;color:#d4af3766;margin-top:6px}

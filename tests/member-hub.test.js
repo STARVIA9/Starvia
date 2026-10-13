@@ -68,17 +68,20 @@ describe('member hub', () => {
     expect(hub.isMember()).toBe(true);
   });
 
-  it('gives every god 3 fortune effects and a story', () => {
+  it('gives every god 5 fortune effects, a story, a mark and an element', () => {
     const hub = loadHub(dom);
     expect(hub.GODS.length).toBe(12);
     hub.GODS.forEach((g) => {
       expect(Array.isArray(g.fx)).toBe(true);
-      expect(g.fx.length).toBe(3);
-      expect(g.fx.join(' ')).toMatch(/งาน.*เงิน.*รัก/s);
+      expect(g.fx.length).toBe(5);
+      expect(g.fx.join(' ')).toMatch(/งาน.*เงิน.*รัก.*สุขภาพ.*โชคลาภ/s);
+      expect(g.fx.join(' ')).not.toMatch(/[💼💰💕📜✉️💎🌟👑]/);
       expect(typeof g.story).toBe('string');
       expect(g.story.length).toBeGreaterThan(30);
       expect(g.story).toContain('ผู้ที่ได้ไพ่ใบนี้');
-      expect(g.fx.join(' ')).not.toMatch(/[💼💰💕📜✉️💎🌟👑]/);
+      expect(typeof g.mark).toBe('string');
+      expect(g.mark.length).toBeGreaterThan(5);
+      expect(['fire', 'earth', 'air', 'water']).toContain(g.el);
     });
   });
 
