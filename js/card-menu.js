@@ -150,6 +150,17 @@
     root.classList.remove('cm-menu');
     root.classList.add('cm-doc');
     en.el.classList.add('cm-open');
+    // 13 ต.ค.69 พ่อสั่ง: จิ้มการ์ดแล้วต้องเห็นเนื้อหาเลย — กาง section ที่พับไว้ทุกครั้ง
+    if (en.el.classList.contains('collapsible-section')) {
+      en.el.classList.remove('collapsed');
+      var eb = en.el.querySelector('.section-body');
+      var et = en.el.querySelector('.section-toggle');
+      if (et) et.setAttribute('aria-expanded', 'true');
+      if (eb) {
+        eb.style.removeProperty('--section-h');
+        requestAnimationFrame(function(){ eb.style.setProperty('--section-h', eb.scrollHeight + 'px'); });
+      }
+    }
     if (typeof window !== 'undefined' && window.SocialProof && window.SocialProof.trackRead) {
       window.SocialProof.trackRead(root.id || 'r0');
     }

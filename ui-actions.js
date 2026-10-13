@@ -528,6 +528,8 @@ function onPremiumVerified(token) {
 // ===== COLLAPSIBLE SECTIONS =====
 function initCollapsibleSections() {
   document.querySelectorAll('.collapsible-section').forEach(function(section) {
+    if (section.dataset.csBound) return; // ponytail: กันผูก listener ซ้ำ (จิ้มครั้งเดียวต้องสลับครั้งเดียว)
+    section.dataset.csBound = '1';
     var body = section.querySelector('.section-body');
     var toggle = section.querySelector('.section-toggle');
     if (!body || !toggle) return;
