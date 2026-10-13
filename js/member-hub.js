@@ -300,6 +300,51 @@ var MemberHub = (function() {
       + '<div class="album-count">สะสมแล้ว ' + album.length + ' ใบ</div>';
   }
 
+  // ─── สถานะสมาชิก: เหลืออีกกี่วัน (13 ต.ค.69 พ่อสั่งโชว์ที่โซนสมาชิก) ───
+  // อ่านวันหมดอายุจาก JWT ที่ได้ตอนกรอก PIN (โชว์อย่างเดียว ไม่เปลี่ยนสิทธิ์)
+  function premiumDaysLeft(){
+    try {
+      var tok = localStorage.getItem('starviaPremiumToken');
+      if (tok) {
+        var parts = String(tok).split('.');
+        if (parts.length === 3) {
+          var b64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+          while (b64.length % 4) b64 += '=';
+          var payload = JSON.parse(atob(b64));
+          if (payload && payload.exp) {
+            var msLeft = payload.exp * 1000 - Date.now();
+            if (msLeft <= 0) return { state: 'expired' };
+            var days = Math.ceil(msLeft / 86400000);
+            return { state: 'active', days: days };
+          }
+        }
+      }
+      var raw = localStorage.getItem('starvia_streak_premium');
+      if (raw) {
+        var sd = JSON.parse(raw);
+        if (sd && sd.unlocked && sd.expiresAt > Date.now()) {
+          var hrs = Math.max(1, Math.ceil((sd.expiresAt - Date.now()) / 3600000));
+          return { state: 'trial', hours: hrs };
+        }
+      }
+    } catch (e) {}
+    return { state: 'unknown' };
+  }
+
+  function memberStatusHtml(){
+    var s = premiumDaysLeft();
+    if (s.state === 'active') {
+      return '<div class="member-status">💎 สมาชิก · เหลืออีก ' + s.days + ' วัน</div>';
+    }
+    if (s.state === 'trial') {
+      return '<div class="member-status">🎁 สิทธิ์ทดลอง · เหลืออีก ' + s.hours + ' ชม.</div>';
+    }
+    if (s.state === 'expired') {
+      return '<div class="member-status member-expired">⏳ PIN หมดอายุแล้ว — กรอก PIN ใหม่เพื่อต่ออายุ</div>';
+    }
+    return '<div class="member-status">💎 สมาชิก</div>';
+  }
+
   function render(){
     var hub = $('member-hub');
     if (!hub) return;
@@ -307,6 +352,7 @@ var MemberHub = (function() {
     var member = isMember();
     var html = '<div class="section-pill">🎁 โซนสมาชิก</div>'
       + '<h2 class="section-title">ทุกเดือนมีให้ลุ้น</h2>';
+    if (member) html += memberStatusHtml();
 
     // ก. ซองดวงรายเดือน
     var claim = getClaim(ym);
