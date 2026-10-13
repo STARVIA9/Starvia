@@ -57,6 +57,7 @@ const otherFiles = [
   'assets/og-share-story.jpg',
   'assets/qr-payment.jpg',
   'assets/pack-ad.png',
+  'assets/parchment.png',  // พื้นกระดาษโบราณให้ตำนาน+คำทำนาย (13 ต.ค.69)
   'privacy.html',
   'terms.html',
   'about.html',
