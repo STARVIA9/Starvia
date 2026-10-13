@@ -71,7 +71,7 @@ var UI = {
     mn:'คาถาประจำใจ', cm:'คาถาแห่งคู่ชีวิต', am:'คาถาเปิดฤกษ์',
     cv2:'ดาวสองดวงที่ส่องแสงต่างกัน ไม่ได้แข่งกัน แต่ร่วมกันทำให้คืนนั้นสวยงาม',
     av:'เวลาที่ดีที่สุดคือเวลาที่ท่านพร้อมที่สุด — ดาวเป็นเพียงแสงนำทาง ฝีเท้าเป็นของท่านเอง',
-    r0:'↩ ดูดวงใหม่', r1:'↩ ดูดวงคู่ใหม่', r2:'↩ ดูฤกษ์คนใหม่',
+    r0:'↩ กลับไปแก้วันเกิด', r1:'↩ ดูดวงคู่ใหม่', r2:'↩ ดูฤกษ์คนใหม่',
     ct:['♡ ภาพรวม','✦ ธาตุ','◈ ราศี','◉ ลัคนา','★ แนวทาง'],
     cs:['ดวงความรักโดยรวม','ความสัมพันธ์ทางธาตุ','ตำแหน่งราศีสัมพันธ์','ลัคนาและตัวตนภายใน','แนวทางเสริมสร้างความสัมพันธ์'],
     ec:'ธาตุเสริม', pc:'ดาวสัมพันธ์', rc:'ราศีสัมพันธ์', lc:'ลัคนาเสริม',
@@ -106,7 +106,7 @@ var UI = {
     mn:'Guiding Mantra', cm:"Couple's Mantra", am:'Opening Mantra',
     cv2:'Two stars shining differently are not competing — together they make the night more beautiful.',
     av:'The best time is when you are most ready. The stars light your path — the steps are yours to take.',
-    r0:'↩ New Reading', r1:'↩ New Couple Reading', r2:'↩ New Reading',
+    r0:'↩ Back to edit birthdate', r1:'↩ New Couple Reading', r2:'↩ New Reading',
     ct:['♡ Overview','✦ Elements','◈ Signs','◉ Lagna','★ Guidance'],
     cs:['Compatibility Overview','Elemental Relationship','Sign Position','Lagna & Inner Self','Relationship Guidance'],
     ec:'Element Match', pc:'Planet Harmony', rc:'Sign Angle', lc:'Lagna Match',
@@ -615,6 +615,9 @@ var PLC = [[75,85,70,80,90,65,60],[85,70,65,80,85,90,55],[70,65,75,65,70,55,80],
 function bindUIEvents(){
   var byId = function(id){ return document.getElementById(id); };
 
+  // มิเตอร์โควต้าดูฟรีรายวัน
+  if (typeof updateQuotaMeters === 'function') { try { updateQuotaMeters(); } catch (_) {} }
+
   var lbtn = byId('lbtn');
   if(lbtn) lbtn.addEventListener('click', toggleLang);
 
@@ -666,6 +669,12 @@ function bindUIEvents(){
       resetM(parseInt(act.getAttribute('data-mode'), 10));
     } else if (action === 'clear-mode') {
       clearM(parseInt(act.getAttribute('data-mode'), 10));
+    } else if (action === 'quota-share') {
+      // แชร์แลกโควต้า: ใช้ช่องทางแชร์จริงเท่านั้น (โบนัสให้ใน recordShare)
+      if (typeof ShareViral !== 'undefined') {
+        if (navigator.share && ShareViral.nativeShare) { ShareViral.nativeShare(); }
+        else if (ShareViral.copyShareLink) { ShareViral.copyShareLink(); }
+      }
     } else if (action === 'open-payment' || action === 'unlock-premium') {
       openPayment();
     } else if (action === 'close-payment') {

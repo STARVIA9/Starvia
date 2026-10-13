@@ -400,6 +400,77 @@ function clearM(mode){
   resetM(mode);
 }
 
+// ===== Daily Reading Quota (12 ต.ค.69) =====
+// ฟรีวันละ 3 ดวง (ทุกโหมดรวมกัน) พรีเมียมไม่จำกัด แชร์แลกเพิ่มได้สูงสุด +2/วัน
+// pattern เดียวกับ tarot free tier (starvia_tarot_count)
+var READ_FREE_PER_DAY = 3;
+var READ_BONUS_PER_DAY = 2;
+var READ_COUNT_KEY = 'starvia_read_count';
+
+function readQuotaToday(){
+  var d = new Date();
+  var today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  var data = { date: today, count: 0, bonus: 0 };
+  try {
+    var raw = localStorage.getItem(READ_COUNT_KEY);
+    if (raw) {
+      var s = JSON.parse(raw);
+      if (s && s.date === today) {
+        data.count = s.count | 0;
+        data.bonus = Math.min(s.bonus | 0, READ_BONUS_PER_DAY);
+      }
+    }
+  } catch (_) {}
+  return data;
+}
+
+function getDailyReadCount(){ return readQuotaToday().count; }
+
+function getRemainingReads(){
+  var q = readQuotaToday();
+  return Math.max(0, READ_FREE_PER_DAY + q.bonus - q.count);
+}
+
+function canReadFree(){ return getRemainingReads() > 0; }
+
+function incrementDailyReadCount(){
+  var q = readQuotaToday();
+  q.count++;
+  try { localStorage.setItem(READ_COUNT_KEY, JSON.stringify(q)); } catch (_) {}
+  updateQuotaMeters();
+}
+
+function grantShareBonus(){
+  var q = readQuotaToday();
+  if (q.bonus >= READ_BONUS_PER_DAY) return false;
+  q.bonus++;
+  try { localStorage.setItem(READ_COUNT_KEY, JSON.stringify(q)); } catch (_) {}
+  updateQuotaMeters();
+  return true;
+}
+
+function updateQuotaMeters(){
+  var left = getRemainingReads();
+  var ids = ['q0', 'q1', 'q2'];
+  for (var i = 0; i < ids.length; i++) {
+    var el = (typeof document !== 'undefined') ? document.getElementById(ids[i]) : null;
+    if (el) el.textContent = 'โควต้าดูฟรีวันนี้ เหลือ ' + left + '/' + READ_FREE_PER_DAY + ' ดวง';
+  }
+}
+
+// การ์ดล็อกเมื่อโควต้าหมด — มีทางออก 2 ทาง (จ่าย / แชร์แลกเพิ่ม)
+function renderQuotaLock(wrap){
+  var bonusLeft = READ_BONUS_PER_DAY - readQuotaToday().bonus;
+  wrap.innerHTML = '<div class="mc"><div class="mc-l">✦ โควต้าวันนี้หมดแล้ว ✦</div>'
+    + '<div class="mc-t">"ดวงของคุณมีค่า อย่าใช้หมดในวันเดียว"</div>'
+    + '<p style="font-size:14px;line-height:1.9;color:var(--tx2)">วันนี้ดูครบ ' + READ_FREE_PER_DAY + ' ดวงแล้ว กลับมาใหม่พรุ่งนี้ หรือปลดล็อกดูไม่จำกัด</p>'
+    + '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px">'
+    + '<button class="rbtn rbtn-clear" data-action="open-payment">✦ ปลดล็อกไม่จำกัด 199/เดือน</button>'
+    + (bonusLeft > 0 ? '<button class="rbtn" data-action="quota-share">📤 แชร์แลกดูเพิ่ม (เหลือ ' + bonusLeft + ')</button>' : '')
+    + '</div></div>';
+  if (typeof CardMenu !== 'undefined' && CardMenu.build) { try { CardMenu.build(wrap.id); } catch (_) {} }
+}
+
 // ═══ Lottery Results Card ═══
 function loadLotteryResults(){
   var section = document.getElementById('lottery-results-section');

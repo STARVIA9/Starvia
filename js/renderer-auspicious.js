@@ -5,6 +5,11 @@
 
 function go2(){
   var ds=document.getElementById('d2').value; if(!ds)return;
+  // โควต้ารายวัน (พรีเมียมไม่จำกัด)
+  if (!premiumIsUnlocked()) {
+    if (!canReadFree()) { renderQuotaLock(document.getElementById('r2')); return; }
+    incrementDailyReadCount();
+  }
   var u=U(), PL2=getPL();
   var nm=document.getElementById('n2').value||(u.pdef||'บุคคลนี้');
   var pw=new Date(ds).getDay(), p=PL2[pw];

@@ -207,6 +207,12 @@
       if (window.Gamification && window.Gamification.completeChallenge) {
         window.Gamification.completeChallenge('share-result');
       }
+
+      // แชร์แลกโควต้าดูดวงเพิ่ม (สูงสุด +2/วัน)
+      try {
+        if (typeof grantShareBonus === 'function' && grantShareBonus()
+          && typeof updateQuotaMeters === 'function') { updateQuotaMeters(); }
+      } catch (e) { /* ignore */ }
     } catch(e) { /* ignore */ }
   }
 

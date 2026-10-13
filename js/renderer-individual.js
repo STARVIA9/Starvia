@@ -422,6 +422,11 @@ function buildMonthlyLifeMapHtml(model, premiumUnlocked){
 // ===== MODE 0: Individual =====
 function go0(){
   var ds=document.getElementById('d0').value; if(!ds)return;
+  // โควต้ารายวัน (พรีเมียมไม่จำกัด)
+  if (!premiumIsUnlocked()) {
+    if (!canReadFree()) { renderQuotaLock(document.getElementById('r0')); return; }
+    incrementDailyReadCount();
+  }
   var u=U(), PL2=getPL(), RA2=getRA();
   var nm=document.getElementById('n0').value||(u.pdef||'บุคคลนี้');
   var gd=document.getElementById('g0').value;
@@ -1187,17 +1192,15 @@ function renderInd(nm,gd,ds,ts,p,r,l,ri,li,u, birthDay, birthMonth, birthYearBE)
   // Load lottery results after report renders
   if (typeof loadLotteryResults === 'function') setTimeout(loadLotteryResults, 400);
   
-  // Insert content AFTER the tabs section (not inside tabs)
-  var tabsCard = document.querySelector('.detail-tabs-card');
-  if (tabsCard) {
-    tabsCard.insertAdjacentHTML('afterend',
-      '<div class="mc"><div class="mc-l">✦ '+u.mn+' · '+nm+' ✦</div>'
-      +'<div class="mc-t">"'+p.man+'"</div></div>'
-      + '<div id="ind-share-section" class="ind-share-section"></div>'
-      + consultHtml
-      +'<div class="rbt"><button class="rbtn" data-action="reset-mode" data-mode="0">'+u.r0+'</button> <button class="rbtn rbtn-clear" data-action="clear-mode" data-mode="0">🗑 ล้างข้อมูลดูใหม่</button></div>'
-    );
-  }
+  // Insert closing block at report end (top-level) so buttons stay visible
+  // in card-menu mode too (same pattern as renderer-couple.js)
+  wrap.insertAdjacentHTML('beforeend',
+    '<div class="mc"><div class="mc-l">✦ '+u.mn+' · '+nm+' ✦</div>'
+    +'<div class="mc-t">"'+p.man+'"</div></div>'
+    + '<div id="ind-share-section" class="ind-share-section"></div>'
+    + consultHtml
+    +'<div class="rbt"><button class="rbtn" data-action="reset-mode" data-mode="0">'+u.r0+'</button> <button class="rbtn rbtn-clear" data-action="clear-mode" data-mode="0">🗑 ล้างข้อมูล ดูคนใหม่</button></div>'
+  );
 
   // Render personalized share buttons
   if (typeof ShareViral !== 'undefined' && ShareViral.renderPersonalizedShare) {

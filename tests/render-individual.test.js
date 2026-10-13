@@ -587,3 +587,16 @@ describe('Monthly Life Map subscription feature', () => {
     expect(phaseElements.length).toBe(5);
   });
 });
+
+describe('Report closing buttons (12 ต.ค.69)', () => {
+  it('places .rbt top-level so it stays visible in card-menu mode', () => {
+    const dom = new JSDOM('<!doctype html><div id="r0"></div><div id="ts0"></div>', { url: 'http://localhost' });
+    const context = loadContext(dom);
+    context.renderInd('Test', 'หญิง', '2000-06-15', '08:30', samplePlanet('ไฟ'), sampleSign(), sampleSign(), 0, 0, sampleUi());
+    const rbt = dom.window.document.querySelector('#r0 > .rbt');
+    expect(rbt).toBeTruthy();
+    expect(rbt.innerHTML).toContain('data-action="reset-mode"');
+    expect(rbt.innerHTML).toContain('data-action="clear-mode"');
+    expect(rbt.textContent).toContain('ล้างข้อมูล ดูคนใหม่');
+  });
+});

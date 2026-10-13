@@ -4,6 +4,11 @@
 function go1(){
   var da=document.getElementById('d1a').value, db=document.getElementById('d1b').value;
   if(!da)return;
+  // โควต้ารายวัน (พรีเมียมไม่จำกัด)
+  if (!premiumIsUnlocked()) {
+    if (!canReadFree()) { renderQuotaLock(document.getElementById('r1')); return; }
+    incrementDailyReadCount();
+  }
   var u=U(), PL2=getPL(), RA2=getRA();
   var def=u.def||['คนที่หนึ่ง','คนที่สอง'];
   var na=document.getElementById('n1a').value||def[0];
