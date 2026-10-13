@@ -385,17 +385,17 @@ describe('Free reader conversion reading order', () => {
     expect(tabsCard.textContent).not.toContain('อ่านรายละเอียดพื้นฐาน');
   });
 
-  it('locks all tabs for premium readers', () => {
+  it('locks all stacked sections for premium readers', () => {
     const dom = new JSDOM('<!doctype html><div id="r0"></div><div id="ts0"></div>', { url: 'http://localhost' });
     const context = loadContext(dom);
 
     context.renderInd('Test', 'หญิง', '2000-06-15', '08:30', samplePlanet('ไฟ'), sampleSign(), sampleSign(), 0, 0, sampleUi());
-    const tabs = Array.from(dom.window.document.querySelectorAll('#tt0 .tab'));
+    const secs = Array.from(dom.window.document.querySelectorAll('#ts0 .stack-sec'));
 
-    expect(tabs.length).toBe(4);
-    tabs.forEach((tab) => {
-      expect(tab.querySelector('.tab-lock')).toBeTruthy();
-      expect(tab.textContent).toContain('🔒');
+    expect(secs.length).toBe(4);
+    secs.forEach((sec) => {
+      expect(sec.classList.contains('is-locked')).toBe(true);
+      expect(sec.querySelector('.lock-overlay')).toBeTruthy();
     });
   });
 
@@ -423,23 +423,23 @@ describe('Free reader conversion reading order', () => {
     expect(output).not.toContain('karma-card collapsed');
   });
 
-  it('renders separate free tabs for self, relationship, career, and money and each tab opens', () => {
+  it('renders all four detail sections stacked with no tab clicks needed', () => {
     const dom = new JSDOM('<!doctype html><div id="r0"></div><div id="ts0"></div>', { url: 'http://localhost' });
     const context = loadContext(dom);
 
     context.renderInd('Test', 'หญิง', '2000-06-15', '08:30', samplePlanet('ไฟ'), sampleSign(), sampleSign(), 0, 0, sampleUi());
     const tabsCard = dom.window.document.querySelector('.detail-tabs-card');
-    const tabs = Array.from(dom.window.document.querySelectorAll('#tt0 .tab'));
-    const labels = tabs.map((node) => node.textContent);
+    const secs = Array.from(dom.window.document.querySelectorAll('#ts0 .stack-sec'));
+    const heads = secs.map((node) => node.querySelector('.stack-sec-title')?.textContent);
 
     expect(tabsCard).toBeTruthy();
-    expect(labels).toEqual(['👤ตัวตน🔒', '💞คู่สัมพันธ์🔒', '💼การงาน🔒', '💰การเงิน🔒']);
+    // ไม่มีปุ่มแท็ปแล้ว — เปิดครั้งเดียวเห็นทั้ง 4 หมวด
+    expect(dom.window.document.querySelectorAll('#tt0 .tab').length).toBe(0);
+    expect(heads).toEqual(['ตัวตน', 'คู่สัมพันธ์', 'การงาน', 'การเงิน']);
 
-    tabs.forEach((tab, index) => {
-      tab.click();
-      expect(tab.classList.contains('on')).toBe(true);
-      const sections = Array.from(dom.window.document.querySelectorAll('#ts0 .sec'));
-      expect(sections[index].classList.contains('on')).toBe(true);
+    // ทั้ง 4 หมวดอยู่ใน DOM พร้อมกัน ไม่ต้องคลิกสลับ
+    secs.forEach((sec) => {
+      expect(sec.querySelector('.tab-section-card')).toBeTruthy();
     });
   });
 });

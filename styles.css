@@ -2256,6 +2256,12 @@ body.senior .pack-story p{font-size:18px;color:#111}
   color: var(--g);
   box-shadow: 0 0 12px rgba(201,162,39,.10);
 }
+/* Stacked detail (13 ต.ค.69: รวม 4 แท็ปเป็นหน้ายาว จิ้มครั้งเดียวเห็นหมด) */
+.stacked-detail{display:flex;flex-direction:column;gap:20px}
+.stack-sec-head{display:flex;align-items:center;gap:8px;margin:2px 0 10px}
+.stack-sec-icon{font-size:16px;line-height:1}
+.stack-sec-title{margin:0;font-size:15px;font-weight:800;letter-spacing:.04em;color:var(--g)}
+.stack-sec:last-child{margin-bottom:0}
 
 
 

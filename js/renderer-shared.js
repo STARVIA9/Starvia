@@ -240,6 +240,49 @@ function buildTabs(tid,sid,pre,TB,p,u){
   }
 }
 
+// ===== รายละเอียดแบบหน้ายาว (13 ต.ค.69 พ่อสั่ง: จิ้มครั้งเดียวเห็นหมด) =====
+// แทน buildTabs สำหรับรีพอร์ตดูดวงตัวเอง — เรนเดอร์ทั้ง 4 หมวดต่อกันยาวๆ
+// ไม่ต้องจิ้มแท็ปข้างในอีก ใช้ teaser/lock เดิมต่อหมวดเหมือน buildTabs
+function buildStackedDetail(sid, pre, TB, p, u){
+  var host = document.getElementById(sid);
+  if (!host || !TB) return;
+  var secIcons = ['👤', '💞', '💼', '💰'];
+  TB.forEach(function(tb, i){
+    var sec = document.createElement('section');
+    sec.className = 'stack-sec';
+    sec.id = pre + i;
+    var isLocked = !premiumIsUnlocked(); // ทุกหมวด = Premium เหมือน buildTabs
+    if (isLocked) sec.classList.add('is-locked');
+    var html = '<div class="stack-sec-head"><span class="stack-sec-icon" aria-hidden="true">'
+      + (secIcons[i] || '✦') + '</span><h3 class="stack-sec-title">' + tb.lb + '</h3></div>';
+    if (isLocked) {
+      var teaser = buildTabTeaser(tb, i, p);
+      if (teaser) html += '<div class="lock-preview-text">' + teaser + '</div>';
+      html += '<div class="locked-content">';
+    }
+    tb.secs.forEach(function(s){
+      html += '<div class="tab-section-card">'
+        + '<div class="tsc-header"><span class="tsc-icon">✦</span><span class="tsc-title">' + s.t + '</span></div>'
+        + '<div class="tsc-body">';
+      if (s.c === 'habits') {
+        p.hb.forEach(function(h, n){ html += '<div class="hi"><div class="hn">' + (n+1) + '</div><div class="ht">' + h + '</div></div>'; });
+      } else {
+        html += '<div class="rb">' + s.c + '</div>';
+      }
+      html += '<div class="tsc-ref"><span class="tsc-ref-dot">🔍</span>' + u.rf + ' ' + s.rf + '</div>'
+        + '</div></div>';
+    });
+    if (isLocked) {
+      html += buildPremiumLockOverlay(
+        'เนื้อหาเจาะลึกเฉพาะคุณ (Premium)',
+        'ปลดล็อกเพื่ออ่านกระจกกรรม วิเคราะห์ 6 ด้าน อดีต-ปัจจุบัน-อนาคต และคำแนะนำที่นำไปใช้ได้จริง'
+      ) + '</div>';
+    }
+    sec.innerHTML = html;
+    host.appendChild(sec);
+  });
+}
+
 // ===== เหตุเสริมแกร่งธาตุ (Dharma Gift — ฟรีสำหรับทุกคน) =====
 // Shared between individual reading (mode 0) and auspicious reading (mode 2)
 // Data: ทาน · จิตบริสุทธิ์ · เมตตา · ปัญญา — personalized by birth element

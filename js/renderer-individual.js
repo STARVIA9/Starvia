@@ -1084,8 +1084,7 @@ function renderInd(nm,gd,ds,ts,p,r,l,ri,li,u, birthDay, birthMonth, birthYearBE)
     + '</div>';
 
 
-  var detailTabsShellHtml = '<div class="detail-tabs-card">'
-    + '<div class="tabs-w"><div class="tabs" id="tt0"></div></div><div id="ts0"></div>'
+  var detailTabsShellHtml = '<div class="detail-tabs-card"><div id="ts0" class="stacked-detail"></div>'
     + '</div>';
 
   var badgesHtml = '';
@@ -1166,7 +1165,7 @@ function renderInd(nm,gd,ds,ts,p,r,l,ri,li,u, birthDay, birthMonth, birthYearBE)
     {lb:'การเงิน', secs:[{t:u.s0[5], c:p.mn, rf:refDesc.mn}]}
   ];
 
-  buildTabs('tt0','ts0','s0_',TB,p,u);
+  buildStackedDetail('ts0','s0_',TB,p,u);
 
   // 7. กล่องนัดหมายส่วนตัว (ลิงก์ Inbox ของคุณ)
   var consultHtml = '<div class="private-consult-card">'
@@ -1263,7 +1262,7 @@ function buildRahuKetuHtml(dayOfWeek) {
     html += '<div class="rk-transit-period">⏱️ ' + escapeHTML(ct.period||'') + '</div>';
     html += '<div class="rk-transit-meaning">' + escapeHTML(ct.meaning||'') + '</div>';
     if (ct.affectedDays && ct.affectedDays.length) {
-      html += '<div class="rk-transit-affected">⚠️ คนเกิดวัน<strong>' + ct.affectedDays.join('</strong>, <strong>') + '</strong> โดนหนัก</div>';
+      html += '<div class="rk-transit-affected">⚠️ คนเกิดวัน<strong>' + ct.affectedDays.join('</strong>, <strong>') + '</strong> ได้รับผลมากในช่วงนี้</div>';
     }
     if (ct.advice) html += '<div class="rk-advice">💡 ' + escapeHTML(ct.advice) + '</div>';
     html += '</div>';
@@ -1272,8 +1271,9 @@ function buildRahuKetuHtml(dayOfWeek) {
   // Rahu by sign table
   if (rk.rahuBySign) {
     html += '<div class="rk-section">';
-    html += '<div class="rk-subtitle">📊 ราหูอยู่ราศีไหน = คนเกิดวันไหนโดน</div>';
-    html += '<table class="rk-table"><thead><tr><th>ราศี</th><th>โดนหนัก</th><th>เปลี่ยนเรื่อง</th></tr></thead><tbody>';
+    html += '<div class="rk-subtitle">📊 ตาราง 12 ราศี — หาแถวราศีตัวเองอ่านบรรทัดเดียวพอ</div>';
+    html += '<details class="rk-details"><summary>เปิดดูตารางทั้ง 12 ราศี</summary>';
+    html += '<table class="rk-table"><thead><tr><th>ราศี</th><th>ได้ผลมาก</th><th>เปลี่ยนเรื่อง</th></tr></thead><tbody>';
     var signs = ['เมษ','พฤษภ','เมถุน','กรกฎ','สิงห์','กันย์','ตุลย์','พิจิก','ธนู','มังกร','กุมภ์','มีน'];
     signs.forEach(function(s) {
       var data = rk.rahuBySign[s];
@@ -1282,16 +1282,16 @@ function buildRahuKetuHtml(dayOfWeek) {
       var rowCls = isCurrent ? 'rk-row-current' : '';
       html += '<tr class="' + rowCls + '"><td>' + (data.emoji||'') + ' ' + s + (isCurrent ? ' 🔵' : '') + '</td><td>' + escapeHTML(data.affected) + '</td><td>' + escapeHTML(data.topic) + '</td></tr>';
     });
-    html += '</tbody></table></div>';
+    html += '</tbody></table></details></div>';
   }
 
   // Per-birth-day effects
   if (rk.rahu && rk.rahu[dayName]) {
     var rh = rk.rahu[dayName];
     html += '<div class="rk-section">';
-    html += '<div class="rk-subtitle">🌑 ราหูกระทบคนเกิดวัน' + dayName + '</div>';
-    html += '<div class="rk-impact"><strong>ผลกระทบ:</strong> ' + escapeHTML(rh.impact) + '</div>';
-    html += '<div class="rk-change"><strong>สิ่งที่เปลี่ยน:</strong> ' + escapeHTML(rh.change) + '</div>';
+    html += '<div class="rk-subtitle">🌑 ราหูกับคนเกิดวัน' + dayName + '</div>';
+    html += '<div class="rk-impact"><strong>จะเกิดอะไร:</strong> ' + escapeHTML(rh.impact) + '</div>';
+    html += '<div class="rk-change"><strong>เปลี่ยนเรื่อง:</strong> ' + escapeHTML(rh.change) + '</div>';
     if (rh.advice) html += '<div class="rk-advice"><strong>💡 วิธีรับมือ:</strong> ' + escapeHTML(rh.advice) + '</div>';
     html += '</div>';
   }
@@ -1300,9 +1300,9 @@ function buildRahuKetuHtml(dayOfWeek) {
   if (rk.ketu && rk.ketu[dayName]) {
     var kt = rk.ketu[dayName];
     html += '<div class="rk-section">';
-    html += '<div class="rk-subtitle">🌗 เกตุ — จุดปล่อยวางสำหรับคนเกิดวัน' + dayName + '</div>';
-    html += '<div class="rk-impact"><strong>ต้องปล่อย:</strong> ' + escapeHTML(kt.impact) + '</div>';
-    html += '<div class="rk-change"><strong>สิ่งที่เปลี่ยน:</strong> ' + escapeHTML(kt.change) + '</div>';
+    html += '<div class="rk-subtitle">🌗 เกตุ — เรื่องที่คนเกิดวัน' + dayName + 'ควรปล่อย</div>';
+    html += '<div class="rk-impact"><strong>ปล่อยเรื่อง:</strong> ' + escapeHTML(kt.impact) + '</div>';
+    html += '<div class="rk-change"><strong>ทำอย่างไร:</strong> ' + escapeHTML(kt.change) + '</div>';
     if (kt.advice) html += '<div class="rk-advice"><strong>💡 บทเรียน:</strong> ' + escapeHTML(kt.advice) + '</div>';
     html += '</div>';
   }
@@ -1310,7 +1310,7 @@ function buildRahuKetuHtml(dayOfWeek) {
   // Coping strategies
   if (rk.coping && rk.coping.length) {
     html += '<div class="rk-section">';
-    html += '<div class="rk-subtitle">🧭 วิธีรับมือเมื่อดาวย้าย</div>';
+    html += '<div class="rk-subtitle">🧭 ถึงช่วงเปลี่ยน ทำแบบนี้</div>';
     rk.coping.forEach(function(c) {
       html += '<div class="rk-coping-item"><strong>' + escapeHTML(c.situation) + '</strong>: ' + escapeHTML(c.action) + '</div>';
     });
