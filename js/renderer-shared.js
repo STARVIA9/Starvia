@@ -450,11 +450,13 @@ function grantShareBonus(){
 }
 
 function updateQuotaMeters(){
+  var premium = false;
+  try { if (typeof premiumIsUnlocked === 'function' && premiumIsUnlocked()) premium = true; } catch (_) {}
   var left = getRemainingReads();
   var ids = ['q0', 'q1', 'q2'];
   for (var i = 0; i < ids.length; i++) {
     var el = (typeof document !== 'undefined') ? document.getElementById(ids[i]) : null;
-    if (el) el.textContent = 'โควต้าดูฟรีวันนี้ เหลือ ' + left + '/' + READ_FREE_PER_DAY + ' ดวง';
+    if (el) el.textContent = premium ? 'สมาชิก: ดูไม่จำกัด ✦' : 'โควต้าดูฟรีวันนี้ เหลือ ' + left + '/' + READ_FREE_PER_DAY + ' ดวง';
   }
 }
 

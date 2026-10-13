@@ -32,6 +32,10 @@ var MemberHub = (function() {
   function isMember(){
     try {
       if (localStorage.getItem('starvia_premium') === 'true') return true;
+      // สดจาก session นี้: เพิ่งจ่าย PIN สำเร็จแต่ยังไม่ reload
+      if (typeof window !== 'undefined' && window.isPremiumUnlockedFlag === true) return true;
+      if (typeof premiumIsUnlocked === 'function' && premiumIsUnlocked()) return true;
+      if (typeof isPremiumUnlocked === 'function' && isPremiumUnlocked()) return true;
       if (typeof StreakReward !== 'undefined' && StreakReward.isPremiumUnlocked && StreakReward.isPremiumUnlocked()) return true;
     } catch (e) {}
     return false;

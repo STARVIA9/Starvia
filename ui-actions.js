@@ -496,12 +496,29 @@ function onPremiumVerified(token) {
 
   setTimeout(function() {
     setPremiumUnlocked(true, token);
+    // แฟล็กถาวรให้ทุกส่วนเห็นตรงกัน (โซนสมาชิก/ป้าย/โควต้า) + รีเฟรชโซนสมาชิกทันที
+    try { localStorage.setItem('starvia_premium', 'true'); } catch (e) {}
+    try {
+      if (typeof MemberHub !== 'undefined' && MemberHub.render) { MemberHub.render(); }
+      var promo = document.getElementById('promo-pack');
+      if (promo) promo.style.display = 'none';
+    } catch (e2) {}
 
     document.querySelectorAll('.is-locked').forEach(function(el) {
       el.classList.remove('is-locked');
       var overlay = el.querySelector('.lock-overlay');
       if(overlay) overlay.remove();
     });
+
+    // วาดรายงานที่เปิดอยู่ใหม่เป็นฉบับเต็มทันที (สมาชิกไม่ตัดโควต้า)
+    try {
+      var modes = [['r0', 'go0'], ['r1', 'go1'], ['r2', 'go2']];
+      for (var i = 0; i < modes.length; i++) {
+        var wrap = document.getElementById(modes[i][0]);
+        var fn = window[modes[i][1]];
+        if (wrap && wrap.innerHTML.trim().length > 100 && typeof fn === 'function') { fn(); break; }
+      }
+    } catch (e3) {}
 
     closePayment();
     window.scrollBy({ top: 150, behavior: 'smooth' });

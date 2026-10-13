@@ -61,6 +61,13 @@ describe('member hub', () => {
     expect(dom.window.document.getElementById('member-hub').textContent).toContain('เปิดซองดวงเดือนนี้');
   });
 
+  it('sees same-session paid unlock via memory flag', () => {
+    const hub = loadHub(dom);
+    expect(hub.isMember()).toBe(false);
+    dom.window.isPremiumUnlockedFlag = true;
+    expect(hub.isMember()).toBe(true);
+  });
+
   it('detects full-moon events from GENERATED_EVENTS', () => {
     const d = new Date();
     const today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
