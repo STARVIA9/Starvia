@@ -78,6 +78,17 @@ describe('member hub', () => {
     });
   });
 
+  it('shows a show-off button after claiming', () => {
+    const hub = loadHub(dom);
+    dom.window.localStorage.setItem('starvia_premium', 'true');
+    hub.claimPack();
+    hub.render();
+    const btn = dom.window.document.querySelector('[data-action="pack-share"]');
+    expect(btn).toBeTruthy();
+    expect(btn.textContent).toContain('อวดไพ่');
+    expect(typeof hub.sharePack).toBe('function');
+  });
+
   it('detects full-moon events from GENERATED_EVENTS', () => {
     const d = new Date();
     const today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');

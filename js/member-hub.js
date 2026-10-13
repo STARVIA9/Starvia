@@ -122,6 +122,66 @@ var MemberHub = (function() {
     return pack;
   }
 
+  // ─── อวดไพ่: รวมรูป+ข้อความเป็นการ์ดเดียวแล้วแชร์/โหลด ───
+  function sharePack(){
+    var ym = monthISO();
+    var claim = getClaim(ym);
+    if (!claim) return;
+    var W = 768, H = 1150;
+    var cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    var ctx = cv.getContext('2d');
+    var g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, '#120a2d'); g.addColorStop(1, '#070413');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    function drawText(){
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#D6AD45';
+      ctx.font = '700 44px Sarabun, sans-serif';
+      ctx.fillText('✦ STARVIA ✦', W / 2, 70);
+      ctx.fillStyle = '#F4D987';
+      ctx.font = '700 40px Sarabun, sans-serif';
+      ctx.fillText(RAR_EMO[claim.rarity] + ' ' + claim.god + ' · ' + claim.godName, W / 2, H - 210);
+      ctx.fillStyle = '#C9BDDF';
+      ctx.font = '32px Sarabun, sans-serif';
+      ctx.fillText('"' + claim.godBless + '"', W / 2, H - 160);
+      ctx.fillStyle = '#8E72D8';
+      ctx.font = '28px Sarabun, sans-serif';
+      ctx.fillText('เปิดซองดวงทุกวันที่ 1 · starvia.website', W / 2, H - 100);
+    }
+    function finish(){
+      drawText();
+      var done = function (blob) {
+        if (!blob) return;
+        var file = new File([blob], 'starvia-pack-' + ym + '.png', { type: 'image/png' });
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+          navigator.share({ files: [file], title: 'ไพ่เทพประจำเดือนของฉัน' }).catch(function () {});
+        } else {
+          var a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = file.name;
+          document.body.appendChild(a); a.click();
+          setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
+        }
+        try { if (typeof announce === 'function') announce('บันทึกรูปไพ่แล้ว'); } catch (e2) {}
+      };
+      if (cv.toBlob) cv.toBlob(done, 'image/png');
+    }
+    var img = new Image();
+    var settled = false;
+    var go = function () { if (!settled) { settled = true; finish(); } };
+    img.onload = function () {
+      try {
+        var iw = 560, ih = 560 * img.height / img.width;
+        ctx.drawImage(img, (W - iw) / 2, 110, iw, Math.min(ih, 720));
+      } catch (e) {}
+      go();
+    };
+    img.onerror = go;
+    img.src = 'assets/pack-cards/' + godImgFor(claim) + '.jpg';
+    setTimeout(go, 4000);
+  }
+
   // ─── ข. คืนจันทร์เต็มดวง ───
   var MOON_MSG = [
     'คืนนี้จันทร์เต็มดวง — เรื่องที่ค้างคาให้เขียนใส่กระดาษแล้วฉีกทิ้ง เป็นการปล่อยวางตามจันทรคติ',
@@ -230,6 +290,7 @@ var MemberHub = (function() {
       if (claim.rarity === 'rare') html += '<div class="pack-lucky">🔢 เลขลับของคุณ: <b>' + claim.lucky.join(' · ') + '</b></div>';
       if (claim.rarity === 'legendary') html += '<div class="pack-lucky">📿 คาถา: <b>' + esc(claim.mantra) + '</b><br>🌟 ฤกษ์ทองของคุณ: วันที่ ' + claim.goldDay + '</div>';
       if (claim.rarity === 'common') html += '<p class="pack-bless">"' + esc(claim.msg) + '"</p>';
+      html += '<div style="margin-top:12px"><button class="rbtn" data-action="pack-share">📤 อวดไพ่ใบนี้ให้เพื่อนดู</button></div>';
       html += '</div>' + albumHtml();
     }
     html += '</div>';
@@ -267,6 +328,7 @@ var MemberHub = (function() {
   var api = {
     init: init, render: render, renderHub: render,
     isMember: isMember, rollPack: rollPack, claimPack: claimPack, getClaim: getClaim, getAlbum: getAlbum,
+    sharePack: sharePack,
     moonState: moonState, checkin: checkin, checkinProgress: checkinProgress,
     monthISO: monthISO, GODS: GODS
   };

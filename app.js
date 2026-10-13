@@ -679,6 +679,10 @@ function bindUIEvents(){
       // เปิดซองดวงรายเดือน
       if (typeof MemberHub !== 'undefined' && MemberHub.claimPack) { MemberHub.claimPack(); }
       if (typeof announce === 'function') { announce('เปิดซองดวงแล้ว'); }
+    } else if (action === 'pack-share') {
+      // อวดไพ่: รวมเป็นการ์ดเดียวแล้วแชร์/โหลด (นับโควต้าแชร์ให้ด้วย)
+      if (typeof MemberHub !== 'undefined' && MemberHub.sharePack) { MemberHub.sharePack(); }
+      if (typeof ShareViral !== 'undefined' && ShareViral.recordShare) { try { ShareViral.recordShare('pack'); } catch (_) {} }
     } else if (action === 'open-payment' || action === 'unlock-premium') {
       openPayment();
     } else if (action === 'close-payment') {
