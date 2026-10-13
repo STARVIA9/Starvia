@@ -97,6 +97,15 @@ describe('member hub', () => {
     expect(html).toContain('assets/icons/story.png');
   });
 
+  it('shows sample gods before claiming', () => {
+    const hub = loadHub(dom);
+    dom.window.localStorage.setItem('starvia_premium', 'true');
+    hub.render();
+    const html = dom.window.document.getElementById('member-hub').innerHTML;
+    expect(html).toContain('ตัวอย่างไพ่ที่รอคุณ');
+    expect((html.match(/pack-sample-cell/g) || []).length).toBe(3);
+  });
+
   it('shows a show-off button after claiming', () => {
     const hub = loadHub(dom);
     dom.window.localStorage.setItem('starvia_premium', 'true');

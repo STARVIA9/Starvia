@@ -146,6 +146,9 @@ var CosmicEvents = (function() {
       var ctaLink = '#fc0';
       if (cta.indexOf('♡') !== -1) ctaLink = '#fc1';  // couple mode
       inner += '<a class="ceb-cta" href="' + ctaLink + '">' + escapeHTML(cta) + '</a>';
+    } else if (/Full/i.test(title || '')) {
+      // จันทร์เต็มดวง: ปุ่มพาไปโซนสมาชิกรับคำทำนาย (แถบทำหน้าที่"รู้" ส่วน hub ทำหน้าที่"ได้") (13 ต.ค.69)
+      inner += '<a class="ceb-cta" href="#member-hub">🌕 รับคำทำนาย</a>';
     }
 
     div.innerHTML = inner;

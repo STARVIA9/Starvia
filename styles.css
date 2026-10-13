@@ -220,6 +220,14 @@ body.senior .quota-meter{font-size:15px;color:#7a4a00}
 .moon-next{font-size:13px;color:var(--tx2)}
 .moon-img{width:130px;border-radius:50%;box-shadow:0 0 34px rgba(244,217,135,.45);margin-bottom:10px}
 .moon-next-row,.check-card{display:flex;gap:12px;align-items:center;text-align:left}
+/* แถบเด่นกว่าพื้นเว็บ (13 ต.ค.69 — พ่อสั่ง: ต้องรู้ว่ามีสะสม) */
+.moon-card{background:radial-gradient(circle at 85% 15%,rgba(244,217,135,.16),transparent 45%),linear-gradient(145deg,#2b1a4de6,#0e0826f5);border:1px solid rgba(214,173,69,.5);box-shadow:0 0 26px rgba(214,173,69,.18)}
+.check-card{background:radial-gradient(circle at 10% 90%,rgba(142,114,216,.20),transparent 50%),linear-gradient(145deg,#241645f2,#0e0826f5);border:1px solid rgba(142,114,216,.5);box-shadow:0 0 26px rgba(142,114,216,.20)}
+.pack-sample{margin:12px 0}
+.pack-sample-t{font-size:13px;letter-spacing:.12em;color:var(--g2);font-weight:700;margin-bottom:8px}
+.pack-sample-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pack-sample-cell img{width:100%;border-radius:10px;display:block;box-shadow:0 8px 20px rgba(0,0,0,.45)}
+.pack-sample-cell small{display:block;font-size:11px;color:var(--tx2);margin-top:4px}
 .moon-thumb{width:56px;height:56px;border-radius:12px;flex-shrink:0}
 .check-card>div{flex:1}
 .pack-god-img{width:150px;border-radius:12px;box-shadow:0 10px 26px rgba(0,0,0,.5);margin-bottom:10px}

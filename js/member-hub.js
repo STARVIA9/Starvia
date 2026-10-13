@@ -206,6 +206,20 @@ var MemberHub = (function() {
     setTimeout(go, 4000);
   }
 
+  // ตัวอย่างไพ่ 3 ใบให้คนยังไม่เปิดเห็นของ (ไม่สปอยล์ใบจริงของเขา)
+  function sampleGods(){
+    var h = hash(monthISO() + '|show');
+    var out = [];
+    for (var k = 0; k < 3; k++) out.push(GODS[(h + k * 4) % 12]);
+    return out;
+  }
+  function sampleHtml(){
+    return '<div class="pack-sample"><div class="pack-sample-t">ตัวอย่างไพ่ที่รอคุณ</div><div class="pack-sample-row">'
+      + sampleGods().map(function (g) {
+        return '<div class="pack-sample-cell"><img src="assets/pack-cards/' + g.img + '.jpg" alt="เทพ' + g.z + '" loading="lazy"><small>' + g.z + ' · ' + g.g + '</small></div>';
+      }).join('') + '</div></div>';
+  }
+
   // ─── ข. คืนจันทร์เต็มดวง ───
   var MOON_MSG = [
     'คืนนี้จันทร์เต็มดวง — เรื่องที่ค้างคาให้เขียนใส่กระดาษแล้วฉีกทิ้ง เป็นการปล่อยวางตามจันทรคติ',
@@ -299,9 +313,11 @@ var MemberHub = (function() {
     html += '<div class="pack-card">';
     if (!member) {
       html += '<div class="pack-lock">🔒 ซองดวงประจำเดือนนี้รอเจ้าของอยู่<br><small>สมาชิกเท่านั้นที่เปิดได้</small></div>'
+        + sampleHtml()
         + '<button class="rbtn rbtn-clear" data-action="open-payment">✦ เป็นสมาชิก 199/เดือน</button>';
     } else if (!claim) {
       html += '<div class="pack-sealed">✉️ ซองดวงเดือนนี้ยังไม่เปิด<br><small>กดเลย ดวงระดับไหนอยู่ในนี้…</small></div>'
+        + sampleHtml()
         + '<button class="rbtn rbtn-clear" data-action="pack-open">✉️ เปิดซองดวงเดือนนี้</button>';
     } else {
       var godFx = (function(){ for (var gi = 0; gi < GODS.length; gi++) if (GODS[gi].z === claim.god) return GODS[gi].fx || []; return []; })();
@@ -340,14 +356,16 @@ var MemberHub = (function() {
       else html += '<p class="pack-bless">🔒 สมาชิกอ่านคำทำนายคืนจันทร์เต็มดวงได้ <button class="rbtn" data-action="open-payment">ปลดล็อก 199/เดือน</button></p>';
     } else if (moon.next) {
       html += '<div class="moon-next-row"><img class="moon-thumb" src="assets/moon-full.png" alt="จันทร์" loading="lazy">'
-        + '<div class="moon-next">🌖 จันทร์เต็มดวงครั้งหน้า: ' + esc(moon.next.start) + ' — ' + esc(moon.next.title) + '</div></div>';
+        + '<div class="moon-next">🌖 จันทร์เต็มดวงครั้งหน้า: ' + esc(moon.next.start) + ' — ' + esc(moon.next.title)
+        + '<br><small>สมาชิกอ่านคำทำนายพิเศษเฉพาะคืนนั้นได้</small></div></div>';
     }
     html += '</div>';
 
     // ค. เช็กอิน
     var pr = checkinProgress();
+    var albumCount = getAlbum().length;
     html += '<div class="check-card"><img class="moon-thumb" src="assets/icons/gift.png" alt="ของรางวัล">'
-      + '<div>📅 เช็กอินเดือนนี้ <b>' + pr.days + '/' + pr.goal + '</b> วัน'
+      + '<div>📅 เช็กอินเดือนนี้ <b>' + pr.days + '/' + pr.goal + '</b> วัน · สะสมแล้ว <b>' + albumCount + '/12</b> ใบ'
       + (pr.rewarded ? ' — รับไพ่ทองแล้ว 👑' : ' — ครบ ' + pr.goal + ' รับไพ่ทอง 👑')
       + '<div class="sb"><div class="sbr" style="width:' + Math.min(100, Math.round(pr.days / pr.goal * 100)) + '%"></div></div></div>';
 
