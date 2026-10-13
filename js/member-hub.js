@@ -334,17 +334,20 @@ var MemberHub = (function() {
     var moon = moonState();
     html += '<div class="moon-card">';
     if (moon.active) {
-      html += '<div class="moon-live">🌕 คืนนี้จันทร์เต็มดวง' + (moon.active.zodiac ? 'ในราศี' + esc(moon.active.zodiac) : '') + '</div>';
+      html += '<img class="moon-img" src="assets/moon-full.png" alt="จันทร์เต็มดวง" loading="lazy">'
+        + '<div class="moon-live">🌕 คืนนี้จันทร์เต็มดวง' + (moon.active.zodiac ? 'ในราศี' + esc(moon.active.zodiac) : '') + '</div>';
       if (member) html += '<p class="pack-bless">"' + esc(moon.msg) + '"</p>';
       else html += '<p class="pack-bless">🔒 สมาชิกอ่านคำทำนายคืนจันทร์เต็มดวงได้ <button class="rbtn" data-action="open-payment">ปลดล็อก 199/เดือน</button></p>';
     } else if (moon.next) {
-      html += '<div class="moon-next">🌖 จันทร์เต็มดวงครั้งหน้า: ' + esc(moon.next.start) + ' — ' + esc(moon.next.title) + '</div>';
+      html += '<div class="moon-next-row"><img class="moon-thumb" src="assets/moon-full.png" alt="จันทร์" loading="lazy">'
+        + '<div class="moon-next">🌖 จันทร์เต็มดวงครั้งหน้า: ' + esc(moon.next.start) + ' — ' + esc(moon.next.title) + '</div></div>';
     }
     html += '</div>';
 
     // ค. เช็กอิน
     var pr = checkinProgress();
-    html += '<div class="check-card">📅 เช็กอินเดือนนี้ <b>' + pr.days + '/' + pr.goal + '</b> วัน'
+    html += '<div class="check-card"><img class="moon-thumb" src="assets/icons/gift.png" alt="ของรางวัล">'
+      + '<div>📅 เช็กอินเดือนนี้ <b>' + pr.days + '/' + pr.goal + '</b> วัน'
       + (pr.rewarded ? ' — รับไพ่ทองแล้ว 👑' : ' — ครบ ' + pr.goal + ' รับไพ่ทอง 👑')
       + '<div class="sb"><div class="sbr" style="width:' + Math.min(100, Math.round(pr.days / pr.goal * 100)) + '%"></div></div></div>';
 

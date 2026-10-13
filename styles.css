@@ -218,6 +218,10 @@ body.senior .quota-meter{font-size:15px;color:#7a4a00}
 .album-count{font-size:12px;color:var(--tx2);margin-top:8px}
 .moon-live{font-size:17px;color:var(--g2);font-weight:700;margin-bottom:8px}
 .moon-next{font-size:13px;color:var(--tx2)}
+.moon-img{width:130px;border-radius:50%;box-shadow:0 0 34px rgba(244,217,135,.45);margin-bottom:10px}
+.moon-next-row,.check-card{display:flex;gap:12px;align-items:center;text-align:left}
+.moon-thumb{width:56px;height:56px;border-radius:12px;flex-shrink:0}
+.check-card>div{flex:1}
 .pack-god-img{width:150px;border-radius:12px;box-shadow:0 10px 26px rgba(0,0,0,.5);margin-bottom:10px}
 /* ตราประจำใบ + แสงตามธาตุ (13 ต.ค.69 — พ่อสั่ง: เอกลักษณ์รายใบ เรืองแสงต่างกัน) */
 .god-mark{font-size:17px;font-weight:700;letter-spacing:.06em;margin:6px 0 2px;color:var(--g2);animation:godPulse 2.6s ease-in-out infinite}
