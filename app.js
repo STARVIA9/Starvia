@@ -675,6 +675,10 @@ function bindUIEvents(){
         if (navigator.share && ShareViral.nativeShare) { ShareViral.nativeShare(); }
         else if (ShareViral.copyShareLink) { ShareViral.copyShareLink(); }
       }
+    } else if (action === 'pack-open') {
+      // เปิดซองดวงรายเดือน
+      if (typeof MemberHub !== 'undefined' && MemberHub.claimPack) { MemberHub.claimPack(); }
+      if (typeof announce === 'function') { announce('เปิดซองดวงแล้ว'); }
     } else if (action === 'open-payment' || action === 'unlock-premium') {
       openPayment();
     } else if (action === 'close-payment') {

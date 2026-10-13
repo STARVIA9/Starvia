@@ -37,6 +37,7 @@ const jsFiles = [
   'js/daily-fortune.js',
   'js/onboarding.js',
   'js/gamification.js',
+  'js/member-hub.js',
   'js/share-viral.js',
   'js/social-proof.js',
   'js/analytics.js',
