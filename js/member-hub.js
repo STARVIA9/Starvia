@@ -230,6 +230,10 @@ var MemberHub = (function() {
 
   function init(){
     try { checkin(); } catch (e) {}
+    try {
+      // เป็นสมาชิกแล้ว ไม่ต้องเห็นป้ายโฆษณา
+      if (isMember()) { var p = $('promo-pack'); if (p) p.style.display = 'none'; }
+    } catch (e2) {}
     render();
   }
 

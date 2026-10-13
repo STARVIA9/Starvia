@@ -56,6 +56,7 @@ const otherFiles = [
   'assets/og-image.png',
   'assets/og-share-story.jpg',
   'assets/qr-payment.jpg',
+  'assets/pack-ad.png',
   'privacy.html',
   'terms.html',
   'about.html',
