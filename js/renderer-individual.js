@@ -256,7 +256,7 @@ function buildDomainCardV2(domain, isLocked){
       + '<div class="domain-compact-line domain-now"><b>🌙 สถานะตอนนี้</b><span>' + escapeHTML(domain.current) + '</span></div>'
       + '<div class="domain-compact-line domain-caution"><b>⚡ ระวัง</b><span>' + escapeHTML(domain.warning) + '</span></div>'
       + '<div class="domain-compact-line domain-cause"><b>🔮 แก้เหตุ</b><span>' + escapeHTML(remedy.fix) + '</span></div>'
-      + '<div class="domain-compact-line domain-boost"><b>✨ เสริมให้ปัง</b><span>' + escapeHTML(remedy.boost) + '</span></div>'
+      + '<div class="domain-compact-line domain-boost"><b>✨ เสริมให้รุ่ง</b><span>' + escapeHTML(remedy.boost) + '</span></div>'
       + '<div class="domain-compact-line domain-practice"><b>ภารกิจ 7 วัน</b><span>' + escapeHTML(practiceText) + '</span></div>'
       + '</div>'
       + '<details class="domain-age-details">'

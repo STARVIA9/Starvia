@@ -148,7 +148,7 @@ describe('Life Domain Forecast Matrix', () => {
     for (const label of ['โชค', 'การเงิน', 'สุขภาพ', 'ความสัมพันธ์', 'การงาน', 'บริวาร']) {
       expect(output).toContain(label);
     }
-    for (const part of ['สถานะตอนนี้', 'ระวัง', 'แก้เหตุ', 'เสริมให้ปัง', 'ภารกิจ 7 วัน', 'ดูจังหวะ 15 ปีข้างหน้า']) {
+    for (const part of ['สถานะตอนนี้', 'ระวัง', 'แก้เหตุ', 'เสริมให้รุ่ง', 'ภารกิจ 7 วัน', 'ดูจังหวะ 15 ปีข้างหน้า']) {
       expect(output).toContain(part);
     }
     expect(output).toContain('คัมภีร์แก้ดวง 6 ด้าน');
@@ -189,7 +189,7 @@ describe('Life Domain Forecast Matrix', () => {
     context.renderInd('Test', 'หญิง', '1990-06-15', '08:30', samplePlanet('ไฟ'), sampleSign(), sampleSign(), 0, 0, sampleUi());
 
     const output = dom.window.document.getElementById('r0').innerHTML;
-    for (const part of ['สถานะตอนนี้', 'ระวัง', 'แก้เหตุ', 'เสริมให้ปัง', 'ภารกิจ 7 วัน', 'ดูจังหวะ 15 ปีข้างหน้า']) {
+    for (const part of ['สถานะตอนนี้', 'ระวัง', 'แก้เหตุ', 'เสริมให้รุ่ง', 'ภารกิจ 7 วัน', 'ดูจังหวะ 15 ปีข้างหน้า']) {
       expect(output).toContain(part);
     }
     expect(output).not.toContain('วิธีเสริมให้ดีขึ้น');
